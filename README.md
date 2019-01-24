@@ -35,11 +35,11 @@
 
 ## Support
 - **Important: Only official release versions validated by the phpBB Extensions Team should be installed on a live forum. Pre-release (beta, RC) versions downloaded from this repository are only to be used for testing on offline/development forums and are not officially supported.**
-- Report bugs and other issues to our **[Issue Tracker]()**.
-- Support requests should be posted and discussed in the **[Advanced Points System topic]()** over at [phpBB.com](https://www.phpbb.com).
+- Report bugs and other issues to our **[Issue Tracker](https://github.com/phpBB-Studio/AdvancedPointsSystem/issues)**.
+- Support requests should be posted and discussed in the **[Advanced Points System topic](https://www.phpbb.com/community/viewtopic.php?f=456&t=2500296&p=15186601)** over at [phpBB.com](https://www.phpbb.com).
 
 ## Translations
-- Translations should be posted in the **[Advanced Points System topic]()** over at [phpBB.com](https://www.phpbb.com).
+- Translations should be posted in the **[Advanced Points System topic](https://www.phpbb.com/community/viewtopic.php?f=456&t=2500296&p=15186601)** over at [phpBB.com](https://www.phpbb.com).
 - Translation <u>***corrections***</u> are accepted as pull requests.
 - New translations are <u>***not***</u> accepted as pull requests.
 
@@ -61,7 +61,7 @@
 
 ## Extending APS
 For the extension developers amongst us, we have written a comprehensive Wiki that should describe everything in detail.
-You can read about [Extending APS]() and all [the possibilities]() there are. If there are still any questions, feel free to ask.
+You can read about [Extending APS](https://github.com/phpBB-Studio/AdvancedPointsSystem/wiki/Extending-APS) and all [the possibilities](https://github.com/phpBB-Studio/AdvancedPointsSystem/wiki/Extending-possibilities) there are. If there are still any questions, feel free to ask.
 
 ## You might also like
 - <a href="https://github.com/phpBB-Studio/DiceRolls"><img src="./images/dice_rolls.png" alt="Dice Rolls" /></a>
