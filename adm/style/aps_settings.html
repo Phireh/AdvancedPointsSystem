@@ -1,0 +1,52 @@
+{% include 'overall_header.html' %}
+
+{% INCLUDECSS '@phpbbstudio_aps/css/fontawesome-iconpicker.min.css' %}
+{% INCLUDECSS '@phpbbstudio_aps/css/aps_common.css' %}
+{% INCLUDECSS '@phpbbstudio_aps/css/aps_form.css' %}
+{% INCLUDECSS '@phpbbstudio_aps/css/aps_iconpicker.css' %}
+
+<h1>{{ PAGE_TITLE }}</h1>
+<p>{{ lang('ACP_APS_SETTINGS_EXPLAIN', aps_name()) }}</p>
+
+{% if S_ERROR %}
+<div class="errorbox">
+	<h3>{{ lang('WARNING') }}</h3>
+	<p>{{ ERROR_MSG }}</p>
+</div>
+{% endif %}
+
+{% if S_APS_COPY %}
+	{% include '@phpbbstudio_aps/aps_points_copy.html' %}
+{% else %}
+	<form class="aps-form" id="aps_settings" name="aps_settings" action="{{ U_ACTION }}" method="post">
+	{% for setting in settings %}
+		{% if setting.S_LEGEND %}
+		{% if not loop.first %}</fieldset>{% endif %}
+
+		<fieldset class="{{ setting.CLASS }}">
+			<legend>{{ lang(setting.LEGEND, aps_name()) }}</legend>
+		{% else %}
+			<dl>
+				<dt><label for="{{ setting.KEY }}">{{ lang(setting.TITLE, aps_name()) }}</label>{% if setting.S_EXPLAIN %}<br><span class="explain">{{ lang(setting.TITLE ~ '_DESC', aps_name()) }}</span>{% endif %}</dt>
+				<dd>{{ setting.CONTENT }}</dd>
+			</dl>
+		{% endif %}
+		{% if loop.last %}</fieldset>{% endif %}
+	{% endfor %}
+
+		<fieldset>
+			<legend>{{ lang('ACP_SUBMIT_CHANGES') }}</legend>
+
+			<p class="submit-buttons">
+				<input class="button1" id="submit" name="submit" type="submit" value="{{ lang('SUBMIT') }}">&nbsp;
+				<input class="button2" id="reset" name="reset" type="reset" value="{{ lang('RESET') }}">
+				{{ S_FORM_TOKEN }}
+			</p>
+		</fieldset>
+	</form>
+{% endif %}
+
+{% INCLUDEJS '@phpbbstudio_aps/js/fontawesome-iconpicker.min.js' %}
+{% INCLUDEJS '@phpbbstudio_aps/js/aps_common.js' %}
+
+{% include 'overall_footer.html' %}

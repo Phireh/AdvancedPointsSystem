@@ -1,0 +1,22 @@
+{% block width %}s12 m6 aps-js{% endblock %}
+
+{% block content %}
+	<canvas data-aps-chart="line"
+			data-aps-time="{{ aps_config('aps_display_graph_time') }}"
+			data-aps-empty="{{ lang('APS_POINTS_DATA_EMPTY', aps_name()) }}"
+			aria-label="{{ lang('APS_POINTS_GROWTH', aps_name()) }}"
+			role="img">
+		<p>{{ lang('APS_POINTS_GROWTH', aps_name()) }}</p>
+	</canvas>
+	<div class="hidden">
+		{% for growth in aps_period %}
+			<div data-aps-labels="{{ growth.DATE|e }}"
+				 data-aps-label="{{ aps_name()|e }}"
+				 data-aps-colour="transparent"
+				 data-aps-colour-border="#12a3eb"
+				 data-aps-colour-point="#0076b1"
+				 data-aps-value="{{ aps_format(growth.TOTAL) }}">
+			</div>
+		{% endfor %}
+	</div>
+{% endblock %}

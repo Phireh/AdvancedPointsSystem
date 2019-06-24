@@ -1,0 +1,28 @@
+{% set width = block('width', block.TEMPLATE) is defined ? block('width', block.TEMPLATE) : 's12' %}
+<div class="aps-col {{ width }}" id="aps_{{ block.ID }}" data-aps-id="{{ block.ID }}">
+	<div class="aps-panel">
+		<div class="aps-panel-header">
+			<h3>{{ block.TITLE }}</h3>
+			{% if S_USER_LOGGED_IN and not S_IS_BOT %}
+				{% if not block.S_REQUIRED %}
+					<a class="aps-panel-action aps-panel-delete" href="{{ block.U_DELETE }}" data-ajax="aps_remove">
+						<i class="icon fa-times fa-fw"></i>
+					</a>
+				{% endif %}
+				<span class="aps-panel-action aps-panel-move aps-js"><i class="icon fa-ellipsis-h fa-fw"></i></span>
+			{% endif %}
+		</div>
+		<div class="aps-panel-content">
+			{% if block('content', block.TEMPLATE) is defined %}
+				{{ block('content', block.TEMPLATE) }}
+			{% else %}
+				<p class="error">{{ lang('APS_POINTS_BLOCK_NO_CONTENT') }}</p>
+			{% endif %}
+		</div>
+		{% if block('footer', block.TEMPLATE) is defined %}
+			<div class="aps-panel-footer">
+				{{ block('footer', block.TEMPLATE) }}
+			</div>
+		{% endif %}
+	</div>
+</div>

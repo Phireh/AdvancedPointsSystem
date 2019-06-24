@@ -1,0 +1,108 @@
+{% include 'overall_header.html' %}
+
+{% INCLUDECSS '@phpbbstudio_aps/css/aps_form.css' %}
+
+<h1>{{ PAGE_TITLE }}</h1>
+<p>{{ lang('ACP_APS_DISPLAY_EXPLAIN', aps_name()) }}</p>
+
+{% if S_ERROR %}
+	<div class="errorbox">
+		<h3>{{ lang('WARNING') }}</h3>
+		<p>{{ ERROR_MSG }}</p>
+	</div>
+{% endif %}
+
+<form class="aps-form" id="aps_display" name="aps_display" action="{{ U_ACTION }}" method="post">
+	<fieldset>
+		<legend>{{ lang('GENERAL_SETTINGS') }}</legend>
+
+		<dl>
+			<dt>
+				<label for="aps_display_top_change_yes">{{ lang('ACP_APS_DISPLAY_TOP_CHANGE') }}</label><br />
+				<span class="explain">{{ lang('ACP_APS_DISPLAY_TOP_CHANGE_DESC') }}</span>
+			</dt>
+			<dd>
+				<label>
+					<input class="radio aps-bool" id="aps_display_top_change_yes" name="aps_display_top_change" value="1" type="radio"{{ APS_DISPLAY_TOP_CHANGE ? ' checked' : '' }} />
+					<span class="aps-button-green">{{ lang('YES') }}</span>
+				</label>
+				<label>
+					<input class="radio aps-bool" id="aps_display_top_change_no" name="aps_display_top_change" value="0" type="radio"{{ APS_DISPLAY_TOP_CHANGE ? '' : ' checked' }} />
+					<span class="aps-button-red">{{ lang('NO') }}</span>
+				</label>
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label for="aps_display_top_count">{{ lang('ACP_APS_DISPLAY_TOP_COUNT') }}</label><br />
+				<span class="explain">{{ lang('ACP_APS_DISPLAY_TOP_COUNT_DESC') }}</span>
+			</dt>
+			<dd><input class="autowidth" id="aps_display_top_count" name="aps_display_top_count" type="number" value="{{ APS_DISPLAY_TOP_COUNT }}" min="1" required /></dd>
+		</dl>
+		<dl>
+			<dt>
+				<label for="aps_display_adjustments">{{ lang('ACP_APS_DISPLAY_ADJUSTMENTS') }}</label><br />
+				<span class="explain">{{ lang('ACP_APS_DISPLAY_ADJUSTMENTS_DESC') }}</span>
+			</dt>
+			<dd><input class="autowidth" id="aps_display_adjustments" name="aps_display_adjustments" type="number" value="{{ APS_DISPLAY_ADJUSTMENTS }}" min="1" required /></dd>
+		</dl>
+		<dl>
+			<dt>
+				<label for="aps_display_graph_time">{{ lang('ACP_APS_DISPLAY_GRAPH_TIME') }}</label><br />
+				<span class="explain">{{ lang('ACP_APS_DISPLAY_GRAPH_TIME_DESC') }}</span>
+			</dt>
+			<dd><input class="autowidth" id="aps_display_graph_time" name="aps_display_graph_time" type="number" min="0" value="{{ APS_DISPLAY_GRAPH_TIME }}" required /></dd>
+		</dl>
+	</fieldset>
+
+	<fieldset class="aps-pages notice" data-aps-sortable="true">
+		{% for page in aps_pages %}
+			<fieldset>
+				<dl>
+					<dt><strong>{{ page.TITLE }}</strong></dt>
+					<dd>
+						<label>
+							<span class="aps-button-blue"><i class="icon fa-arrows-v fa-fw"></i></span>
+						</label>
+					</dd>
+				</dl>
+
+				<fieldset data-aps-sortable="true">
+					{% for block in page.blocks %}
+						<dl>
+							<dt><strong>{{ block.TITLE }}</strong></dt>
+							<dd>
+								<label>
+									<input class="radio aps-bool" name="aps_blocks[{{ page.ID }}][{{ loop.index }}]" value="{{ block.ID }}" type="radio"{{ block.S_ACTIVE ? ' checked' : '' }} />
+									<span class="aps-button-green">{{ lang('ENABLED') }}</span>
+								</label>
+								<label>
+									<input class="radio aps-bool" name="aps_blocks[{{ page.ID }}][{{ loop.index }}]" value="" type="radio"{{ block.S_ACTIVE ? '' : ' checked' }} />
+									<span class="aps-button-red">{{ lang('DISABLED') }}</span>
+								</label>
+								<label>
+									<span class="aps-button-blue"><i class="icon fa-arrows-v fa-fw"></i></span>
+								</label>
+							</dd>
+						</dl>
+					{% endfor %}
+				</fieldset>
+			</fieldset>
+		{% endfor %}
+	</fieldset>
+
+	<fieldset>
+		<legend>{{ lang('ACP_SUBMIT_CHANGES') }}</legend>
+
+		<p class="submit-buttons">
+			<input class="button1" id="submit" name="submit" type="submit" value="{{ lang('SUBMIT') }}">&nbsp;
+			<input class="button2" id="reset" name="reset" type="reset" value="{{ lang('RESET') }}">
+			{{ S_FORM_TOKEN }}
+		</p>
+	</fieldset>
+</form>
+
+{% INCLUDEJS '@phpbbstudio_aps/js/jquery-ui-sortable.min.js' %}
+{% INCLUDEJS '@phpbbstudio_aps/js/aps_display.js' %}
+
+{% include 'overall_footer.html' %}

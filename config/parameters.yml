@@ -1,0 +1,5 @@
+parameters:
+    phpbbstudio.aps.tables.display: '%core.table_prefix%aps_display'
+    phpbbstudio.aps.tables.logs: '%core.table_prefix%aps_logs'
+    phpbbstudio.aps.tables.points: '%core.table_prefix%aps_points'
+    phpbbstudio.aps.tables.reasons: '%core.table_prefix%aps_reasons'

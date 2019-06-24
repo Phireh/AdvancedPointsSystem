@@ -1,0 +1,14 @@
+<div class="panel">
+	<div class="inner">
+		<fieldset>
+			{% if S_ERROR %}
+				<p class="error">{{ ERROR_MSG }}</p>
+			{% endif %}
+			<dl>
+				<dt><label for="username">{{ lang('SELECT_USER') ~ lang('COLON') }}</label></dt>
+				<dd><input name="username" id="username" type="text" class="inputbox" value="{{ APS_USERNAME }}" /></dd>
+				<dd>[ <a href="{{ U_APS_SEARCH }}" onclick="find_username(this.href); return false;">{{ lang('FIND_USERNAME') }}</a> ]</dd>
+			</dl>
+		</fieldset>
+	</div>
+</div>

@@ -1,0 +1,136 @@
+services:
+    # Service collection
+    phpbbstudio.aps.actions_collection:
+        class: phpbb\di\ordered_service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: phpbbstudio.aps.action }
+
+    # Base class
+    phpbbstudio.aps.action.base:
+        abstract: true
+
+    # GLOBAL
+    phpbbstudio.aps.action.pm:
+        class: phpbbstudio\aps\actions\type\pm
+        shared: false
+        arguments:
+            - '@config'
+            - '@text_formatter.utils'
+        tags:
+            - { name: phpbbstudio.aps.action, order: -4 }
+
+    phpbbstudio.aps.action.birthday:
+        class: phpbbstudio\aps\actions\type\birthday
+        shared: false
+        arguments:
+            - '@user'
+        tags:
+            - { name: phpbbstudio.aps.action, order: -3 }
+
+    phpbbstudio.aps.action.register:
+        class: phpbbstudio\aps\actions\type\register
+        shared: false
+        tags:
+            - { name: phpbbstudio.aps.action, order: -2 }
+
+    phpbbstudio.aps.action.warn:
+        class: phpbbstudio\aps\actions\type\warn
+        shared: false
+        arguments:
+            - '@user'
+        tags:
+            - { name: phpbbstudio.aps.action, order: -1 }
+
+    # LOCAL - Topic
+    phpbbstudio.aps.action.topic:
+        class: phpbbstudio\aps\actions\type\topic
+        shared: false
+        arguments:
+            - '@config'
+            - '@text_formatter.utils'
+        tags:
+            - { name: phpbbstudio.aps.action, order: -4 }
+
+    # LOCAL - Post
+    phpbbstudio.aps.action.post:
+        class: phpbbstudio\aps\actions\type\post
+        shared: false
+        arguments:
+            - '@config'
+            - '@text_formatter.utils'
+        tags:
+            - { name: phpbbstudio.aps.action, order: -3 }
+
+    # LOCAL - Moderate
+    phpbbstudio.aps.action.copy:
+        class: phpbbstudio\aps\actions\type\copy
+        shared: false
+        tags:
+            - { name: phpbbstudio.aps.action, order: -2 }
+
+    phpbbstudio.aps.action.change:
+        class: phpbbstudio\aps\actions\type\change
+        shared: false
+        tags:
+            - { name: phpbbstudio.aps.action, order: -2 }
+
+    phpbbstudio.aps.action.delete:
+        class: phpbbstudio\aps\actions\type\delete
+        shared: false
+        arguments:
+            - '@user'
+        tags:
+            - { name: phpbbstudio.aps.action, order: -2 }
+
+    phpbbstudio.aps.action.edit:
+        class: phpbbstudio\aps\actions\type\edit
+        shared: false
+        tags:
+            - { name: phpbbstudio.aps.action, order: -2 }
+
+    phpbbstudio.aps.action.lock:
+        class: phpbbstudio\aps\actions\type\lock
+        shared: false
+        arguments:
+            - '@user'
+        tags:
+            - { name: phpbbstudio.aps.action, order: -2 }
+
+    phpbbstudio.aps.action.merge:
+        class: phpbbstudio\aps\actions\type\merge
+        shared: false
+        arguments:
+            - '@user'
+        tags:
+            - { name: phpbbstudio.aps.action, order: -2 }
+
+    phpbbstudio.aps.action.move:
+        class: phpbbstudio\aps\actions\type\move
+        shared: false
+        arguments:
+            - '@user'
+        tags:
+            - { name: phpbbstudio.aps.action, order: -1 }
+
+    phpbbstudio.aps.action.queue:
+        class: phpbbstudio\aps\actions\type\queue
+        shared: false
+        arguments:
+            - '@user'
+        tags:
+            - { name: phpbbstudio.aps.action, order: -1 }
+
+    phpbbstudio.aps.action.topic_type:
+        class: phpbbstudio\aps\actions\type\topic_type
+        shared: false
+        tags:
+            - { name: phpbbstudio.aps.action, order: -1 }
+
+    # LOCAL - Misc.
+    phpbbstudio.aps.action.vote:
+        class: phpbbstudio\aps\actions\type\vote
+        shared: false
+        tags:
+            - { name: phpbbstudio.aps.action, order: 0 }

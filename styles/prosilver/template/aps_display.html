@@ -1,0 +1,50 @@
+{% extends '@phpbbstudio_aps/aps_main.html' %}
+
+{% block nav %}
+	{% for page in aps_navbar %}
+		<li>
+			<a class="aps-list-item{{ page.S_ACTIVE ? ' aps-list-active' }}" href="{{ page.U_VIEW }}">
+				{{ page.TITLE }}
+			</a>
+		</li>
+	{% endfor %}
+{% endblock %}
+
+{% block nav_right %}
+	{% if S_REGISTERED_USER %}
+		<li class="aps-list-item aps-panel-add dropdown-container dropdown-container-left">
+			<span class="dropdown-trigger dropdown-select{{ aps_blocks|length ? '' : ' aps-panel-add-pulse' }}">
+				<i class="icon fa-th-large fa-fw" aria-hidden="true"></i>
+			</span>
+			<div class="dropdown hidden">
+				<div class="pointer"><div class="pointer-inner"></div></div>
+				<ul class="dropdown-contents">
+					{% for block in aps_blocks_add %}
+						{{ block.item }}
+					{% endfor %}
+					<li class="aps-panel-empty"><span class="aps-button-red">{{ lang('APS_POINTS_BLOCK_NO') }}</span></li>
+				</ul>
+			</div>
+		</li>
+	{% endif %}
+{% endblock %}
+
+{% block main %}
+	<div class="aps-row" data-aps-sort="{{ U_APS_ACTION_SORT }}">
+		{% for block in aps_blocks %}
+			{{ include('@phpbbstudio_aps/blocks/base.html', {'block': block}) }}
+		{% endfor %}
+		<div class="aps-panel-empty aps-col s12" data-aps-empty-panel="true">
+			<div class="aps-panel">
+				<div class="aps-panel-content aps-center">
+					<p class="error aps-no-mar-bot">{{ lang('APS_POINTS_BLOCK_NONE') }}</p>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% INCLUDEJS '@phpbbstudio_aps/js/chart.bundle.min.js' %}
+{% INCLUDEJS '@phpbbstudio_aps/js/jquery-ui-sortable.min.js' %}
+{% INCLUDEJS '@phpbbstudio_aps/js/palette.js' %}
+{% INCLUDEJS '@phpbbstudio_aps/js/aps_display.js' %}

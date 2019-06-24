@@ -1,0 +1,66 @@
+services:
+    phpbbstudio.aps.listener.acp:
+        class: phpbbstudio\aps\event\acp
+        arguments:
+            - '@phpbbstudio.aps.acp'
+            - '@auth'
+            - '@config'
+            - '@phpbbstudio.aps.functions'
+            - '@controller.helper'
+            - '@language'
+            - '@log'
+            - '@phpbbstudio.aps.log'
+            - '@request'
+            - '@template'
+            - '@user'
+        tags:
+            - { name: event.listener }
+
+    phpbbstudio.aps.listener.actions:
+        class: phpbbstudio\aps\event\actions
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@phpbbstudio.aps.functions'
+            - '@phpbbstudio.aps.manager'
+            - '@request'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: event.listener }
+
+    phpbbstudio.aps.listener.check:
+        class: phpbbstudio\aps\event\check
+        arguments:
+            - '@config'
+            - '@phpbbstudio.aps.functions'
+            - '@language'
+            - '@template'
+            - '@user'
+            - '@phpbbstudio.aps.valuator'
+        tags:
+            - { name: event.listener }
+
+    phpbbstudio.aps.listener.display:
+        class: phpbbstudio\aps\event\display
+        arguments:
+            - '@phpbbstudio.aps.functions'
+            - '@controller.helper'
+            - '@language'
+            - '%core.php_ext%'
+        tags:
+            - { name: event.listener }
+
+    phpbbstudio.aps.listener.modules:
+        class: phpbbstudio\aps\event\modules
+        arguments:
+            - '@phpbbstudio.aps.functions'
+            - '@language'
+        tags:
+            - { name: event.listener }
+
+    phpbbstudio.aps.listener.permissions:
+        class: phpbbstudio\aps\event\permissions
+        tags:
+            - { name: event.listener }

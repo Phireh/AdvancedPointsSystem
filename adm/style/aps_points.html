@@ -1,0 +1,99 @@
+{% include 'overall_header.html' %}
+
+{% INCLUDECSS '@phpbbstudio_aps/css/aps_common.css' %}
+{% INCLUDECSS '@phpbbstudio_aps/css/aps_form.css' %}
+
+<h1>{{ APS_TITLE }}</h1>
+<p>{{ lang('ACP_APS_POINTS_EXPLAIN', aps_name()) }}</p>
+
+<form class="aps-form" id="acp_aps_points" name="acp_aps_points" method="post" action="{{ U_APS_ACTION }}">
+	<fieldset{% if S_APS_ACTION not in ['add', 'edit'] %} class="panel"{% endif %}>
+		{% if S_ERRORS %}
+			<div class="errorbox"><p class="error">{{ ERROR_MSG }}</p></div>
+		{% endif %}
+
+		{% if S_APS_ACTION in ['add', 'edit'] %}
+			{% if S_APS_REASONS %}
+			<dl>
+				<dt><label for="title">{{ lang('SUBJECT') }}</label></dt>
+				<dd><input class="medium" id="title" name="title" type="text" value="{{ REASON_TITLE }}" required></dd>
+			</dl>
+			<dl>
+				<dt><label for="description">{{ lang('REASON') }}</label></dt>
+				<dd>
+					<textarea class="inputbox" id="description" name="description">{{ REASON_DESC }}</textarea>
+				</dd>
+			</dl>
+			<dl>
+				<dt><label for="points">{{ aps_name() }}</label></dt>
+				<dd><input class="tiny" id="points" name="points" type="number" value="{{ REASON_POINTS }}" step="0.01" required></dd>
+			</dl>
+			{% endif %}
+		{% else %}
+			{% if S_APS_REASONS %}
+			<table class="table1 forums responsive">
+				<thead>
+					<tr>
+						<th class="centered-text">{{ aps_name() }}</th>
+						<th>{{ lang('REASON') }}</th>
+						<th class="centered-text">{{ lang('ACTIONS') }}</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for reason in aps_reasons %}
+						<tr>
+							<td class="actions {{ reason.POINTS > 0 ? 'yes' : 'never' }}">
+								{{ aps_format(reason.POINTS) }}
+							</td>
+							<td>
+								<strong>{{ reason.TITLE }}</strong><br />
+								{{ reason.DESC }}
+							</td>
+							<td class="actions">
+								<span class="up-disabled hidden">{{ ICON_MOVE_UP_DISABLED }}</span>
+								<span class="up"><a href="{{ reason.U_MOVE_UP }}" data-ajax="row_up">{{ ICON_MOVE_UP }}</a></span>
+								<span class="down-disabled hidden">{{ ICON_MOVE_DOWN_DISABLED }}</span>
+								<span class="down"><a href="{{ reason.U_MOVE_DOWN }}" data-ajax="row_down">{{ ICON_MOVE_DOWN }}</a></span>
+								<a href="{{ reason.U_EDIT }}">{{ ICON_EDIT }}</a>
+								<a href="{{ reason.U_DELETE }}" data-ajax="row_delete">{{ ICON_DELETE }}</a>
+							</td>
+						</tr>
+					{% else %}
+						<tr>
+							<td class="centered-text" colspan="3">{{ lang('ACP_NO_ITEMS') }}</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+
+			<hr />
+
+			<fieldset class="quick">
+				<a class="aps-button-green" href="{{ U_APS_REASON_ADD }}">{{ lang('ADD') }}</a>
+			</fieldset>
+
+	</fieldset>
+	<fieldset>
+		{% endif %}
+		{% if S_APS_POINTS %}
+		<legend>{{ aps_name() }}</legend>
+
+			{% include '@phpbbstudio_aps/aps_points_list.html' %}
+
+		{% endif %}
+		{% endif %}
+
+	</fieldset>
+
+	<fieldset>
+		<legend>{{ lang('ACP_SUBMIT_CHANGES') }}</legend>
+
+		<p class="submit-buttons">
+			<input class="button1" id="submit" name="submit" type="submit" value="{{ lang('SUBMIT') }}">&nbsp;
+			<input class="button2" id="reset" name="reset" type="reset" value="{{ lang('RESET') }}">
+			{{ S_FORM_TOKEN }}
+		</p>
+	</fieldset>
+</form>
+
+{% include 'overall_footer.html' %}

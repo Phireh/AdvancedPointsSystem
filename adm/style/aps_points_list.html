@@ -1,0 +1,17 @@
+<div id="aps_points" class="aps-tabs aps-form">
+	{% for category in aps_categories %}
+		<input class="aps-tab-input" id="aps-tab-{{ loop.index }}" name="aps-tabs" type="radio"{% if loop.first %} checked{% endif %}>
+		<label class="aps-tab-label" for="aps-tab-{{ loop.index }}">{{ lang(category.title) }}</label>
+		<fieldset class="aps-tab-panel">
+			{% for fields in category.blocks %}
+				{% for field, title in fields %}
+					<dl>
+						<dt><label for="{{ field }}">{{ lang(title, aps_name()) ~ lang('COLON') }}</label>{% if lang(title ~ '_DESC') != title ~ '_DESC' %}<br><span class="explain">{{ lang(title ~ '_DESC', aps_name()) }}</span>{% endif %}</dt>
+						<dd><input class="autowidth" id="{{ field }}" name="aps_values[{{ field }}]" type="number" value="{{ aps_format(APS_VALUES[field]) }}" step="{{ aps_step() }}"></dd>
+					</dl>
+				{% endfor %}
+				{% if not loop.last %}<hr>{% endif %}
+			{% endfor %}
+		</fieldset>
+	{% endfor %}
+</div>

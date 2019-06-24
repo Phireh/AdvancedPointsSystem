@@ -1,0 +1,42 @@
+{% include 'overall_header.html' %}
+
+{% INCLUDECSS '@phpbbstudio_aps/css/aps_common.css' %}
+
+<h1>{{ PAGE_TITLE }}</h1>
+<p>{{ lang('ACP_APS_LOGS_EXPLAIN', aps_name()) }}</p>
+
+<form id="aps_logs" name="aps_logs" action="{{ U_ACTION }}" method="post">
+	<fieldset class="display-options search-box">
+		<label for="keywords">{{ lang('SEARCH_KEYWORDS') ~ lang('COLON') }}</label> <input type="text" id="keywords" name="keywords" value="{{ S_KEYWORDS }}" />&nbsp;<input type="submit" class="button2" name="filter" value="{{ lang('SEARCH') }}" />
+	</fieldset>
+
+	{% if pagination %}
+	<div class="pagination top-pagination">
+		{% include 'pagination.html' %}
+	</div>
+	{% endif %}
+
+	{% include '@phpbbstudio_aps/aps_logs_list.html' with {'s_include_mark': true} %}
+
+	{% if pagination %}
+		<div class="pagination">
+			{% include 'pagination.html' %}
+		</div>
+	{% endif %}
+
+	<fieldset class="display-options">
+		{{ lang('DISPLAY_LOG') ~ lang('COLON') }} {{ S_LIMIT_DAYS }} &nbsp;
+		{{ lang('SORT_BY') ~ lang('COLON') }} {{ S_SORT_KEY }} {{ S_SORT_DIR }}
+		<input class="button2" type="submit" value="{{ lang('GO') }}" name="sort" />
+		{{ S_FORM_TOKEN }}
+	</fieldset>
+	<hr>
+
+	<fieldset class="quick">
+		<input class="button2" type="submit" name="del_all" value="{{ lang('DELETE_ALL') }}" />&nbsp;
+		<input class="button2" type="submit" name="del_marked" value="{{ lang('DELETE_MARKED') }}" /><br />
+		<p class="small"><a href="#" onclick="marklist('aps_logs', 'mark', true); return false;">{{ lang('MARK_ALL') }}</a> &bull; <a href="#" onclick="marklist('aps_logs', 'mark', false); return false;">{{ lang('UNMARK_ALL') }}</a></p>
+	</fieldset>
+</form>
+
+{% include 'overall_footer.html' %}

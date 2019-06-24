@@ -1,0 +1,69 @@
+imports:
+    - { resource: actions.yml }
+    - { resource: parameters.yml }
+    - { resource: services_controllers.yml }
+    - { resource: services_core.yml }
+    - { resource: services_listeners.yml }
+
+services:
+    phpbbstudio.aps.manager:
+        class: phpbbstudio\aps\actions\manager
+        arguments:
+            - '@phpbbstudio.aps.actions_collection'
+            - '@phpbbstudio.aps.distributor'
+            - '@phpbbstudio.aps.functions'
+            - '@language'
+            - '@log'
+            - '@phpbbstudio.aps.valuator'
+            - '@user'
+
+    phpbbstudio.aps.blockader:
+        class: phpbbstudio\aps\points\blockader
+        arguments:
+            - '@dbal.conn'
+            - '%phpbbstudio.aps.tables.display%'
+
+    phpbbstudio.aps.distributor:
+        class: phpbbstudio\aps\points\distributor
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@phpbbstudio.aps.functions'
+            - '@phpbbstudio.aps.log'
+            - '@phpbbstudio.aps.valuator'
+
+    phpbbstudio.aps.reasoner:
+        class: phpbbstudio\aps\points\reasoner
+        arguments:
+            - '@dbal.conn'
+            - '%phpbbstudio.aps.tables.reasons%'
+
+    phpbbstudio.aps.valuator:
+        class: phpbbstudio\aps\points\valuator
+        arguments:
+            - '@dbal.conn'
+            - '@phpbbstudio.aps.functions'
+            - '%phpbbstudio.aps.tables.points%'
+
+    phpbbstudio.aps.birthday:
+        class: phpbbstudio\aps\cron\task\birthday
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@phpbbstudio.aps.functions'
+            - '@phpbbstudio.aps.manager'
+        calls:
+            - [set_name, [phpbbstudio.aps.cron.task.birthday]]
+        tags:
+            - { name: cron.task }
+
+    phpbbstudio.aps.notification.type.adjust:
+        class: phpbbstudio\aps\notification\type\adjust
+        shared: false # service MUST not be shared for this to work!
+        parent: notification.type.base
+        calls:
+            - [set_auth, ['@auth']]
+            - [set_controller_helper, ['@controller.helper']]
+            - [set_user_loader, ['@user_loader']]
+        tags:
+            - { name: notification.type }

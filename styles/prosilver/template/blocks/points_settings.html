@@ -1,0 +1,18 @@
+{% block width %}s12 m6{% endblock %}
+
+{% block content %}
+	{% set min = aps_config('aps_points_min') %}
+	{% set max = aps_config('aps_points_max') %}
+	{% set def = aps_config('default_lang') %}
+	{% set name = aps_config('aps_points_name_' ~ def) %}
+	{% set name = user.lang_name != def and name != aps_name() ? name : '' %}
+
+	<dl class="details">
+		<dt>{{ lang('APS_POINTS_NAME') ~ lang('COLON') }}</dt><dd>{{ aps_name() }}{% if name %} <em>({{ name }})</em>{% endif %}</dd>
+		<dt>{{ lang('APS_POINTS_FORMAT', aps_name()) ~ lang('COLON') }}</dt><dd>{{ aps_display(12345.00) }}</dd>
+		<dt>{{ lang('APS_POINTS_MIN', aps_name()) ~ lang('COLON') }}</dt><dd>{{ min ? min : lang('NA') }}</dd>
+		<dt>{{ lang('APS_POINTS_MAX', aps_name()) ~ lang('COLON') }}</dt><dd>{{ max ? max : lang('NA') }}</dd>
+		<dt>{{ lang('APS_POINTS_ACTIONS_PAGE') ~ lang('COLON') }}</dt><dd>{{ aps_config('aps_actions_per_page') }}</dd>
+		{% EVENT phpbbstudio_aps_display_settings_append %}
+	</dl>
+{% endblock %}

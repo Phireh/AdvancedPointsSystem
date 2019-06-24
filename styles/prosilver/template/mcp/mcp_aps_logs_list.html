@@ -1,0 +1,38 @@
+<table class="table1">
+	<thead>
+		<tr>
+			<th class="name"><i class="icon fa-user fa-fw"></i></th>
+			<th class="name">{{ lang('REASON') }}</th>
+			<th class="name"><i class="icon fa-clock-o fa-fw"></i></th>
+			<th class="name"><i class="icon fa-sign-out fa-fw"></i></th>
+			<th class="name"><i class="icon fa-arrow-right fa-fw"></i></th>
+			<th class="name"><i class="icon fa-sign-in fa-fw"></i></th>
+			<th class="name"><i class="icon fa-comments fa-fw"></i></th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for log in logs_array %}
+			<tr class="bg{{ loop.index is odd ? 1 : 2 }}">
+				<td>{{ log.USER }}</td>
+				<td>
+					<strong>{{ lang(log.ACTION, aps_name()) }}</strong>
+					{% if not log.S_SELF and log.REPORTEE %}<br>&raquo; {{ lang('FROM') ~ ' ' ~ log.REPORTEE }}{% endif %}
+				</td>
+				<td>{{ user.format_date(log.TIME) }}</td>
+				<td>{{ aps_display(log.POINTS_OLD, false) }}</td>
+				<td>{{ aps_display(log.POINTS_SUM, false) }}</td>
+				<td>{{ aps_display(log.POINTS_NEW, false) }}</td>
+				<td>
+					{% if log.FORUM_NAME %}&raquo; <a href="{{ log.U_FORUM }}" title="{{ lang('FORUM') }}">{{ log.FORUM_NAME }}</a><br />{% endif %}
+					{% if log.TOPIC_TITLE %}&raquo; <a href="{{ log.U_TOPIC }}" title="{{ lang('TOPIC') }}">{{ log.TOPIC_TITLE }}</a><br />{% endif %}
+					{% if log.POST_SUBJECT %}&raquo; <a href="{{ log.U_POST }}" title="{{ lang('POST') }}">{{ log.POST_SUBJECT }}</a><br />{% endif %}
+					{% if not log.FORUM_NAME and not log.TOPIC_TITLE and not log.POST_SUBJECT %}{{ lang('NA') }}{% endif %}
+				</td>
+			</tr>
+		{% else %}
+			<tr>
+				<td class="center" colspan="7"><span class="error">{{ lang('NO_ENTRIES') }}</span></td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>

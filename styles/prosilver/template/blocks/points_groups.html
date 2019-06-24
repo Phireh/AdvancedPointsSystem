@@ -1,0 +1,16 @@
+{% block width %}s12 m6 aps-js{% endblock %}
+
+{% block content %}
+	<canvas data-aps-chart="polarArea"
+			data-aps-time="{{ aps_config('aps_display_graph_time') }}"
+			data-aps-empty="{{ lang('APS_POINTS_DATA_EMPTY', aps_name()) }}"
+			aria-label="{{ lang('APS_POINTS_PER_GROUP', aps_name()) }}"
+			role="img">
+		<p>{{ lang('APS_POINTS_PER_GROUP', aps_name()) }}</p>
+	</canvas>
+	<div class="hidden">
+		{% for group in aps_groups %}
+			<div data-aps-labels="{{ group.NAME|e }}" data-aps-colour="#{{ group.COLOUR }}" data-aps-value="{{ aps_format(group.POINTS) }}"></div>
+		{% endfor %}
+	</div>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% include 'overall_header.html' %}
+
+{% if not definition.INCLUDED_APS_DISPLAYCSS %}
+	{% INCLUDECSS '@phpbbstudio_aps/aps_display.css' %}
+	{% DEFINE INCLUDED_APS_DISPLAYCSS = true %}
+{% endif %}
+
+{% if not definition.INCLUDED_APS_FORMCSS %}
+	{% INCLUDECSS '@phpbbstudio_aps/aps_form.css' %}
+	{% DEFINE INCLUDED_APS_FORMCSS = true %}
+{% endif %}
+
+{% block includes %}{% endblock %}
+
+<main class="aps-main">
+	<header>
+		<div class="aps-menu aps-lists-container">
+			<span class="aps-menu-faq"></span>
+			{# @todo FAQ link?
+			<a class="aps-menu-faq" href="#">
+				<i class="icon fa-question fa-fw"></i>
+			</a>
+			#}
+			<div class="aps-menu-icon">
+				<div>
+					<i class="headerbar icon {{ aps_config('aps_points_icon') }} fa-fw"></i>
+				</div>
+			</div>
+			<ul class="aps-list">
+				<li>
+					<a class="aps-list-item{{ S_APS_OVERVIEW ? ' aps-list-active' }}" href="{{ path('phpbbstudio_aps_display') }}" title="{{ lang('APS_OVERVIEW') }}">
+						<i class="icon fa-newspaper-o fa-fw"></i>
+						<span>{{ lang('APS_OVERVIEW') }}</span>
+					</a>
+				</li>
+				{% EVENT phpbbstudio_aps_menu_append %}
+			</ul>
+			<ul class="aps-list aps-list-right">
+				{% EVENT phpbbstudio_aps_menu_right_prepend %}
+				<li>
+					<span class="aps-list-item">
+						{{ aps_display(user.data.user_points, false) }}
+					</span>
+				</li>
+			</ul>
+		</div>
+
+		{% set nav = block('nav')|trim %}
+		{% set nav_right = block('nav_right')|trim %}
+
+		{% if (nav is defined and nav != '') or (nav_right is defined and nav != '') %}
+			<div class="aps-nav aps-lists-container headerbar">
+				{% if nav is defined and nav is not empty %}
+					<ul class="aps-list">
+						{{ nav }}
+					</ul>
+				{% endif %}
+				{% if nav_right is defined and nav_right != '' %}
+					<ul class="aps-list aps-list-right">
+						{{ nav_right }}
+					</ul>
+				{% endif %}
+			</div>
+		{% endif %}
+	</header>
+
+	<div class="aps-body">
+		{% block main %}{% endblock %}
+	</div>
+
+	<footer class="aps-footer">
+		<a href="https://phpbbstudio.com/extensions/advanced-points-system" target="_blank" rel="noopener">Advanced Points System</a> <i class="icon fa-copyright fa-fw" aria-hidden="true"></i> <a href="https://phpbbstudio.com" target="_blank" rel="noopener">phpBB Studio</a>
+	</footer>
+</main>
+
+{% if not definition.INCLUDED_SWEETALERT2ALLMINJS %}
+	{% INCLUDEJS '@phpbbstudio_aps/js/sweetalert2.all.min.js' %}
+	{% DEFINE INCLUDED_SWEETALERT2ALLMINJS = true %}
+{% endif %}
+
+{% include 'overall_footer.html' %}

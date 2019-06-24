@@ -1,0 +1,76 @@
+services:
+    phpbbstudio.aps.acp:
+        class: phpbbstudio\aps\core\acp
+        arguments:
+            - '@phpbbstudio.aps.functions'
+            - '@template'
+            - '@phpbbstudio.aps.actions_collection'
+            - '@phpbbstudio.aps.valuator'
+
+    phpbbstudio.aps.blocks:
+        class: phpbbstudio\aps\core\blocks
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@phpbbstudio.aps.dbal'
+            - '@phpbbstudio.aps.functions'
+            - '@group_helper'
+            - '@controller.helper'
+            - '@language'
+            - '@phpbbstudio.aps.log'
+            - '@pagination'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%phpbbstudio.aps.tables.logs%'
+
+    phpbbstudio.aps.dbal:
+        class: phpbbstudio\aps\core\dbal
+        arguments:
+            - '@dbal.conn'
+
+    phpbbstudio.aps.functions:
+        class: phpbbstudio\aps\core\functions
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@ext.manager'
+            - '@language'
+            - '@path_helper'
+            - '@user'
+            - '%core.table_prefix%'
+
+    phpbbstudio.aps.language:
+        class: phpbbstudio\aps\core\language
+        arguments:
+            - '@config'
+            - '@language'
+            - '@ext.manager'
+            - '@user'
+            - '%core.php_ext%'
+
+    phpbbstudio.aps.log:
+        class: phpbbstudio\aps\core\log
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@phpbbstudio.aps.functions'
+            - '@language'
+            - '@phpbbstudio.aps.language'
+            - '@user'
+            - '%phpbbstudio.aps.tables.logs%'
+            - '%core.root_path%'
+            - '%core.adm_relative_path%'
+            - '%core.php_ext%'
+
+    phpbbstudio.aps.template:
+        class: phpbbstudio\aps\core\template
+        arguments:
+            - '@phpbbstudio.aps.functions'
+        tags:
+            - { name: twig.extension }

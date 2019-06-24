@@ -1,0 +1,69 @@
+{% include 'mcp_header.html' %}
+
+<h2>{{ lang('MCP_APS_POINTS_CHANGE', aps_name()) }}</h2>
+
+<form id="mcp_aps_change" name="mcp_aps_change" method="post" action="{{ U_APS_ACTION }}">
+	{% if S_APS_SEARCH %}
+		{% include '@phpbbstudio_aps/mcp/mcp_aps_find_username.html' %}
+	{% else %}
+		{% INCLUDEJS '@phpbbstudio_aps/js/aps_mcp.js' %}
+
+		{% if S_APS_LOGS %}
+			<div class="panel">
+				<div class="inner">
+					{% include '@phpbbstudio_aps/mcp/mcp_aps_logs_list.html' with {'logs_array': logs}  %}
+				</div>
+			</div>
+		{% endif %}
+
+		<div class="panel">
+			<div class="inner">
+				<fieldset>
+					<dl>
+						<dt><label>{{ lang('USERNAME') ~ lang('COLON') }}</label></dt>
+						<dd>{{ APS_USERNAME }}</dd>
+					</dl>
+					<dl>
+						<dt>
+							<label for="action">
+								{{ lang('MCP_APS_POINTS_CHANGE', aps_name()) ~ lang('COLON') }}
+							</label>
+						</dt>
+						<dd>
+							<select id="action" name="action">
+								<option value="" data-points="true">{{ lang('SELECT_OPTION') }}</option>
+								{% if S_APS_REASON %}
+									{% for reason in APS_REASONS %}
+										{% if loop.first and S_APS_CUSTOM %}<optgroup label="{{ lang('REASON') }}">{% endif %}
+										<option value="{{ reason.reason_id }}" data-points="{{ aps_format(reason.reason_points) }}" data-reason="{{ reason.reason_desc|e }}">
+											{{ reason.reason_title }}
+										</option>
+										{% if loop.last and S_APS_CUSTOM %}</optgroup>{% endif %}
+									{% endfor %}
+								{% endif %}
+								{% if S_APS_CUSTOM %}
+									{% if S_APS_REASON %}<optgroup label="{{ lang('ACTION') }}">{% endif %}
+										{% for action, title in APS_ACTIONS %}
+											<option value="{{ action }}" data-points="false">{{ title }}</option>
+										{% endfor %}
+									{% if S_APS_REASON %}</optgroup>{% endif %}
+								{% endif %}
+							</select>
+							<input id="points" name="points" type="number" step="{{ aps_step() }}" class="tiny" placeholder="{{ aps_format(0.00) }}"><br>
+							<input id="reason" name="reason" type="text" class="full" placeholder="{{ lang('REASON') }}">
+						</dd>
+					</dl>
+				</fieldset>
+			</div>
+		</div>
+	{% endif %}
+
+	<fieldset class="submit-buttons">
+		<input class="button1" id="submit" name="submit" type="submit" value="{{ lang('SUBMIT') }}" />
+		<input class="button2" id="reset" name="reset" type="reset" value="{{ lang('RESET') }}" />&nbsp;
+		{{ S_FORM_TOKEN }}
+	</fieldset>
+</form>
+
+{% include 'mcp_footer.html' %}
+

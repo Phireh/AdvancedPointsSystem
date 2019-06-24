@@ -1,0 +1,18 @@
+{% block width %}s12 m6 aps-js{% endblock %}
+
+{% block content %}
+	<canvas data-aps-chart="pie"
+			data-aps-time="{{ aps_config('aps_display_graph_time') }}"
+			data-aps-empty="{{ lang('APS_POINTS_DATA_EMPTY', aps_name()) }}"
+			aria-label="{{ lang('APS_POINTS_PER_FORUM', aps_name()) }}"
+			role="img">
+		<p>{{ lang('APS_POINTS_PER_FORUM', aps_name()) }}</p>
+	</canvas>
+	<div class="hidden">
+		{% for forum in aps_forums %}
+			<div data-aps-labels="{{ forum.NAME|e }}"
+				 data-aps-value="{{ aps_format(forum.POINTS) }}">
+			</div>
+		{% endfor %}
+	</div>
+{% endblock %}

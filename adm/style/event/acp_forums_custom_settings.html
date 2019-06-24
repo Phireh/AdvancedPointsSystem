@@ -1,0 +1,47 @@
+{% if S_APS_POINTS %}
+	<fieldset class="aps-form">
+		<legend>{{ aps_name() }}</legend>
+
+		{# We can only AJAX copy and reset if the forum already exists #}
+		{% if not S_ADD_ACTION %}
+			{# Include the JS file #}
+			{% INCLUDEJS '@phpbbstudio_aps/js/aps_forum.js' %}
+
+			<dl>
+				<dt><label for="aps_points_reset">{{ lang('ACP_APS_POINTS_RESET', aps_name()) }}</label><br><span>{{ lang('ACP_APS_POINTS_RESET_EXPLAIN', aps_name()) }}</span></dt>
+				<dd>
+					<noscript>
+						<label>
+							<input class="radio aps-bool" id="aps_points_reset" name="aps_points_reset" type="checkbox" value="1">
+							<span class="aps-button-red">{{ lang('RESET') }}</span>
+						</label>
+					</noscript>
+
+					<label class="aps-ajax">
+						<a class="aps-button-red" id="aps_points_reset_ajax" type="button" href="{{ U_APS_RESET }}" data-ajax="aps_points_reset">
+							{{ lang('RESET') }}
+						</a>
+					</label>
+				</dd>
+			</dl>
+		{% endif %}
+
+		<dl>
+			<dt><label for="aps_points_copy">{{ lang('ACP_APS_POINTS_COPY', aps_name()) }}</label><br><span>{{ lang('ACP_APS_POINTS_COPY_EXPLAIN', aps_name()) }}</span></dt>
+			<dd>
+				<select id="aps_points_copy" name="aps_points_copy">
+					<option value="0">{{ lang('ACP_APS_POINTS_COPY_NOT', aps_name()) }}</option>
+					{{ S_FORUM_OPTIONS }}
+				</select>
+				{% if not S_ADD_ACTION %}
+					<button class="aps-button-green aps-ajax" id="aps_points_copy_ajax" type="button">{{ lang('ACP_APS_POINTS_COPY_TITLE', aps_name()) }}</button>
+				{% endif %}
+			</dd>
+		</dl>
+
+		{% INCLUDECSS '@phpbbstudio_aps/css/aps_common.css' %}
+		{% INCLUDECSS '@phpbbstudio_aps/css/aps_form.css' %}
+
+		{% include '@phpbbstudio_aps/aps_points_list.html' %}
+	</fieldset>
+{% endif %}

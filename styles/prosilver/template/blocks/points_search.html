@@ -1,0 +1,29 @@
+{% block width %}s12 m6{% endblock %}
+
+{% block content %}
+	<div class="aps-row">
+		<div class="aps-col s6 aps-center">
+			{{ APS_SEARCH_USER_AVATAR ? APS_SEARCH_USER_AVATAR : (S_APS_DAE_ENABLED ? '' : APS_NO_AVATAR) }}
+		</div>
+		<div class="aps-col s6">
+			{{ APS_SEARCH_USER_FULL }}<br />
+			{{ aps_display(APS_SEARCH_USER_POINTS) }}<br />
+			{% set podium = APS_SEARCH_USER_RANK in 1..3 ? ' aps-podium-' ~ APS_SEARCH_USER_RANK : '' %}
+			<span title="{{ lang('RANK') }}"><i class="icon fa-trophy fa-fw{{ podium }}" aria-hidden="true"></i> {{ APS_SEARCH_USER_RANK }}</span>
+			{% if S_APS_USER_ADJUST and U_APS_SEARCH_USER_ADJUST %}
+				<br />
+				<a class="aps-secondary-content" href="{{ U_APS_SEARCH_USER_ADJUST }}" title="{{ lang('APS_ADJUST_USER_POINTS', aps_name()) }}">
+					<i class="icon fa-pencil fa-fw"></i>
+				</a>
+			{% endif %}
+		</div>
+	</div>
+{% endblock %}
+
+{% block footer %}
+	<form class="aps-form" method="post" action="{{ U_APS_ACTION_SEARCH }}" data-ajax="aps_replace">
+		<label for="aps_user_search">{{ lang('FIND_USERNAME') ~ lang('COLON') }}</label>
+		<input id="aps_user_search" name="aps_user_search" type="text" value="{{ APS_SEARCH_USERNAME }}" />
+		<input name="submit" type="submit" value="{{ lang('SEARCH') }}" />
+	</form>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% block width %}s12 m6{% endblock %}
+
+{% block content %}
+	<div class="aps-row">
+		<div class="aps-col s6 aps-center">
+			{{ APS_RANDOM_USER_AVATAR ? APS_RANDOM_USER_AVATAR : (S_APS_DAE_ENABLED ? '' : APS_RANDOM_NO_AVATAR) }}
+		</div>
+		<div class="aps-col s6">
+			{{ APS_RANDOM_USER_FULL }}<br />
+			{{ aps_display(APS_RANDOM_USER_POINTS) }}
+		</div>
+	</div>
+{% endblock %}

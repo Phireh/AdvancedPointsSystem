@@ -1,0 +1,115 @@
+.nojs .aps-ajax {
+	display: none;
+}
+
+.aps-tabs {
+	background: #e5e5e5;
+	border-top: 1px solid #d7d7d7;
+	border-right: 1px solid #cccccc;
+	border-bottom: 1px solid #cccccc;
+	border-left: 1px solid #d7d7d7;
+	border-radius: 3px;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.aps-tab-input {
+	opacity: 0;
+	position: absolute;
+}
+
+.aps-tab-label {
+	font-size: 1.2em;
+	font-weight: bold;
+	background: #e5e5e5;
+	border-right: 1px solid transparent;
+	border-left: 1px solid transparent;
+	color: #7f7f7f;
+	width: 100%;
+	padding: 10px 20px;
+	cursor: pointer;
+	transition: all 0.2s ease-in;
+}
+.aps-tab-label:first-of-type { border-top-left-radius: 3px; }
+.aps-tab-label:last-of-type { border-top-right-radius: 3px; }
+.aps-tab-label:hover { background: #d8d8d8; }
+.aps-tab-label:active { background: #cccccc; }
+
+.aps-tab-input:checked + .aps-tab-label {
+	background: #ffffff;
+	border-color: #cccccc;
+	color: #000000;
+}
+
+.aps-tab-input:checked:first-of-type + .aps-tab-label {
+	border-left-color: transparent;
+}
+
+@media (min-width: 600px) {
+	.aps-tab-label {
+		width: auto;
+	}
+}
+
+.aps-tab-panel {
+	background: #ffffff;
+	border: none;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+	display: none;
+	width: 100%;
+	margin: 0;
+}
+
+@media (min-width: 600px) {
+	.aps-tab-panel {
+		order: 99;
+	}
+}
+
+.aps-tab-input:checked + .aps-tab-label + .aps-tab-panel {
+	display: block;
+}
+
+.aps-tabs h3 {
+	font-size: 1.2em;
+	color: #115098;
+	margin: 5px 0 10px;
+}
+
+.aps-tabs small {
+	font-size: 90%;
+}
+
+/* aps logs */
+table th.aps-logs-mark,
+table td.aps-logs-mark { width: 50px; }
+.aps-logs-user { width: 15%; }
+.aps-logs-time { width: 20%; }
+.aps-logs-points { width: 10%; }
+
+.aps-logs-action {
+	display: block;
+}
+
+.aps-logs-edit {
+	font-size: 120%;
+	text-decoration: none;
+	float: right;
+	margin-right: 5px;
+}
+
+.aps-logs-mark label {
+	display: block;
+	padding: 0;
+}
+
+@media all and (max-width: 700px) {
+	.aps-logs-edit {
+		margin-right: 0;
+	}
+
+	.aps-logs-mark label {
+		display: inline-block;
+	}
+}

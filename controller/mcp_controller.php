@@ -1,0 +1,528 @@
+<?php
+/**
+ *
+ * phpBB Studio - Advanced Points System. An extension for the phpBB Forum Software package.
+ *
+ * @copyright (c) 2019, phpBB Studio, https://www.phpbbstudio.com
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ */
+
+namespace phpbbstudio\aps\controller;
+
+/**
+ * phpBB Studio - Advanced Points System MCP controller.
+ */
+class mcp_controller
+{
+	/** @var \phpbb\auth\auth */
+	protected $auth;
+
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
+	/** @var \phpbb\event\dispatcher */
+	protected $dispatcher;
+
+	/** @var \phpbbstudio\aps\points\distributor */
+	protected $distributor;
+
+	/** @var \phpbbstudio\aps\core\functions */
+	protected $functions;
+
+	/** @var \phpbb\language\language */
+	protected $lang;
+
+	/** @var \phpbbstudio\aps\core\log */
+	protected $log;
+
+	/** @var \phpbb\notification\manager */
+	protected $notification;
+
+	/** @var \phpbb\pagination */
+	protected $pagination;
+
+	/** @var \phpbbstudio\aps\points\reasoner */
+	protected $reasoner;
+
+	/** @var \phpbb\request\request */
+	protected $request;
+
+	/** @var \phpbb\template\template */
+	protected $template;
+
+	/** @var \phpbb\user */
+	protected $user;
+
+	/** @var \phpbbstudio\aps\points\valuator */
+	protected $valuator;
+
+	/** @var string phpBB root path */
+	protected $root_path;
+
+	/** @var string PHP file extension */
+	protected $php_ext;
+
+	/** @var string Points name */
+	protected $name;
+
+	/** @var string Custom form action */
+	protected $u_action;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param  \phpbb\auth\auth						$auth			Authentication object
+	 * @param  \phpbb\config\config					$config			Configuration object
+	 * @param  \phpbb\db\driver\driver_interface	$db				Database object
+	 * @param  \phpbb\event\dispatcher				$dispatcher		Event dispatcher
+	 * @param  \phpbbstudio\aps\points\distributor	$distributor	APS Distributor object
+	 * @param  \phpbbstudio\aps\core\functions		$functions		APS Core functions
+	 * @param  \phpbb\language\language				$lang			Language object
+	 * @param  \phpbbstudio\aps\core\log			$log			APS Log object
+	 * @param  \phpbb\notification\manager			$notification	Notification manager object
+	 * @param  \phpbb\pagination					$pagination		Pagination object
+	 * @param  \phpbbstudio\aps\points\reasoner		$reasoner		APS Reasoner object
+	 * @param  \phpbb\request\request				$request		Request object
+	 * @param  \phpbb\template\template				$template		Template object
+	 * @param  \phpbb\user							$user			User object
+	 * @param  \phpbbstudio\aps\points\valuator		$valuator		APS Valuator object
+	 * @param  string								$root_path		phpBB root path
+	 * @param  string								$php_ext		PHP file extension
+	 * @return void
+	 * @access public
+	 */
+	public function __construct(
+		\phpbb\auth\auth $auth,
+		\phpbb\config\config $config,
+		\phpbb\db\driver\driver_interface $db,
+		\phpbb\event\dispatcher $dispatcher,
+		\phpbbstudio\aps\points\distributor $distributor,
+		\phpbbstudio\aps\core\functions $functions,
+		\phpbb\language\language $lang,
+		\phpbbstudio\aps\core\log $log,
+		\phpbb\notification\manager $notification,
+		\phpbb\pagination $pagination,
+		\phpbbstudio\aps\points\reasoner $reasoner,
+		\phpbb\request\request $request,
+		\phpbb\template\template $template,
+		\phpbb\user $user,
+		\phpbbstudio\aps\points\valuator $valuator,
+		$root_path,
+		$php_ext
+	)
+	{
+		$this->auth			= $auth;
+		$this->config		= $config;
+		$this->db			= $db;
+		$this->dispatcher	= $dispatcher;
+		$this->distributor	= $distributor;
+		$this->functions	= $functions;
+		$this->lang			= $lang;
+		$this->log			= $log;
+		$this->notification	= $notification;
+		$this->pagination	= $pagination;
+		$this->reasoner		= $reasoner;
+		$this->request		= $request;
+		$this->template		= $template;
+		$this->user			= $user;
+		$this->valuator		= $valuator;
+
+		$this->root_path	= $root_path;
+		$this->php_ext		= $php_ext;
+
+		$this->name			= $functions->get_name();
+
+		$log->load_lang();
+	}
+
+	/**
+	 * Handle MCP front page.
+	 *
+	 * @return void
+	 * @access public
+	 */
+	public function front()
+	{
+		if ($this->auth->acl_get('u_aps_view_logs'))
+		{
+			// Latest 5 logs
+			$logs = $this->log->get(false, 5);
+			foreach ($logs as $row)
+			{
+				$this->template->assign_block_vars('logs', array_change_key_case($row, CASE_UPPER));
+			}
+
+			// Latest 5 adjustments
+			$moderated = $this->log->get(false, 5, 0, '', 0, 0, 0, 0, 0, 'l.log_time DESC', 'APS_POINTS_USER_ADJUSTED');
+			foreach ($moderated as $row)
+			{
+				$this->template->assign_block_vars('moderated', array_change_key_case($row, CASE_UPPER));
+			}
+		}
+
+		// Top 5 users
+		$sql = 'SELECT user_id, username, user_colour, user_points
+				FROM ' . $this->functions->table('users') . '
+				WHERE user_type <> ' . USER_IGNORE . '
+				ORDER BY user_points DESC, username_clean ASC';
+		$result = $this->db->sql_query_limit($sql, 5);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$this->template->assign_block_vars('aps_users_top', [
+				'NAME'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
+				'POINTS'	=> $row['user_points'],
+			]);
+		}
+		$this->db->sql_freeresult($result);
+
+		// Bottom 5 user
+		$sql = 'SELECT user_id, username, user_colour, user_points
+				FROM ' . $this->functions->table('users') . '
+				WHERE user_type <> ' . USER_IGNORE . '
+				ORDER BY user_points ASC, username_clean DESC';
+		$result = $this->db->sql_query_limit($sql, 5);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$this->template->assign_block_vars('aps_users_bottom', [
+				'NAME'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
+				'POINTS'	=> $row['user_points'],
+			]);
+		}
+		$this->db->sql_freeresult($result);
+
+		$this->dispatcher->dispatch('phpbbstudio.aps.mcp_front');
+
+		$this->template->assign_vars([
+			'S_APS_LOGS'	=> $this->auth->acl_get('u_aps_view_logs'),
+		]);
+	}
+
+	/**
+	 * Handle MCP logs.
+	 *
+	 * @return void
+	 * @access public
+	 */
+	public function logs()
+	{
+		// Set up general vars
+		$start		= $this->request->variable('start', 0);
+		$forum_id	= $this->request->variable('f', '');
+		$topic_id	= $this->request->variable('t', 0);
+		$post_id	= $this->request->variable('p', 0);
+		$user_id	= $this->request->variable('u', 0);
+		$reportee_id = $this->request->variable('r', 0);
+
+		// Sort keys
+		$sort_days	= $this->request->variable('st', 0);
+		$sort_key	= $this->request->variable('sk', 't');
+		$sort_dir	= $this->request->variable('sd', 'd');
+
+		// Keywords
+		$keywords = $this->request->variable('keywords', '', true);
+		$keywords_param = !empty($keywords) ? '&amp;keywords=' . urlencode(htmlspecialchars_decode($keywords)) : '';
+
+		$name = $this->functions->get_name();
+		$limit = $this->config['aps_actions_per_page'];
+
+		// Sorting
+		$limit_days = [
+			0 => $this->lang->lang('ALL_ENTRIES'),
+			1 => $this->lang->lang('1_DAY'),
+			7 => $this->lang->lang('7_DAYS'),
+			14 => $this->lang->lang('2_WEEKS'),
+			30 => $this->lang->lang('1_MONTH'),
+			90 => $this->lang->lang('3_MONTHS'),
+			180 => $this->lang->lang('6_MONTHS'),
+			365 => $this->lang->lang('1_YEAR'),
+		];
+		$sort_by_text = [
+			'a'  => $this->lang->lang('SORT_ACTION'),
+			'ps' => $name,
+			'pn' => $this->lang->lang('APS_POINTS_NEW', $name),
+			'po' => $this->lang->lang('APS_POINTS_OLD', $name),
+			'uu' => $this->lang->lang('SORT_USERNAME'),
+			'ru' => $this->lang->lang('FROM'),
+			't'  => $this->lang->lang('SORT_DATE'),
+		];
+		$sort_by_sql = [
+			'a'  => 'l.log_action',
+			'ps' => 'l.points_sum',
+			'pn' => 'l.points_new',
+			'po' => 'l.points_old',
+			'uu' => 'u.username',
+			'ru' => 'r.username',
+			't'  => 'l.log_time',
+		];
+
+		$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
+		gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
+
+		// Define where and sort sql for use in displaying logs
+		$sql_time = ($sort_days) ? (time() - ($sort_days * 86400)) : 0;
+		$sql_sort = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
+
+		$rowset = $this->log->get(true, $limit, $start, $forum_id, $topic_id, $post_id, $user_id, $reportee_id, $sql_time, $sql_sort, $keywords);
+		$start = $this->log->get_valid_offset();
+		$total = $this->log->get_log_count();
+
+		$base_url = $this->u_action . "&amp;$u_sort_param$keywords_param";
+		$this->pagination->generate_template_pagination($base_url, 'pagination', 'start', $total, $limit, $start);
+
+		foreach ($rowset as $row)
+		{
+			$this->template->assign_block_vars('logs', array_change_key_case($row, CASE_UPPER));
+		}
+
+		$this->template->assign_vars([
+			'U_ACTION'		=> $this->u_action . "&amp;$u_sort_param$keywords_param&amp;start=$start",
+
+			'S_LIMIT_DAYS'	=> $s_limit_days,
+			'S_SORT_KEY'	=> $s_sort_key,
+			'S_SORT_DIR'	=> $s_sort_dir,
+			'S_KEYWORDS'	=> $keywords,
+		]);
+	}
+
+	/**
+	 * Handle MCP user adjustment.
+	 *
+	 * @return void
+	 * @access public
+	 */
+	public function change()
+	{
+		$user_id = $this->request->variable('u', 0);
+
+		if (empty($user_id))
+		{
+			$this->find_user();
+
+			return;
+		}
+
+		$this->lang->add_lang('acp/common');
+
+		$action = $this->request->variable('action', '');
+
+		switch ($action)
+		{
+			case 'add':
+			case 'sub':
+			case 'set':
+				if (!$this->auth->acl_get('m_aps_adjust_custom'))
+				{
+					trigger_error($this->lang->lang('NOT_AUTHORISED'), E_USER_WARNING);
+				}
+			break;
+
+			case '':
+				continue;
+			break;
+
+			default:
+				if (!$this->auth->acl_get('m_aps_adjust_reason'))
+				{
+					trigger_error($this->lang->lang('NOT_AUTHORISED'), E_USER_WARNING);
+				}
+			break;
+		}
+
+		$sql = 'SELECT user_id, username, user_colour
+				FROM ' . $this->functions->table('users') . '
+				WHERE user_type <> ' . USER_IGNORE . '
+					AND user_id = ' . (int) $user_id;
+		$result = $this->db->sql_query_limit($sql, 1);
+		$user = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		if ($user === false)
+		{
+			trigger_error($this->lang->lang('NO_USER') . $this->back_link($this->u_action), E_USER_WARNING);
+		}
+
+		// Actions
+		$reasons = $this->reasoner->rowset();
+		$actions = [
+			'add'	=> $this->lang->lang('ADD'),
+			'sub'	=> $this->lang->lang('REMOVE'),
+			'set'	=> $this->lang->lang('CHANGE'),
+		];
+
+		$user_points = $this->valuator->user((int) $user_id);
+
+		if ($submit = $this->request->is_set_post('submit'))
+		{
+			$points = $this->request->variable('points', 0.00);
+			$reason = $this->request->variable('reason', '', true);
+
+			$sum_points = 0;
+
+			switch ($action)
+			{
+				case 'add':
+					$sum_points = $points;
+				break;
+				case 'sub':
+					$sum_points = $this->functions->equate_points(0, $points, '-');
+				break;
+				case 'set':
+					$sum_points = $this->functions->equate_points($points, $user_points, '-');
+				break;
+
+				case '':
+					trigger_error($this->lang->lang('NO_ACTION'), E_USER_WARNING);
+				break;
+
+				default:
+					if (empty($reasons[$action]))
+					{
+						trigger_error($this->lang->lang('NO_ACTION') . $this->back_link($this->u_action . '&u=' . $user_id), E_USER_WARNING);
+					}
+
+					$points = $sum_points = $reasons[$action]['reason_points'];
+					$reason = $reasons[$action]['reason_title'] . '<br />' . $reasons[$action]['reason_desc'];
+				break;
+			}
+
+			if (confirm_box(true))
+			{
+				$log_entry[] = [
+					'action'		=> 'APS_POINTS_USER_ADJUSTED',
+					'actions'		=> !empty($reason) ? [$reason => $sum_points] : ['APS_POINTS_USER_ADJUSTED' => $sum_points],
+					'user_id'		=> (int) $user_id,
+					'reportee_id'	=> (int) $this->user->data['user_id'],
+					'reportee_ip'	=> (string) $this->user->ip,
+					'points_old'	=> $user_points,
+					'points_sum'	=> $sum_points,
+				];
+
+				$this->distributor->distribute($user_id, $sum_points, $log_entry, $user_points);
+
+				$this->config->increment('aps_notification_id', 1);
+
+				$this->notification->add_notifications('phpbbstudio.aps.notification.type.adjust', [
+					'name'				=> $this->functions->get_name(),
+					'points'			=> $this->functions->display_points($sum_points),
+					'reason'			=> $reason,
+					'user_id'			=> (int) $user_id,
+					'moderator'			=> get_username_string('no_profile', $this->user->data['user_id'], $this->user->data['username'], $this->user->data['user_colour']),
+					'moderator_id'		=> (int) $this->user->data['user_id'],
+					'notification_id'	=> (int) $this->config['aps_notification_id'],
+				]);
+
+				trigger_error($this->lang->lang('MCP_APS_POINTS_USER_CHANGE_SUCCESS', $this->name) . $this->back_link($this->u_action));
+			}
+			else
+			{
+				$new_points = $this->functions->equate_points($user_points, $sum_points);
+				$confirmation = $this->lang->lang('MCP_APS_POINTS_USER_CHANGE', $this->name) . '<br>' . $this->lang->lang('MCP_APS_POINTS_USER_TOTAL', $this->name, $new_points);
+
+				confirm_box(false, $confirmation, build_hidden_fields([
+					'submit'	=> $submit,
+					'action'	=> $action,
+					'points'	=> $points,
+					'reason'	=> $reason,
+				]));
+			}
+		}
+
+		if ($this->auth->acl_get('u_aps_view_logs'))
+		{
+			$logs = $this->log->get(false, 5, 0, '', 0, 0, (int) $user_id);
+			foreach ($logs as $row)
+			{
+				$this->template->assign_block_vars('logs', array_change_key_case($row, CASE_UPPER));
+			}
+		}
+
+		$this->template->assign_vars([
+			'APS_ACTIONS'	=> $actions,
+			'APS_REASONS'	=> $reasons,
+			'APS_POINTS'	=> $this->functions->display_points($user_points),
+			'APS_USERNAME'	=> get_username_string('full', $user['user_id'], $user['username'], $user['user_colour']),
+
+			'S_APS_CUSTOM'	=> $this->auth->acl_get('m_aps_adjust_custom'),
+			'S_APS_REASON'	=> $this->auth->acl_get('m_aps_adjust_reason'),
+			'S_APS_LOGS'	=> $this->auth->acl_get('u_aps_view_logs'),
+			'S_APS_POINTS'	=> true,
+
+			'U_APS_ACTION'	=> $this->u_action . '&u=' . (int) $user_id,
+		]);
+	}
+
+	/**
+	 * Find a user for the MCP adjustment page.
+	 *
+	 * @return void
+	 * @access protected
+	 */
+	protected function find_user()
+	{
+		$form_name = 'mcp_aps_change';
+
+		add_form_key($form_name);
+
+		if ($this->request->is_set_post('submit'))
+		{
+			if (!function_exists('user_get_id_name'))
+			{
+				/** @noinspection PhpIncludeInspection */
+				include $this->root_path . 'includes/functions_user.' . $this->php_ext;
+			}
+
+			$username[] = $this->request->variable('username', '', true);
+
+			$error = user_get_id_name($user_ids, $username);
+
+			if (empty($error))
+			{
+				$user_id = $user_ids[0];
+
+				redirect($this->u_action . '&u=' . (int) $user_id);
+			}
+		}
+
+		$this->template->assign_vars([
+			'S_ERROR'		=> !empty($error),
+			'ERROR_MSG'		=> !empty($error) ? $this->lang->lang($error) : '',
+
+			'APS_USERNAME'	=> !empty($username[0]) ? $username[0] : '',
+
+			'S_APS_SEARCH'	=> true,
+
+			'U_APS_ACTION'	=> $this->u_action,
+			'U_APS_SEARCH'	=> append_sid("{$this->root_path}memberlist.{$this->php_ext}", 'mode=searchuser&amp;form=mcp_aps_change&amp;field=username'),
+		]);
+	}
+
+	/**
+	 * Generate a back link for this MCP controller.
+	 *
+	 * @param  string	$action		The action to return to
+	 * @return string				A HTML formatted URL to the action
+	 * @access protected
+	 */
+	protected function back_link($action)
+	{
+		return '<br /><br /><a href="' . $action . '">&laquo; ' . $this->lang->lang('BACK_TO_PREV') . '</a>';
+	}
+
+	/**
+	 * Set custom form action.
+	 *
+	 * @param  string			$u_action	Custom form action
+	 * @return mcp_controller	$this		This controller for chaining calls
+	 * @access public
+	 */
+	public function set_page_url($u_action)
+	{
+		$this->u_action = $u_action;
+
+		return $this;
+	}
+}

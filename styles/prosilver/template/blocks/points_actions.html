@@ -1,0 +1,102 @@
+{% block width %}s12{% endblock %}
+
+{% block content %}
+	{% if aps_actions %}
+		<div class="aps-collection">
+			{% for action in aps_actions %}
+				<div class="aps-collection-item aps-avatar">
+					{{ APS_ACTIONS_AVATARS[action.USER_ID] is not empty ? APS_ACTIONS_AVATARS[action.USER_ID] : (S_APS_DAE_ENABLED ? '' : APS_ACTIONS_NO_AVATAR) }}
+					<div class="aps-row">
+						<div class="aps-col s12 m{{ action.S_AUTH_BUILD ? 4 : 6 }} l2 aps-no-mar-bot">
+							{{ action.USER }}
+						</div>
+						<div class="aps-col {{ action.S_AUTH_BUILD ? 's9 m6 l2' : 's12 m6 l3' }} aps-no-mar-bot">
+							<strong>{{ lang(action.ACTION) }}</strong>
+						</div>
+						{% if action.S_AUTH_BUILD %}
+						<div class="aps-col s1 m1 l1 aps-no-mar-bot">
+							<div class="aps-button-blue aps-inline aps-js" data-aps-augmentation="true">
+								<i class="icon fa-list fa-fw"></i>
+							</div>
+							<div class="hidden">
+								<dl class="details">
+									{% for key, value in action.ACTIONS %}
+										<dt>{{ aps_display(value, false) }}</dt>
+										<dd>{{ lang(key, aps_name()) }}</dd>
+									{% endfor %}
+								</dl>
+							</div>
+						</div>
+						{% endif %}
+						<div class="aps-row aps-col s12 l3 aps-no-mar-bot">
+							<div class="aps-col s4 aps-no-mar-bot">
+								{{ aps_display(action.POINTS_OLD, false) }}
+							</div>
+							<div class="aps-col s4 aps-no-mar-bot {{ action.POINTS_SUM < 0 ? 'aps-negative' : 'aps-positive' }}">
+								{{ aps_display(action.POINTS_SUM, false) }}
+							</div>
+							<div class="aps-col s4 aps-no-mar-bot">
+								{{ aps_display(action.POINTS_NEW, false) }}
+							</div>
+						</div>
+						<div class="aps-col s6 l2 aps-no-mar-bot aps-hide-s">
+							{{ user.format_date(action.TIME) }}
+							{% if not action.S_SELF %}
+								{{ lang('POST_BY_AUTHOR') }}
+								{% if action.S_MOD and not action.S_AUTH_MOD %}
+									{{ lang('MODERATOR') }}
+								{% else %}
+									{{ action.REPORTEE }}
+								{% endif %}
+							{% endif %}
+						</div>
+						<div class="aps-col s6 l2 aps-no-mar-bot aps-ellipsis aps-hide-s">
+							{% if action.FORUM_NAME or action.TOPIC_TITLE or action.POST_SUBJECT %}
+								<ul class="fa-ul aps-no-mar">
+								{% if action.FORUM_NAME %}
+									<li><a href="{{ action.U_FORUM }}" title="{{ action.FORUM_NAME }}">{{ action.FORUM_NAME }}</a></li>
+								{% endif %}
+								{% if action.TOPIC_TITLE %}
+									<li><a href="{{ action.U_TOPIC }}" title="{{ action.TOPIC_TITLE }}">{{ action.TOPIC_TITLE }}</a></li>
+								{% endif %}
+								{% if action.POST_SUBJECT %}
+									<li><a href="{{ action.U_POST }}" title="{{ action.POST_SUBJECT }}">{{ action.POST_SUBJECT }}</a></li>
+								{% endif %}
+								</ul>
+							{% else %}
+								<div class="aps-center">{{ lang('NA') }}</div>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+	{% else %}
+		<div class="error">{{ lang('APS_POINTS_ACTIONS_NONE', aps_name()) }}</div>
+	{% endif %}
+{% endblock %}
+
+{% block footer %}
+	{# Pagination #}
+	<div class="pagination top-pagination">
+		{{ TOTAL_LOGS }}
+		{% if pagination %}
+			{% include 'pagination.html' %}
+		{% else %}
+			&bull; {{ PAGE_NUMBER }}
+		{% endif %}
+	</div>
+
+	{# Search and sort #}
+	<form class="aps-form" method="post" action="{{ U_APS_ACTION_LOGS }}" data-ajax="aps_replace">
+		{# Sort options #}
+		{% include '@phpbbstudio_aps/aps_display_sort.html' %}
+
+		{# Search options #}
+		{% include '@phpbbstudio_aps/aps_display_search.html' %}
+
+		{# Search keywords #}
+		<input id="keywords" name="keywords"  type="search" size="20" placeholder="{{ lang('APS_POINTS_ACTION_SEARCH', aps_name()) }}" />
+		<input id="submit" name="submit" type="submit" value="{{ lang('SEARCH') }}">
+	</form>
+{% endblock %}

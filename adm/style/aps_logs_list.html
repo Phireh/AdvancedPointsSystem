@@ -1,0 +1,50 @@
+<table class="table1 zebra-table fixed-width-table">
+	<thead>
+		<tr>
+			<th class="aps-logs-user">{{ lang('USERNAME') }}</th>
+			<th class="aps-logs-time">{{ lang('TIME') }}</th>
+			<th class="aps-logs-points centered-text">{{ lang('APS_POINTS_OLD', aps_name()) }}</th>
+			<th class="aps-logs-points centered-text">{{ lang('APS_POINTS_DIFF', aps_name()) }}</th>
+			<th class="aps-logs-points centered-text">{{ lang('APS_POINTS_NEW', aps_name()) }}</th>
+			<th>{{ lang('ACTION') }}</th>
+			{% if s_include_mark %}
+			<th class="aps-logs-mark actions">{{ lang('MARK') }}</th>
+			{% endif %}
+		</tr>
+	</thead>
+	<tbody>
+		{% for log in logs %}
+			<tr>
+				<td>{{ log.USER }}{% if not log.S_SELF and log.REPORTEE %}<br>&raquo; {{ lang('FROM') ~ ' ' ~ log.REPORTEE }}{% endif %}</td>
+				<td>{{ user.format_date(log.TIME) }}</td>
+				<td class="centered-text">{{ aps_display(log.POINTS_OLD, false) }}</td>
+				<td class="centered-text {{ log.POINTS_SUM > 0 ? 'yes' : 'never' }}">{{ aps_display(log.POINTS_SUM, false) }}</td>
+				<td class="centered-text">{{ aps_display(log.POINTS_NEW, false) }}<br></td>
+				<td>
+					<span class="aps-logs-edit" onclick="phpbb.toggleDisplay('aps-logs-info-{{ loop.index }}', 0)"><i class="icon fa-info-circle fa-fw" aria-hidden="true"></i></span>
+					<strong class="aps-logs-action">{{ lang(log.ACTION, aps_name()) }}</strong>
+					<div id="aps-logs-info-{{ loop.index }}" class="hidden">
+						{% for action, points in log.ACTIONS %}
+							&raquo; {{ lang(action, aps_name()) }}: {{ aps_display(points, false) }}<br>
+						{% endfor %}
+						{% if log.U_POINTS %}<a class="button2 aps-logs-edit" href="{{ log.U_POINTS }}">{{ aps_icon() }} {{ lang('EDIT') }}</a>{% endif %}
+					</div>
+					{% if log.FORUM_NAME %}&raquo; <a href="{{ log.U_FORUM }}" title="{{ lang('FORUM') }}">{{ log.FORUM_NAME }}</a>{% endif %}
+					{% if log.TOPIC_TITLE %}&raquo; <a href="{{ log.U_TOPIC }}" title="{{ lang('TOPIC') }}">{{ log.TOPIC_TITLE }}</a>{% endif %}
+					{% if log.POST_SUBJECT %}&raquo; <a href="{{ log.U_POST }}" title="{{ lang('POST') }}">{{ log.POST_SUBJECT }}</a>{% endif %}
+				</td>
+				{% if s_include_mark %}
+				<td class="aps-logs-mark actions"><label for="mark_{{ log.ID }}"><input class="checkbox" id="mark_{{ log.ID }}" name="mark[]" type="checkbox" title="{{ lang('MARK') }}" value="{{ log.ID }}" /></label></td>
+				{% endif %}
+			</tr>
+		{% else %}
+			<tr>
+				<td colspan="{{ s_include_mark ? 7 : 6 }}">
+					<div class="errorbox">
+						<p>{{ lang('NO_ENTRIES') }}</p>
+					</div>
+				</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>

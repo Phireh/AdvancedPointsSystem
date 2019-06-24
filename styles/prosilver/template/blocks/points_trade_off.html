@@ -1,0 +1,28 @@
+{% block width %}s12 m6 aps-js{% endblock %}
+
+{% block content %}
+	<canvas data-aps-chart="bar"
+			data-aps-time="{{ aps_config('aps_display_graph_time') }}"
+			data-aps-empty="{{ lang('APS_POINTS_DATA_EMPTY', aps_name()) }}"
+			aria-label="{{ lang('APS_POINTS_TRADE_OFF', aps_name()) }}"
+			role="img">
+		<p>{{ lang('APS_POINTS_TRADE_OFF', aps_name()) }}</p>
+	</canvas>
+	<div class="hidden">
+		{% for trade in aps_period %}
+			<div data-aps-labels="{{ trade.DATE|e }}"
+				 data-aps-label="{{ lang('APS_POINTS_LOST', aps_name())|e }}"
+				 data-aps-colour="#d31141"
+				 data-aps-value="{{ aps_format(trade.NEGATIVE) }}">
+			</div>
+		{% endfor %}
+	</div>
+	<div class="hidden">
+		{% for trade in aps_period %}
+			<div data-aps-label="{{ lang('APS_POINTS_GAINED', aps_name())|e }}"
+				 data-aps-colour="#28a745"
+				 data-aps-value="{{ aps_format(trade.POSITIVE) }}">
+			</div>
+		{% endfor %}
+	</div>
+{% endblock %}

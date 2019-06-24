@@ -53,11 +53,10 @@
 - Fully extendable by other extensions.<br />*(with detailed explanation and examples)*
 
 ## Other extensions
-- Shop
-- Bank
-- Lottery
-- Robbery
-- Donation
+- Shop _(In development)_
+- Bank _(To be determined)_
+- Lottery _(To be determined)_
+- Robbery _(To be determined)_
 
 ## Extending APS
 For the extension developers amongst us, we have written a comprehensive Wiki that should describe everything in detail.
@@ -70,7 +69,6 @@ You can read about [Extending APS](https://github.com/phpBB-Studio/AdvancedPoint
 - <a href="https://github.com/phpBB-Studio/SubGlobalTopics"><img src="./images/subglobal_topic.png" alt="Sub Global Topic" /></a>
 - <a href="https://github.com/phpBB-Studio/TopicCementStyle"><img src="./images/topic_cement.png" alt="Topic Cement Style" /></a>
 - <a href="https://github.com/phpBB-Studio/DateTopicStarterTemplate"><img src="./images/topic_events.png" alt="Topic Events" /></a>
-
 
 
 ## License

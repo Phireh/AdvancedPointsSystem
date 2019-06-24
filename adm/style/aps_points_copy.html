@@ -1,0 +1,37 @@
+<form class="aps-form" id="aps_points_copy" name="aps_points_copy" method="post" action="{{ U_APS_ACTION_COPY }}" data-ajax="true">
+	<div class="centered-text clearfix">
+		<div class="column1">
+			<h5>{{ lang('ACP_APS_POINTS_COPY', aps_name()) }}</h5>
+			<hr />
+			<label>
+				<select id="aps_forums_from" name="aps_forums_from">
+					{{ S_APS_FORUMS }}
+				</select>
+			</label>
+		</div>
+		<div class="column2">
+			<h5>{{ lang('ACP_APS_POINTS_COPY_TO', aps_name()) }}</h5>
+			<hr />
+			<label>
+				<select id="aps_forums_to" name="aps_forums_to[]" multiple>
+					{{ S_APS_FORUMS }}
+				</select>
+			</label>
+			<p><em>{{ lang('LOOK_UP_FORUMS_EXPLAIN') }}</em></p>
+		</div>
+	</div>
+	<fieldset class="submit-buttons">
+		<hr />
+		{{ S_FORM_TOKEN }}
+		<input class="button1" id="submit_copy" name="submit_copy" type="submit" value="{{ lang('SUBMIT') }}">&nbsp;
+		<input class="button2" id="reset" name="reset" type="reset" value="{{ lang('RESET') }}">
+	</fieldset>
+</form>
+
+<script>
+	phpbb.ajaxify({
+		selector: '#aps_points_copy',
+		refresh: false,
+		callback: null,
+	});
+</script>

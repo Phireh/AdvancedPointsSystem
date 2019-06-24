@@ -1,0 +1,16 @@
+<div class="dropdown-container dropdown-container-left dropdown-button-control sort-tools">
+	<span title="{{ lang('SORT_OPTIONS') }}" class="aps-button-blue dropdown-trigger dropdown-select">
+		<i class="icon fa-sort-amount-asc fa-fw" aria-hidden="true"></i>
+		<span class="caret"><i class="icon fa-sort-down fa-fw" aria-hidden="true"></i></span>
+	</span>
+	<div class="dropdown hidden">
+		<div class="pointer"><div class="pointer-inner"></div></div>
+		<div class="dropdown-contents">
+			<fieldset class="display-options">
+				<label>{{ lang('DISPLAY') ~ lang('COLON') }} {{ S_SELECT_SORT_DAYS }}</label>
+				<label>{{ lang('SORT_BY') ~ lang('COLON') }} {{ S_SELECT_SORT_KEY }}</label>
+				<label>{{ lang('SORT_DIRECTION') ~ lang('COLON') }} {{ S_SELECT_SORT_DIR }}</label>
+			</fieldset>
+		</div>
+	</div>
+</div>

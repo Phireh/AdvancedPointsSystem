@@ -1,0 +1,40 @@
+{% include 'mcp_header.html' %}
+
+<h2>{{ lang('MCP_APS_LOGS') }}</h2>
+
+<div class="panel">
+	<div class="inner">
+		<form id="aps_logs" name="aps_logs" action="{{ U_ACTION }}" method="post">
+			<fieldset class="display-options search-box">
+				<label for="keywords">
+					{{ lang('SEARCH_KEYWORDS') ~ lang('COLON') }}
+				</label>
+				<input type="text" id="keywords" name="keywords" value="{{ S_KEYWORDS }}" />&nbsp;
+				<input type="submit" class="button2" name="filter" value="{{ lang('SEARCH') }}" />
+			</fieldset>
+
+			{% if pagination %}
+				<div class="pagination top-pagination">
+					{% include 'pagination.html' %}
+				</div>
+			{% endif %}
+
+			{% include '@phpbbstudio_aps/mcp/mcp_aps_logs_list.html' with {'logs_array': logs} %}
+
+			{% if pagination %}
+				<div class="pagination">
+					{% include 'pagination.html' %}
+				</div>
+			{% endif %}
+
+			<fieldset class="display-options">
+				{{ lang('DISPLAY_LOG') ~ lang('COLON') }} {{ S_LIMIT_DAYS }} &nbsp;
+				{{ lang('SORT_BY') ~ lang('COLON') }} {{ S_SORT_KEY }} {{ S_SORT_DIR }}
+				<input class="button2" type="submit" value="{{ lang('GO') }}" name="sort" />
+				{{ S_FORM_TOKEN }}
+			</fieldset>
+		</form>
+	</div>
+</div>
+
+{% include 'mcp_footer.html' %}

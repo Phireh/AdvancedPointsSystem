@@ -1,0 +1,56 @@
+{% include 'mcp_header.html' %}
+
+<h2>{{ lang('MAIN') }}</h2>
+
+{% EVENT phpbbstudio_aps_mcp_front_before %}
+
+{% if S_APS_LOGS %}
+	<div class="panel">
+		<div class="inner">
+			<h3>{{ lang('LATEST_LOGS') }}</h3>
+
+			{% include '@phpbbstudio_aps/mcp/mcp_aps_logs_list.html' with {'logs_array': logs}  %}
+		</div>
+	</div>
+
+	{% EVENT phpbbstudio_aps_mcp_front_between_logs %}
+
+	<div class="panel">
+		<div class="inner">
+			<h3>{{ lang('MCP_APS_LATEST_ADJUSTED', 5) }}</h3>
+
+			{% include '@phpbbstudio_aps/mcp/mcp_aps_logs_list.html' with {'logs_array': moderated}  %}
+		</div>
+	</div>
+{% endif %}
+
+{% EVENT phpbbstudio_aps_mcp_front_between %}
+
+<div class="panel">
+	<div class="inner">
+		<div class="column1">
+			<h3>{{ lang('MCP_APS_USERS_TOP', 5) }}</h3>
+			<ul class="fa-ul">
+				{% for user in aps_users_top %}
+					<li><em class="small">{{ loop.index }}.</em> {{ aps_display(user.POINTS) }} {{ user.NAME }}</li>
+				{% else %}
+					<li><strong>{{ lang('NO_ONLINE_USERS') }}</strong></li>
+				{% endfor %}
+			</ul>
+		</div>
+		<div class="column2">
+			<h3>{{ lang('MCP_APS_USERS_BOTTOM', 5) }}</h3>
+			<ul class="fa-ul">
+				{% for user in aps_users_bottom %}
+					<li><em class="small">{{ loop.index }}.</em> {{ aps_display(user.POINTS) }} {{ user.NAME }}</li>
+				{% else %}
+					<li><strong>{{ lang('NO_ONLINE_USERS') }}</strong></li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+</div>
+
+{% EVENT phpbbstudio_aps_mcp_front_after %}
+
+{% include 'mcp_footer.html' %}

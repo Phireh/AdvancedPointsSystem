@@ -1,0 +1,19 @@
+/**
+ * Advanced Points System extension © Copyright phpBB Studio 2019
+ * https://www.phpbbstudio.com
+ *
+ * APS is a free extension for the phpBB Forum Software Package.
+ * You can redistribute it and/or modify it under the terms of
+ * the GNU General Public License, version 2 (GPL-2.0) as
+ * published by the Free Software Foundation.
+ *
+ * This extension is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * A copy of the license can be viewed in the license.txt file.
+ * The same can be viewed at <http://opensource.org/licenses/gpl-2.0.php>
+ */
+
+No events required while using at least phpBB 3.2.7

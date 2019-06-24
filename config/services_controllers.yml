@@ -1,0 +1,57 @@
+services:
+    phpbbstudio.aps.controller.acp:
+        class: phpbbstudio\aps\controller\acp_controller
+        arguments:
+            - '@phpbbstudio.aps.acp'
+            - '@auth'
+            - '@phpbbstudio.aps.blockader'
+            - '@config'
+            - '@phpbbstudio.aps.controller.main'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@phpbbstudio.aps.functions'
+            - '@language'
+            - '@log'
+            - '@phpbbstudio.aps.log'
+            - '@pagination'
+            - '@phpbbstudio.aps.reasoner'
+            - '@request'
+            - '@template'
+            - '@user'
+
+    phpbbstudio.aps.controller.mcp:
+        class: phpbbstudio\aps\controller\mcp_controller
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@phpbbstudio.aps.distributor'
+            - '@phpbbstudio.aps.functions'
+            - '@language'
+            - '@phpbbstudio.aps.log'
+            - '@notification_manager'
+            - '@pagination'
+            - '@phpbbstudio.aps.reasoner'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '@phpbbstudio.aps.valuator'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    phpbbstudio.aps.controller.main:
+        class: phpbbstudio\aps\controller\main_controller
+        arguments:
+            - '@auth'
+            - '@phpbbstudio.aps.blockader'
+            - '@phpbbstudio.aps.blocks'
+            - '@dispatcher'
+            - '@phpbbstudio.aps.functions'
+            - '@controller.helper'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'

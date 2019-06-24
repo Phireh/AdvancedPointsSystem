@@ -1,0 +1,17 @@
+phpbbstudio_aps_display:
+    path: /aps/{page}
+    defaults:
+        _controller: phpbbstudio.aps.controller.main:display
+        page: overview
+        pagination: 1
+    requirements:
+        page: "^((?!shop|inventory|gift).)*$"
+
+phpbbstudio_aps_display_pagination:
+    path: /aps/{page}/page-{pagination}
+    defaults:
+        _controller: phpbbstudio.aps.controller.main:display
+        page: overview
+    requirements:
+        page: "^((?!shop|inventory|gift).)*$"
+        pagination: \d+
