@@ -459,6 +459,7 @@ class blocks
 
 		$sql = 'SELECT forum_id, SUM(points_sum) as points
 				FROM ' . $this->table . '
+				WHERE log_approved = 1
 				GROUP BY forum_id';
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
@@ -504,6 +505,7 @@ class blocks
 				FROM ' . $this->table . ' p,
 					' . $this->functions->table('users') . ' u
 				WHERE u.user_id = p.user_id
+					AND p.log_approved = 1
 				GROUP BY u.group_id';
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
