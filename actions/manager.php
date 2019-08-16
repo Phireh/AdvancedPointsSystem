@@ -321,7 +321,7 @@ class manager
 
 			foreach ($user_ids as $user_id)
 			{
-				if (!empty($user_points[$user_id]))
+				if (isset($user_points[$user_id]))
 				{
 					// Build the base user arrays
 					$this->users[$user_id] = $this->user_array($user_points[$user_id]);
