@@ -2,7 +2,12 @@
 
 {% block content %}
 	<div class="aps-collection">
+		{% set last_place = 0 %}
+		{% set last_points = 0 %}
 		{% for user in top_users %}
+			{% set same_points = last_points == user.POINTS %}
+			{% set last_place = same_points ? last_place : loop.index %}
+			{% set last_points = same_points ? last_points : user.POINTS %}
 			<div class="aps-collection-item aps-avatar">
 				{{ user.AVATAR ? user.AVATAR : (S_APS_DAE_ENABLED ? '' : APS_NO_AVATAR) }}
 				<span class="title">{{ user.NAME }}</span>
@@ -11,8 +16,10 @@
 					<a class="aps-secondary-content" href="{{ user.U_ADJUST }}" title="{{ lang('APS_ADJUST_USER_POINTS', aps_name()) }}">
 						<i class="icon fa-pencil fa-fw"></i>
 					</a>
-				{% elseif loop.index in 1..3 %}
-					<i class="aps-secondary-content icon fa-trophy fa-fw aps-podium-{{ loop.index }}" aria-hidden="true"></i>
+				{% elseif last_place < 4 %}
+					<i class="aps-secondary-content icon fa-trophy fa-fw aps-podium-{{ last_place }}" aria-hidden="true"></i>
+				{% else %}
+					<span class="aps-secondary-content fa-fw">{{ last_place }}</span>
 				{% endif %}
 			</div>
 		{% endfor %}

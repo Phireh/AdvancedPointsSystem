@@ -15,12 +15,10 @@
 <main class="aps-main">
 	<header>
 		<div class="aps-menu aps-lists-container">
-			<span class="aps-menu-faq"></span>
-			{# @todo FAQ link?
-			<a class="aps-menu-faq" href="#">
-				<i class="icon fa-question fa-fw"></i>
-			</a>
-			#}
+			<div class="aps-menu-before">
+				{# Reserved: Please do not use this event #}
+				{% EVENT phpbbstudio_aps_menu_before %}
+			</div>
 			<div class="aps-menu-icon">
 				<div>
 					<i class="headerbar icon {{ aps_config('aps_points_icon') }} fa-fw"></i>
@@ -38,7 +36,7 @@
 			<ul class="aps-list aps-list-right">
 				{% EVENT phpbbstudio_aps_menu_right_prepend %}
 				<li>
-					<span class="aps-list-item">
+					<span class="aps-list-item aps-menu-points">
 						{{ aps_display(user.data.user_points, false) }}
 					</span>
 				</li>

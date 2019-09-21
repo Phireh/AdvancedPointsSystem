@@ -54,7 +54,7 @@ class permissions implements EventSubscriberInterface
 		$perms = [
 			'a_aps_logs', 'a_aps_points', 'a_aps_reasons', 'a_aps_display', 'a_aps_settings',
 			'm_aps_adjust_custom', 'm_aps_adjust_reason',
-			'u_aps_view_build', 'u_aps_view_logs', 'u_aps_view_mod',
+			'u_aps_view_build', 'u_aps_view_build_other', 'u_aps_view_logs', 'u_aps_view_logs_other', 'u_aps_view_mod',
 		];
 
 		foreach ($perms as $permission)

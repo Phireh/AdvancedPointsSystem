@@ -37,6 +37,19 @@ class ext extends \phpbb\extension\base
 			$is_enableable = false;
 		}
 
+		/**
+		 * Now if Ultimate Points is enabled already.
+		 */
+		$ext_manager = $this->container->get('ext.manager');
+		$is_ups_enabled = $ext_manager->is_enabled('dmzx/ultimatepoints');
+
+		if ($is_ups_enabled)
+		{
+			$lang['EXTENSION_NOT_ENABLEABLE'] .= '<br>' . $user->lang('APS_UP_INSTALLED');
+
+			$is_enableable = false;
+		}
+
 		$user->lang = $lang;
 
 		return $is_enableable;

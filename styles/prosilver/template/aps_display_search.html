@@ -18,14 +18,18 @@
 					{{ lang('TOPIC_TITLE') ~ lang('COLON') }}
 					<input class="inputbox autowidth" name="t" type="text" value="{{ S_SEARCH_TOPIC }}">
 				</label>
-				<label>
-					{{ lang('SORT_USERNAME') ~ lang('COLON') }}
-					<input class="inputbox autowidth" name="u" type="text" value="{{ S_SEARCH_USER }}">
-				</label>
-				<label>
-					{{ lang('FROM')|capitalize ~ lang('COLON') }}
-					<input class="inputbox autowidth" name="r" type="text" value="{{ S_SEARCH_USER }}">
-				</label>
+				{% if S_AUTH_USER %}
+					<label>
+						{{ lang('SORT_USERNAME') ~ lang('COLON') }}
+						<input class="inputbox autowidth" name="u" type="text" value="{{ S_SEARCH_USER }}">
+					</label>
+				{% endif %}
+				{% if S_AUTH_FROM %}
+					<label>
+						{{ lang('FROM')|capitalize ~ lang('COLON') }}
+						<input class="inputbox autowidth" name="r" type="text" value="{{ S_SEARCH_FROM }}">
+					</label>
+				{% endif %}
 			</fieldset>
 		</div>
 	</div>

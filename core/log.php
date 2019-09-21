@@ -458,10 +458,6 @@ class log
 				'reportee_id'	=> (int) $row['reportee_id'],
 				's_self'		=> (bool) ((int) $row['user_id'] === (int) $row['reportee_id']),
 
-				's_auth_build'	=> (bool) $this->auth->acl_get('u_aps_view_build'),
-				's_auth_mod'	=> (bool) $this->auth->acl_get('u_aps_view_mod'),
-				's_mod'			=> (bool) strpos($row['log_action'],'_USER_') !== false,
-
 				'ip'			=> (string) $row['reportee_ip'],
 				'time'			=> (int) $row['log_time'],
 				'action'		=> (string) $row['log_action'],

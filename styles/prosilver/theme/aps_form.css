@@ -97,6 +97,7 @@ a.aps-button-green,
 
 .aps-button-green:hover,
 a.aps-button-green:hover,
+.aps-button-green.aps-button-active,
 .aps-form input[type="submit"]:hover {
 	background-color: #28a745;
 	color: #ffffff;
@@ -104,14 +105,17 @@ a.aps-button-green:hover,
 
 .aps-button-red,
 a.aps-button-red,
-.aps-form input[type="reset"] {
+.aps-form input[type="reset"],
+.aps-form input[name="cancel"] {
 	border-color: #d31141;
 	color: #d31141;
 }
 
 .aps-button-red:hover,
 a.aps-button-red:hover,
-.aps-form input[type="reset"]:hover {
+.aps-button-red.aps-button-active,
+.aps-form input[type="reset"]:hover,
+.aps-form input[name="cancel"]:hover {
 	background-color: #d31141;
 	color: #ffffff;
 }
@@ -121,7 +125,8 @@ a.aps-button-red:hover,
 	color: #12a3eb;
 }
 
-.aps-button-blue:hover {
+.aps-button-blue:hover,
+.aps-button-blue.aps-button-active {
 	background-color: #12a3eb;
 	color: #ffffff;
 }

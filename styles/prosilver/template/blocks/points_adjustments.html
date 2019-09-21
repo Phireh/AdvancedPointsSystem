@@ -15,6 +15,7 @@
 						</div>
 						{% if action.S_AUTH_BUILD %}
 						<div class="aps-col s1 m1 l1 aps-no-mar-bot">
+							{% if action.S_AUTH_BUILD_OTHER %}
 							<div class="aps-button-blue aps-inline aps-js" data-aps-augmentation="true">
 								<i class="icon fa-list fa-fw"></i>
 							</div>
@@ -26,6 +27,7 @@
 									{% endfor %}
 								</dl>
 							</div>
+							{% endif %}
 						</div>
 						{% endif %}
 						<div class="aps-row aps-col s12 l3 aps-no-mar-bot">

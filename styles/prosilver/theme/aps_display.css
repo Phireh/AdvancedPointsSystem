@@ -1,10 +1,52 @@
 /* Helpers */
 .nojs .aps-js { display: none; }
-.aps-center { text-align: center; }
+
+.aps-block { display: block; }
 .aps-inline { display: inline-block; }
+.aps-relative { position: relative; }
+
+.aps-center { text-align: center; }
+.aps-bold { font-weight: bold; }
+.aps-italic { font-style: italic; }
+
+.aps-cursor-normal { cursor: auto; }
+.aps-cursor-banned { cursor: not-allowed; }
+.aps-cursor-pointer { cursor: pointer; }
+.aps-cursor-help { cursor: help; }
+
+.aps-mar-top { margin-top: 16px; }
+.aps-mar-bot { margin-bottom: 16px; }
+.aps-mar-left { margin-left: 16px; }
+.aps-mar-right { margin-right: 16px; }
+
 .aps-no-mar { margin: 0 !important; }
 .aps-no-mar-bot { margin-bottom: 0 !important; }
 .aps-no-mar-top { margin-top: 0 !important; }
+.aps-no-mar-left { margin-left: 0 !important; }
+.aps-no-mar-right { margin-right: 0 !important; }
+
+.aps-no-mar-edge {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.aps-no-mar-side {
+	margin-right: 0;
+	margin-left: 0;
+}
+
+.aps-no-padding { padding: 0 !important; }
+.aps-padding { padding: 8px 16px; }
+
+.aps-padding-edge {
+	padding-top: 8px;
+	padding-bottom: 8px;
+}
+
+.aps-padding-side {
+	padding-right: 16px;
+	padding-left: 16px;
+}
 
 .aps-ellipsis,
 .aps-ellipsis * {
@@ -18,6 +60,7 @@
 .aps-positive { color: #28a745; }
 .aps-negative { color: #d31141; }
 
+.aps-podium-0 { color: #313131; }
 .aps-podium-1 { color: #d6af36; }
 .aps-podium-2 { color: #a7a7ad; }
 .aps-podium-3 { color: #824a02; }
@@ -63,8 +106,8 @@
 }
 
 .aps-footer a:hover {
-	text-decoration-color: #12a3eb;
 	color: #313131;
+	text-decoration-color: #12a3eb;
 }
 
 .aps-nav {
@@ -84,7 +127,7 @@
 	z-index: 1;
 }
 
-.aps-menu-faq {
+.aps-menu-before {
 	line-height: 48px;
 	text-align: center;
 	width: 32px;
@@ -201,11 +244,11 @@
 
 .aps-list {
 	display: flex;
-	flex-flow: row wrap;
 	justify-content: flex-start;
 	align-items: stretch;
-	align-content: flex-start;
 	list-style: none;
+	align-content: flex-start;
+	flex-flow: row wrap;
 }
 
 .aps-list-right {
@@ -390,10 +433,10 @@
 
 .aps-panel-content {
 	color: #7b7e8a;
-	-ms-overflow-style: -ms-autohiding-scrollbar;
 	overflow-y: scroll;
 	-webkit-overflow-scrolling: touch;
 	max-height: 500px;
+	-ms-overflow-style: -ms-autohiding-scrollbar;
 	scrollbar-color: rgba(0, 0, 0, 0.4) transparent;
 	scrollbar-width: 4px;
 }
@@ -594,10 +637,10 @@ a.aps-panel-action {
 
 .aps-row {
 	display: flex;
-	flex-flow: row wrap;
 	justify-content: space-between;
 	align-items: flex-start;
 	align-content: flex-start;
+	flex-flow: row wrap;
 }
 
 .aps-col {

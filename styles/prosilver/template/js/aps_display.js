@@ -8,6 +8,7 @@ jQuery(function($) {
 			column: '.aps-col',
 			content: '.aps-panel-content',
 			panel: '.aps-panel',
+			pagination: '.aps-panel-footer .pagination'
 		},
 		add: {
 			el: $('.aps-panel-add'),
@@ -26,10 +27,10 @@ jQuery(function($) {
 				handle: '.aps-panel-move',
 				placeholder: 'aps-panel-placeholder',
 				forcePlaceholderSize: true
-			},
+			}
 		},
 		augmentation: {
-			selector: '[data-aps-augmentation]',
+			selector: '[data-aps-augmentation]'
 		},
 		charts: {
 			selector: '[data-aps-chart]',
@@ -41,9 +42,9 @@ jQuery(function($) {
 				label:	'aps-label',
 				labels:	'aps-labels',
 				time:	'aps-time',
-				value:	'aps-value',
+				value:	'aps-value'
 			}
-		},
+		}
 	};
 
 	aps.add.pulse = function() {
@@ -102,8 +103,8 @@ jQuery(function($) {
 		}));
 	});
 
-	aps.augmentation.register = function() {
-		$(aps.augmentation.selector).each(function() {
+	aps.augmentation.register = function(context) {
+		$(aps.augmentation.selector, context).each(function() {
 			$(this).on('click', function() {
 				let $parent = $(this).parent(),
 					$avatar = $parent.parent().siblings('img');
@@ -120,7 +121,7 @@ jQuery(function($) {
 		});
 	};
 
-	aps.augmentation.register();
+	aps.augmentation.register(null);
 
 	aps.charts.draw = function() {
 		$(aps.charts.selector).each(function() {
@@ -243,11 +244,12 @@ jQuery(function($) {
 	});
 
 	phpbb.addAjaxCallback('aps_replace', function(r) {
-		let $old = $(this).parents(aps.classes.panel).find(aps.classes.content),
-			$new = $(r.body).find(aps.classes.content);
+		let $old = $(this).parents(aps.classes.panel),
+			$new = $(r.body);
 
-		$old.html($new.html());
+		$old.find(aps.classes.content).html($new.find(aps.classes.content));
+		$old.find(aps.classes.pagination).html($new.find(aps.classes.pagination));
 
-		aps.augmentation.register();
+		aps.augmentation.register($old);
 	});
 });

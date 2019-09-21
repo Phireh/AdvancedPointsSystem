@@ -53,7 +53,8 @@
 - Fully extendable by other extensions.<br />*(with detailed explanation and examples)*
 
 ## Other extensions
-- Shop _(In development)_
+- [Advanced Shop System](https://github.com/phpBB-Studio/AdvancedShopSystem)
+- Purchases _(Work In Progress)_
 - Bank _(To be determined)_
 - Lottery _(To be determined)_
 - Robbery _(To be determined)_
@@ -72,7 +73,7 @@ You can read about [Extending APS](https://github.com/phpBB-Studio/AdvancedPoint
 
 
 ## License
-GNU General Public License, version 2 ([GPLv2](license.txt)).
+GNU General Public License, version 2 ([GPLv2](../license.txt)).
 
 ---
 > [phpbbstudio.com](https://www.phpbbstudio.com) · GitHub [phpbb-studio](https://github.com/phpbb-studio/) · phpBB [3Di](https://www.phpbb.com/community/memberlist.php?mode=viewprofile&u=177467) / [mrgoldy](https://www.phpbb.com/community/memberlist.php?mode=viewprofile&u=1114105)

@@ -173,16 +173,15 @@ class blocks
 		// If a user was found
 		if ($user !== false)
 		{
-			// Count the amount of of users with more points than this user.
-			// DISTINCT will make it that users with the same amount of points count as 1 user.
-			$sql = 'SELECT COUNT(DISTINCT user_points) as rank
+			// Count the amount of users with more points than this user.
+			$sql = 'SELECT COUNT(user_points) as rank
 					FROM ' . $this->functions->table('users') . '
 					WHERE user_points > ' . $user['user_points'];
 			$result = $this->db->sql_query_limit($sql, 1);
 			$user_rank = (int) $this->db->sql_fetchfield('rank');
 			$this->db->sql_freeresult($result);
 
-			// Increment by one, we the count is the amount of users above this user
+			// Increment by one, as the rank is the amount of users above this user
 			$user_rank++;
 		}
 
@@ -267,20 +266,27 @@ class blocks
 	 */
 	public function display_actions($pagination, $block_id)
 	{
-		$params = ['page' => 'actions', 'pagination' => $pagination];
+		$params = ['page' => 'actions'];
 		$limit = $this->config['aps_actions_per_page'];
 
 		// Set up general vars
+		$s_reportee = $this->auth->acl_get('u_aps_view_mod');
+		$s_username = $this->auth->acl_get('u_aps_view_logs_other');
+
 		$forum_id	= $this->request->variable('f', '');
 		$topic_title = $this->request->variable('t', '', true);
 		$username	= $this->request->variable('u', '', true);
 		$reportee	= $this->request->variable('r', '', true);
+
+		$username	= $s_username ? $username : '';
+		$reportee	= $s_reportee ? $reportee : '';
 
 		$topic_ids	= $this->find_topic($topic_title);
 		$user_id	= $this->find_user($username, false);
 		$reportee_id = $this->find_user($reportee, false);
 
 		$post_id	= 0;
+		$user_id	= $s_username ? $user_id : (int) $this->user->data['user_id'];
 
 		// Sort keys
 		$sort_days	= $this->request->variable('st', 0);
@@ -355,7 +361,12 @@ class blocks
 		foreach ($rowset as $row)
 		{
 			$user_ids[] = $row['user_id'];
-			$this->template->assign_block_vars('aps_actions', array_change_key_case($row, CASE_UPPER));
+			$this->template->assign_block_vars('aps_actions', array_merge(array_change_key_case($row, CASE_UPPER), [
+				'S_AUTH_BUILD'			=> (bool) $this->auth->acl_get('u_aps_view_build'),
+				'S_AUTH_BUILD_OTHER'	=> (bool) ($this->auth->acl_get('u_aps_view_build_other') || ((int) $this->user->data['user_id'] === $row['user_id'])),
+				'S_AUTH_MOD'			=> (bool) $this->auth->acl_get('u_aps_view_mod'),
+				'S_MOD'					=> (bool) strpos($row['action'],'_USER_') !== false,
+			]));
 		}
 
 		$avatars = $this->functions->get_avatars($user_ids);
@@ -386,7 +397,11 @@ class blocks
 			'APS_ACTIONS_AVATARS'	=> $avatars,
 			'APS_ACTIONS_NO_AVATAR'	=> $this->functions->get_no_avatar(),
 
+			'S_AUTH_FROM'			=> $s_reportee,
+			'S_AUTH_USER'			=> $s_username,
+
 			'S_SEARCH_TOPIC'		=> $topic_title,
+			'S_SEARCH_FROM'			=> $reportee,
 			'S_SEARCH_USER'			=> $username,
 			'S_SELECT_FORUM'		=> make_forum_select((int) $forum_id),
 
@@ -428,15 +443,22 @@ class blocks
 	 */
 	public function recent_adjustments()
 	{
+		$user_id = !$this->auth->acl_get('u_aps_view_logs_other') ? (int) $this->user->data['user_id'] : 0;
+
 		$limit = (int) $this->config['aps_display_adjustments'];
-		$rowset = $this->log->get(true, $limit, 0, 0, 0, 0, 0, 0, 0, 'l.log_time DESC', 'APS_POINTS_USER_ADJUSTED');
+		$rowset = $this->log->get(true, $limit, 0, 0, 0, 0, $user_id, 0, 0, 'l.log_time DESC', 'APS_POINTS_USER_ADJUSTED');
 
 		$user_ids = [];
 
 		foreach ($rowset as $row)
 		{
 			$user_ids[] = $row['user_id'];
-			$this->template->assign_block_vars('aps_adjustments', array_change_key_case($row, CASE_UPPER));
+			$this->template->assign_block_vars('aps_adjustments', array_merge(array_change_key_case($row, CASE_UPPER), [
+				'S_AUTH_BUILD'			=> (bool) $this->auth->acl_get('u_aps_view_build'),
+				'S_AUTH_BUILD_OTHER'	=> (bool) ($this->auth->acl_get('u_aps_view_build_other') || ((int) $this->user->data['user_id'] === $row['user_id'])),
+				'S_AUTH_MOD'			=> (bool) $this->auth->acl_get('u_aps_view_mod'),
+				'S_MOD'					=> (bool) strpos($row['action'],'_USER_') !== false,
+			]));
 		}
 
 		$avatars = $this->functions->get_avatars($user_ids);
@@ -479,7 +501,7 @@ class blocks
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$rowset[(int) $row['forum_id']]['NAME'] = $row['forum_name'];
+			$rowset[(int) $row['forum_id']]['NAME'] = utf8_decode_ncr($row['forum_name']);
 		}
 		$this->db->sql_freeresult($result);
 
@@ -576,6 +598,11 @@ class blocks
 	 */
 	protected function find_user($username, $full = true)
 	{
+		if (empty($username) && !$full)
+		{
+			return 0;
+		}
+
 		$select = !$full ? 'user_id' : 'user_id, username, username_clean, user_colour, user_points, user_avatar, user_avatar_type, user_avatar_width, user_avatar_height';
 
 		$sql = 'SELECT ' . $select . '

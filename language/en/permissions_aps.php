@@ -18,22 +18,9 @@ if (empty($lang) || !is_array($lang))
 	$lang = [];
 }
 
-// DEVELOPERS PLEASE NOTE
-//
-// All language files should use UTF-8 as their encoding and the files must not contain a BOM.
-//
-// Placeholders can now contain order information, e.g. instead of
-// 'Page %s of %s' you can (and should) write 'Page %1$s of %2$s', this allows
-// translators to re-order the output of data while ensuring it remains correct
-//
-// You do not need this where single placeholders are used, e.g. 'Message %d' is fine
-// equally where a string contains only two placeholders which are used to wrap text
-// in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
-//
-// Some characters you may want to copy&paste:
-// ’ » “ ” …
-//
-
+/**
+ * Some characters you may want to copy&paste: ’ » “ ” …
+ */
 $lang = array_merge($lang, [
 	'ACL_CAT_PHPBB_STUDIO'		=> 'phpBB Studio',
 
@@ -46,7 +33,9 @@ $lang = array_merge($lang, [
 	'ACL_M_APS_ADJUST_CUSTOM'	=> '<strong><abbr title="Advanced Points System">APS</abbr></strong> - Can adjust a user’s points with a custom action',
 	'ACL_M_APS_ADJUST_REASON'	=> '<strong><abbr title="Advanced Points System">APS</abbr></strong> - Can adjust a user’s points with a predefined reason',
 
-	'ACL_U_APS_VIEW_BUILD'		=> '<strong><abbr title="Advanced Points System">APS</abbr></strong> - Can view the augmentation<br /><em>Augmentation is the “build up” of the total points.</em>',
-	'ACL_U_APS_VIEW_MOD'		=> '<strong><abbr title="Advanced Points System">APS</abbr></strong> - Can view the moderator',
-	'ACL_U_APS_VIEW_LOGS'		=> '<strong><abbr title="Advanced Points System">APS</abbr></strong> - Can view the logs',
+	'ACL_U_APS_VIEW_BUILD'			=> '<strong><abbr title="Advanced Points System">APS</abbr></strong> - Can view their augmentation<br /><em>Augmentation is the “build up” of the total points.</em>',
+	'ACL_U_APS_VIEW_BUILD_OTHER'	=> '<strong><abbr title="Advanced Points System">APS</abbr></strong> - Can view other users’ augmentation<br /><em>This requires “Can view their augmentation” to be set to Yes.</em>',
+	'ACL_U_APS_VIEW_MOD'			=> '<strong><abbr title="Advanced Points System">APS</abbr></strong> - Can view the moderator',
+	'ACL_U_APS_VIEW_LOGS'			=> '<strong><abbr title="Advanced Points System">APS</abbr></strong> - Can view their logs',
+	'ACL_U_APS_VIEW_LOGS_OTHER'		=> '<strong><abbr title="Advanced Points System">APS</abbr></strong> - Can view other users’ logs<br /><em>This requires “Can view their logs” to be set to Yes.</em>',
 ]);
