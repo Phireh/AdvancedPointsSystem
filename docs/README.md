@@ -2,7 +2,6 @@
 <h4 align="center">An extension for the phpBB Forum Software.</h4>
 
 <p align="center">
-	<img src="https://img.shields.io/badge/Version-1.0.0-12a3eb.svg" />
 	<img src="https://img.shields.io/badge/License-GPLv2-gold.svg" />
 </p>
 
