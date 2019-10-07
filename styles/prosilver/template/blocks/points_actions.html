@@ -10,8 +10,16 @@
 						<div class="aps-col s12 m{{ action.S_AUTH_BUILD ? 4 : 6 }} l2 aps-no-mar-bot">
 							{{ action.USER }}
 						</div>
-						<div class="aps-col {{ action.S_AUTH_BUILD ? 's9 m6 l2' : 's12 m6 l3' }} aps-no-mar-bot">
+						<div class="aps-col {{ action.S_AUTH_BUILD ? 's9 m6 l2' : 's12 m6 l3' }} aps-no-mar-bot aps-no-padding">
 							<strong>{{ lang(action.ACTION) }}</strong>
+							{% if not action.S_SELF %}
+								<br>{{ lang('POST_BY_AUTHOR') }}
+								{% if action.S_MOD and not action.S_AUTH_MOD %}
+									{{ lang('MODERATOR') }}
+								{% else %}
+									{{ action.REPORTEE }}
+								{% endif %}
+							{% endif %}
 						</div>
 						{% if action.S_AUTH_BUILD %}
 						<div class="aps-col s1 m1 l1 aps-no-mar-bot">
@@ -31,26 +39,18 @@
 						</div>
 						{% endif %}
 						<div class="aps-row aps-col s12 l3 aps-no-mar-bot">
-							<div class="aps-col s4 aps-no-mar-bot">
+							<div class="aps-col s4 aps-no-mar-bot aps-no-padding">
 								{{ aps_display(action.POINTS_OLD, false) }}
 							</div>
-							<div class="aps-col s4 aps-no-mar-bot {{ action.POINTS_SUM < 0 ? 'aps-negative' : 'aps-positive' }}">
+							<div class="aps-col s4 aps-no-mar-bot aps-no-padding {{ action.POINTS_SUM < 0 ? 'aps-negative' : 'aps-positive' }}">
 								{{ aps_display(action.POINTS_SUM, false) }}
 							</div>
-							<div class="aps-col s4 aps-no-mar-bot">
+							<div class="aps-col s4 aps-no-mar-bot aps-no-padding">
 								{{ aps_display(action.POINTS_NEW, false) }}
 							</div>
 						</div>
 						<div class="aps-col s6 l2 aps-no-mar-bot aps-hide-s">
 							{{ user.format_date(action.TIME) }}
-							{% if not action.S_SELF %}
-								{{ lang('POST_BY_AUTHOR') }}
-								{% if action.S_MOD and not action.S_AUTH_MOD %}
-									{{ lang('MODERATOR') }}
-								{% else %}
-									{{ action.REPORTEE }}
-								{% endif %}
-							{% endif %}
 						</div>
 						<div class="aps-col s6 l2 aps-no-mar-bot aps-ellipsis aps-hide-s">
 							{% if action.FORUM_NAME or action.TOPIC_TITLE or action.POST_SUBJECT %}

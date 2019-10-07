@@ -21,6 +21,9 @@ class valuator
 	/** @var \phpbbstudio\aps\core\functions */
 	protected $functions;
 
+	/** @var \phpbb\user */
+	protected $user;
+
 	/** @var string APS Values table */
 	protected $table;
 
@@ -29,14 +32,21 @@ class valuator
 	 *
 	 * @param  \phpbb\db\driver\driver_interface	$db			Database object
 	 * @param  \phpbbstudio\aps\core\functions		$functions	APS Core functions
+	 * @param  \phpbb\user							$user		User object
 	 * @param  string								$table		APS Values table
 	 * @return void
 	 * @access public
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbbstudio\aps\core\functions $functions, $table)
+	public function __construct(
+		\phpbb\db\driver\driver_interface $db,
+		\phpbbstudio\aps\core\functions $functions,
+		\phpbb\user $user,
+		$table
+	)
 	{
 		$this->db			= $db;
 		$this->functions	= $functions;
+		$this->user			= $user;
 		$this->table		= $table;
 	}
 
@@ -49,15 +59,20 @@ class valuator
 	 */
 	public function user($user_id)
 	{
+		if ($user_id == $this->user->data['user_id'])
+		{
+			return (double) $this->user->data['user_points'];
+		}
+
 		$sql = 'SELECT user_points
 				FROM ' . $this->functions->table('users') . '
 				WHERE user_id = ' . (int) $user_id . '
 					AND user_type <> ' . USER_IGNORE;
 		$result = $this->db->sql_query_limit($sql, 1);
-		$user_points = (double) $this->db->sql_fetchfield('user_points');
+		$user_points = $this->db->sql_fetchfield('user_points');
 		$this->db->sql_freeresult($result);
 
-		return $user_points;
+		return (double) $user_points;
 	}
 
 	/**

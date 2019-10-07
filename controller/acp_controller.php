@@ -139,7 +139,7 @@ class acp_controller
 	 */
 	public function settings()
 	{
-		$error = [];
+		$errors = [];
 		$submit = $this->request->is_set_post('submit');
 		$form_key = 'aps_settings';
 		add_form_key($form_key);
@@ -149,7 +149,7 @@ class acp_controller
 			switch ($action)
 			{
 				case 'copy':
-					$error = $this->copy_points();
+					$errors = $this->copy_points();
 				break;
 
 				case 'clean':
@@ -192,7 +192,7 @@ class acp_controller
 		 * Event to add additional settings to the APS ACP settings page.
 		 *
 		 * @event phpbbstudio.aps.acp_settings
-		 * @var   array  settings	Available settings
+		 * @var	array	settings	Available settings
 		 * @since 1.0.0
 		 */
 		$vars = ['settings'];
@@ -201,14 +201,14 @@ class acp_controller
 		$this->config_new = clone $this->config;
 		$settings_array = $submit ? $this->request->variable('config', ['' => '']) : $this->config_new;
 
-		validate_config_vars($settings, $settings_array, $error);
+		validate_config_vars($settings, $settings_array, $errors);
 
 		if ($submit && !check_form_key($form_key))
 		{
-			$error[] = $this->lang->lang('FORM_INVALID');
+			$errors[] = $this->lang->lang('FORM_INVALID');
 		}
 
-		if (!empty($error))
+		if (!empty($errors))
 		{
 			$submit = false;
 		}
@@ -284,8 +284,8 @@ class acp_controller
 		}
 
 		$this->template->assign_vars([
-			'S_ERROR'		=> !empty($error),
-			'ERROR_MSG'		=> !empty($error) ? implode('<br>', $error) : '',
+			'S_ERROR'		=> !empty($errors),
+			'ERROR_MSG'		=> !empty($errors) ? implode('<br>', $errors) : '',
 
 			'U_ACTION'		=> $this->u_action,
 		]);
@@ -299,7 +299,7 @@ class acp_controller
 	 */
 	public function display()
 	{
-		$error = [];
+		$errors = [];
 
 		add_form_key('aps_display');
 
@@ -342,6 +342,8 @@ class acp_controller
 			}
 		}
 
+		$submit = $this->request->is_set_post('submit');
+
 		$settings = [
 			'aps_display_top_change'	=> $this->request->variable('aps_display_top_change', (int) $this->config['aps_display_top_change']),
 			'aps_display_top_count'		=> $this->request->variable('aps_display_top_count', (int) $this->config['aps_display_top_count']),
@@ -349,16 +351,28 @@ class acp_controller
 			'aps_display_graph_time'	=> $this->request->variable('aps_display_graph_time', (int) $this->config['aps_display_graph_time']),
 		];
 
-		if ($this->request->is_set_post('submit'))
+		/**
+		 * Event to handle additional settings for the APS ACP display page.
+		 *
+		 * @event phpbbstudio.aps.acp_display
+		 * @var	array	settings	Available settings
+		 * @var	array	errors		Any errors that may have occurred
+		 * @var bool	submit		Whether or not the form was submitted
+		 * @since 1.0.0
+		 */
+		$vars = ['settings', 'errors', 'submit'];
+		extract($this->dispatcher->trigger_event('phpbbstudio.aps.acp_display', compact($vars)));
+
+		if ($submit)
 		{
 			if (!check_form_key('aps_display'))
 			{
-				$error[] = $this->lang->lang('FORM_INVALID');
+				$errors[] = $this->lang->lang('FORM_INVALID');
 			}
 
 			$display_blocks = $this->request->variable('aps_blocks', ['' => ['']]);
 
-			if (empty($error))
+			if (empty($errors))
 			{
 				// Set the settings
 				foreach ($settings as $name => $value)
@@ -391,8 +405,8 @@ class acp_controller
 		}
 
 		$this->template->assign_vars([
-			'S_ERROR'		=> !empty($error),
-			'ERROR_MSG'		=> !empty($error) ? implode('<br>', $error) : '',
+			'S_ERROR'		=> !empty($errors),
+			'ERROR_MSG'		=> !empty($errors) ? implode('<br>', $errors) : '',
 
 			'U_ACTION'		=> $this->u_action,
 		]);

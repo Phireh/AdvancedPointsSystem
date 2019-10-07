@@ -2,7 +2,7 @@
 <h4 align="center">An extension for the phpBB Forum Software.</h4>
 
 <p align="center">
-	<img src="https://img.shields.io/badge/License-GPLv2-gold.svg" />
+	<img src="https://img.shields.io/badge/License-GPLv2-gold.svg" alt="GPLv2 License" />
 </p>
 
 ## Table of Contents
@@ -35,12 +35,15 @@
 ## Support
 - **Important: Only official release versions validated by the phpBB Extensions Team should be installed on a live forum. Pre-release (beta, RC) versions downloaded from this repository are only to be used for testing on offline/development forums and are not officially supported.**
 - Report bugs and other issues to our **[Issue Tracker](https://github.com/phpBB-Studio/AdvancedPointsSystem/issues)**.
-- Support requests should be posted and discussed in the **[Advanced Points System topic](https://www.phpbb.com/community/viewtopic.php?f=456&t=2500296&p=15186601)** over at [phpBB.com](https://www.phpbb.com).
+- Support requests can be posted and discussed in the **[Extension support](https://phpbbstudio.com/viewforum.php?f=5)** forum over at the [phpBB Studio](https://www.phpbbstudio.com).
+- Support requests can be posted and discussed in the **[Development topic](https://www.phpbb.com/community/viewforum.php?f=456)** over at [phpBB.com](https://www.phpbb.com).
 
 ## Translations
-- Translations should be posted in the **[Advanced Points System topic](https://www.phpbb.com/community/viewtopic.php?f=456&t=2500296&p=15186601)** over at [phpBB.com](https://www.phpbb.com).
-- Translation <u>***corrections***</u> are accepted as pull requests.
-- New translations are <u>***not***</u> accepted as pull requests.
+- Translations should be posted in the corresponding forum in **[Extension support](https://phpbbstudio.com/viewforum.php?f=5)** over at the [phpBB Studio](https://www.phpbbstudio.com).
+- Each translation should be created in a **separate** topic.
+- The topic should either contain a **zip archive** as an attachment or a link to your **GitHub repository**.
+- Translations should <u>***not***</u> be posted in the Development topic over at [phpBB.com](https://www.phpbb.com).
+- Translations should <u>***not***</u> be created as Pull Requests over at the [GitHub](https://github.com/phpBB-Studio/) repository.
 
 ## Features
 - Fully integrated Points System for phpBB 3.2

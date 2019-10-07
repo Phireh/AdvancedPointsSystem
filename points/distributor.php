@@ -27,6 +27,9 @@ class distributor
 	/** @var \phpbbstudio\aps\core\log */
 	protected $log;
 
+	/** @var \phpbb\user */
+	protected $user;
+
 	/** @var \phpbbstudio\aps\points\valuator */
 	protected $valuator;
 
@@ -37,16 +40,25 @@ class distributor
 	 * @param  \phpbb\db\driver\driver_interface	$db				Database object
 	 * @param  \phpbbstudio\aps\core\functions		$functions		APS Core functions
 	 * @param  \phpbbstudio\aps\core\log			$log			APS Log object
+	 * @param  \phpbb\user							$user			User object
 	 * @param  \phpbbstudio\aps\points\valuator		$valuator		APS Valuator object
 	 * @return void
 	 * @access public
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbbstudio\aps\core\functions $functions, \phpbbstudio\aps\core\log $log, valuator $valuator)
+	public function __construct(
+		\phpbb\config\config $config,
+		\phpbb\db\driver\driver_interface $db,
+		\phpbbstudio\aps\core\functions $functions,
+		\phpbbstudio\aps\core\log $log,
+		\phpbb\user $user,
+		valuator $valuator
+	)
 	{
 		$this->config		= $config;
 		$this->db			= $db;
 		$this->functions	= $functions;
 		$this->log			= $log;
+		$this->user			= $user;
 		$this->valuator		= $valuator;
 	}
 
@@ -63,23 +75,37 @@ class distributor
 	public function distribute($user_id, $points, $logs, $user_points = null)
 	{
 		// Calculate the new total for this user
-		$total = $this->total($user_id, $user_points, $points);
+		$total = $this->total($user_id, $points, $user_points);
 
 		// If logging was successful
 		if ($this->log->add_multi($logs))
 		{
 			// Update the points for this user
-			$sql = 'UPDATE ' . $this->functions->table('users') . '
-					SET user_points = ' . (double) $total . '
-					WHERE user_id = ' . (int) $user_id;
-			$this->db->sql_query($sql);
-
-			// Points were updated, return true
-			return true;
+			return $this->update_points($total, $user_id);
 		}
 
 		// Points were not updated, return false (logs were invalid)
 		return false;
+	}
+
+	/**
+	 * Update a user's points.
+	 *
+	 * @param  double	$points			The user points
+	 * @param  int		$user_id		The user identifier
+	 * @return bool						Whether or not the user's row was updated
+	 * @access public
+	 */
+	public function update_points($points, $user_id = 0)
+	{
+		$user_id = $user_id ? $user_id : $this->user->data['user_id'];
+
+		$sql = 'UPDATE ' . $this->functions->table('users') . '
+				SET user_points = ' . (double) $points . '
+				WHERE user_id = ' . (int) $user_id;
+		$this->db->sql_query($sql);
+
+		return (bool) $this->db->sql_affectedrows();
 	}
 
 	/**
@@ -102,14 +128,15 @@ class distributor
 		// Calculate the new total for this user
 		$total = $this->total($user_id, $user_points, $points);
 
+		$this->db->sql_transaction('begin');
+
 		// Approve the log entries
 		$this->log->approve($user_id, $post_ids);
 
 		// Update the points for this user
-		$sql = 'UPDATE ' . $this->functions->table('users') . '
-				SET user_points = ' . (double) $total . '
-				WHERE user_id = ' . (int) $user_id;
-		$this->db->sql_query($sql);
+		$this->update_points($total, $user_id);
+
+		$this->db->sql_transaction('commit');
 	}
 
 	/**
@@ -136,15 +163,15 @@ class distributor
 	 * Calculate the new total (current points + gained points) for a specific user.
 	 *
 	 * @param  int		$user_id		The user identifier
-	 * @param  double	$user_points	The user's current points
 	 * @param  double	$points			The user's gained points
+	 * @param  double	$user_points	The user's current points
 	 * @return double					The new total for this user
-	 * @access protected
+	 * @access public
 	 */
-	protected function total($user_id, $user_points, $points)
+	public function total($user_id, $points, $user_points = null)
 	{
 		// If the current user's points is null, get it from the database
-		if (is_null($user_points))
+		if ($user_points === null)
 		{
 			$user_points = $this->valuator->user((int) $user_id);
 		}

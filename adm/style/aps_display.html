@@ -13,8 +13,13 @@
 {% endif %}
 
 <form class="aps-form" id="aps_display" name="aps_display" action="{{ U_ACTION }}" method="post">
+
+	{% EVENT phpbbstudio_aps_acp_display_before %}
+
 	<fieldset>
 		<legend>{{ lang('GENERAL_SETTINGS') }}</legend>
+
+		{% EVENT phpbbstudio_aps_acp_display_prepend %}
 
 		<dl>
 			<dt>
@@ -53,7 +58,11 @@
 			</dt>
 			<dd><input class="autowidth" id="aps_display_graph_time" name="aps_display_graph_time" type="number" min="0" value="{{ APS_DISPLAY_GRAPH_TIME }}" required /></dd>
 		</dl>
+
+		{% EVENT phpbbstudio_aps_acp_display_append %}
 	</fieldset>
+
+	{% EVENT phpbbstudio_aps_acp_display_after %}
 
 	<fieldset class="aps-pages notice" data-aps-sortable="true">
 		{% for page in aps_pages %}

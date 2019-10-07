@@ -30,6 +30,7 @@ services:
             - '@dbal.conn'
             - '@phpbbstudio.aps.functions'
             - '@phpbbstudio.aps.log'
+            - '@user'
             - '@phpbbstudio.aps.valuator'
 
     phpbbstudio.aps.reasoner:
@@ -43,6 +44,7 @@ services:
         arguments:
             - '@dbal.conn'
             - '@phpbbstudio.aps.functions'
+            - '@user'
             - '%phpbbstudio.aps.tables.points%'
 
     phpbbstudio.aps.birthday:

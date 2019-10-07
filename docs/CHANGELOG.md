@@ -1,3 +1,10 @@
+# phpBB Studio - Advanced Points System
+
+#### v1.0.2-beta
+- Improved position of reportee/moderator name in Actions list
+- Added public function for points distribution
+- Added PHP and Style events
+
 #### v1.0.1-beta
 - Updated route requirements
 - Fixed pagination issues for blocks
