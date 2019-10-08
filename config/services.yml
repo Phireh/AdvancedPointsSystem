@@ -28,6 +28,7 @@ services:
         arguments:
             - '@config'
             - '@dbal.conn'
+            - '@dispatcher'
             - '@phpbbstudio.aps.functions'
             - '@phpbbstudio.aps.log'
             - '@user'

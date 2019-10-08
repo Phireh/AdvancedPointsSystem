@@ -1,5 +1,9 @@
 # phpBB Studio - Advanced Points System
 
+#### v1.0.3-beta
+- Fixed PHP event DocBlocks versions
+- Added PHP event for points distribution
+
 #### v1.0.2-beta
 - Improved position of reportee/moderator name in Actions list
 - Added public function for points distribution

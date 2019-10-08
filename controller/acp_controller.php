@@ -358,7 +358,7 @@ class acp_controller
 		 * @var	array	settings	Available settings
 		 * @var	array	errors		Any errors that may have occurred
 		 * @var bool	submit		Whether or not the form was submitted
-		 * @since 1.0.0
+		 * @since 1.0.2
 		 */
 		$vars = ['settings', 'errors', 'submit'];
 		extract($this->dispatcher->trigger_event('phpbbstudio.aps.acp_display', compact($vars)));

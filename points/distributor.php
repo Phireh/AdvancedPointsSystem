@@ -21,6 +21,9 @@ class distributor
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
+	/** @var \phpbb\event\dispatcher */
+	protected $dispatcher;
+
 	/** @var \phpbbstudio\aps\core\functions */
 	protected $functions;
 
@@ -38,6 +41,7 @@ class distributor
 	 *
 	 * @param  \phpbb\config\config					$config			Configuration object
 	 * @param  \phpbb\db\driver\driver_interface	$db				Database object
+	 * @param  \phpbb\event\dispatcher				$dispatcher		Event dispatcher object
 	 * @param  \phpbbstudio\aps\core\functions		$functions		APS Core functions
 	 * @param  \phpbbstudio\aps\core\log			$log			APS Log object
 	 * @param  \phpbb\user							$user			User object
@@ -48,6 +52,7 @@ class distributor
 	public function __construct(
 		\phpbb\config\config $config,
 		\phpbb\db\driver\driver_interface $db,
+		\phpbb\event\dispatcher $dispatcher,
 		\phpbbstudio\aps\core\functions $functions,
 		\phpbbstudio\aps\core\log $log,
 		\phpbb\user $user,
@@ -56,6 +61,7 @@ class distributor
 	{
 		$this->config		= $config;
 		$this->db			= $db;
+		$this->dispatcher	= $dispatcher;
 		$this->functions	= $functions;
 		$this->log			= $log;
 		$this->user			= $user;
@@ -104,8 +110,21 @@ class distributor
 				SET user_points = ' . (double) $points . '
 				WHERE user_id = ' . (int) $user_id;
 		$this->db->sql_query($sql);
+		$success = (bool) $this->db->sql_affectedrows();
 
-		return (bool) $this->db->sql_affectedrows();
+		/**
+		 * Event to perform additional actions after APS Points have been distributed.
+		 *
+		 * @event phpbbstudio.aps.update_points
+		 * @var int		user_id			The user identifier
+		 * @var double	points			The user points
+		 * @var bool	success			Whether or not the points were updated
+		 * @since 1.0.3
+		 */
+		$vars = ['user_id', 'points', 'success'];
+		extract($this->dispatcher->trigger_event('phpbbstudio.aps.update_points', compact($vars)));
+
+		return $success;
 	}
 
 	/**

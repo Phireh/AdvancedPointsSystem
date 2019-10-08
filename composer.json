@@ -3,8 +3,8 @@
     "type": "phpbb-extension",
     "description": "A fully integrated and extendable points extension for the phpBB Forum Software.",
     "homepage": "https://www.phpbbstudio.com",
-    "version": "1.0.2-beta",
-    "time": "2019-10-07",
+    "version": "1.0.3-beta",
+    "time": "2019-10-08",
     "license": "GPL-2.0-only",
     "authors": [
         {

@@ -480,8 +480,8 @@ class main_controller
 		 * Event to add additional page blocks to the APS display page.
 		 *
 		 * @event phpbbstudio.aps.display_blocks
-		 * @var   array	page_blocks		Available page blocks
-		 * @var   int	pagination		Pagination's page number
+		 * @var array	page_blocks		Available page blocks
+		 * @var int		pagination		Pagination's page number
 		 * @since 1.0.0
 		 */
 		$vars = ['page_blocks', 'pagination'];

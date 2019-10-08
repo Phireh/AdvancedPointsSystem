@@ -194,6 +194,12 @@ class mcp_controller
 		}
 		$this->db->sql_freeresult($result);
 
+		/**
+		 * Event to assign additional variables for the APS MCP front page.
+		 *
+		 * @event phpbbstudio.aps.mcp_front
+		 * @since 1.0.0
+		 */
 		$this->dispatcher->dispatch('phpbbstudio.aps.mcp_front');
 
 		$this->template->assign_vars([

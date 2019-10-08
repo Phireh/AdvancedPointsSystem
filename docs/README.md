@@ -56,10 +56,10 @@
 
 ## Other extensions
 - [Advanced Shop System](https://github.com/phpBB-Studio/AdvancedShopSystem)
-- Purchases _(Work In Progress)_
+- [Advanced Points System · Purchases](https://phpbbstudio.com/extensions/advanced-points-system-purchases)
+- [Advanced Points System · Auto Groups](https://github.com/phpBB-Studio/AdvancedShopSystemAutoGroups)
 - Bank _(To be determined)_
 - Lottery _(To be determined)_
-- Robbery _(To be determined)_
 
 ## Extending APS
 For the extension developers amongst us, we have written a comprehensive Wiki that should describe everything in detail.
