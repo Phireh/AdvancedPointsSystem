@@ -43,7 +43,7 @@ class acp_controller
 	protected $functions;
 
 	/** @var \phpbb\language\language */
-	protected $lang;
+	protected $language;
 
 	/** @var \phpbb\log\log */
 	protected $log_phpbb;
@@ -80,7 +80,7 @@ class acp_controller
 	 * @param  \phpbb\db\driver\driver_interface			$db				Database object
 	 * @param  \phpbb\event\dispatcher						$dispatcher		Event dispatcher
 	 * @param  \phpbbstudio\aps\core\functions				$functions		APS Core functions
-	 * @param  \phpbb\language\language						$lang			phpBB Language object
+	 * @param  \phpbb\language\language						$language		phpBB Language object
 	 * @param  \phpbb\log\log								$log_phpbb		phpBB Log object
 	 * @param  \phpbbstudio\aps\core\log					$log			APS Log object
 	 * @param  \phpbb\pagination							$pagination		Pagination object
@@ -100,7 +100,7 @@ class acp_controller
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
 		\phpbbstudio\aps\core\functions $functions,
-		\phpbb\language\language $lang,
+		\phpbb\language\language $language,
 		\phpbb\log\log $log_phpbb,
 		\phpbbstudio\aps\core\log $log,
 		\phpbb\pagination $pagination,
@@ -118,7 +118,7 @@ class acp_controller
 		$this->db			= $db;
 		$this->dispatcher	= $dispatcher;
 		$this->functions	= $functions;
-		$this->lang			= $lang;
+		$this->language		= $language;
 		$this->log_phpbb	= $log_phpbb;
 		$this->log			= $log;
 		$this->pagination	= $pagination;
@@ -126,9 +126,6 @@ class acp_controller
 		$this->request		= $request;
 		$this->template		= $template;
 		$this->user			= $user;
-
-		$log->load_lang();
-		$lang->add_lang('aps_acp_common', 'phpbbstudio/aps');
 	}
 
 	/**
@@ -139,6 +136,9 @@ class acp_controller
 	 */
 	public function settings()
 	{
+		$this->log->load_lang();
+		$this->language->add_lang('aps_acp_common', 'phpbbstudio/aps');
+
 		$errors = [];
 		$submit = $this->request->is_set_post('submit');
 		$form_key = 'aps_settings';
@@ -167,6 +167,7 @@ class acp_controller
 			// Later inserted
 			'legend3'		=> 'ACP_APS_FORMATTING',
 			'aps_points_icon'				=> ['lang' => 'ACP_APS_POINTS_ICON', 'type' => 'text:0:100', 'append' => '<i class="icon fa-fw" aria-hidden="true"></i>'],
+			'aps_points_icon_img'			=> ['lang' => 'ACP_APS_POINTS_ICON_IMG', 'validate' => 'string:0:255', 'type' => 'custom', 'method' => 'build_icon_image_select', 'explain' => true],
 			'aps_points_icon_position'		=> ['lang' => 'ACP_APS_POINTS_ICON_POSITION', 'validate' => 'bool', 'type' => 'custom', 'method' => 'build_position_radio'],
 			'aps_points_decimals'			=> ['lang' => 'ACP_APS_POINTS_DECIMALS', 'validate' => 'string', 'type' => 'select', 'method' => 'build_decimal_select'],
 			'aps_points_separator_dec'		=> ['lang' => 'ACP_APS_SEPARATOR_DEC', 'validate' => 'string', 'type' => 'select', 'method' => 'build_separator_select', 'params' => ['{CONFIG_VALUE}']],
@@ -178,7 +179,7 @@ class acp_controller
 			'aps_points_min'				=> ['lang' => 'ACP_APS_POINTS_MIN', 'type' => 'number', 'validate' => 'string', 'explain' => true], // Validate as string to make sure it does not default to 0
 			'aps_points_max'				=> ['lang' => 'ACP_APS_POINTS_MAX', 'type' => 'number', 'validate' => 'string', 'explain' => true],
 			'aps_actions_per_page'			=> ['lang' => 'ACP_APS_POINTS_PER_PAGE', 'type' => 'number:10:100', 'validate', 'validate' => 'number:10:100', 'explain' => true],
-			'aps_points_exclude_words'		=> ['lang' => 'ACP_APS_POINTS_EXCLUDE_WORDS', 'type' => 'number:0:10', 'validate' => 'number:0:10', 'explain' => true, 'append' => '&nbsp;' . $this->lang->lang('ACP_APS_CHARACTERS')],
+			'aps_points_exclude_words'		=> ['lang' => 'ACP_APS_POINTS_EXCLUDE_WORDS', 'type' => 'number:0:10', 'validate' => 'number:0:10', 'explain' => true, 'append' => '&nbsp;' . $this->language->lang('ACP_APS_CHARACTERS')],
 			'aps_points_exclude_chars'		=> ['lang' => 'ACP_APS_POINTS_EXCLUDE_CHARS', 'type' => 'radio:yes_no', 'validate' => 'bool', 'explain' => true],
 			'legend5'		=> 'ACP_APS_CHAIN_SETTINGS',
 			'aps_chain_merge_delete'		=> ['lang' => 'ACP_APS_CHAIN_MERGE_DELETE', 'type' => 'radio:enabled_disabled', 'validate' => 'bool', 'explain' => true],
@@ -205,7 +206,7 @@ class acp_controller
 
 		if ($submit && !check_form_key($form_key))
 		{
-			$errors[] = $this->lang->lang('FORM_INVALID');
+			$errors[] = $this->language->lang('FORM_INVALID');
 		}
 
 		if (!empty($errors))
@@ -234,7 +235,7 @@ class acp_controller
 			$this->log_phpbb->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_ACP_APS_SETTINGS');
 
 			// Show success message
-			trigger_error($this->lang->lang('ACP_APS_SETTINGS_SUCCESS') . adm_back_link($this->u_action));
+			trigger_error($this->language->lang('ACP_APS_SETTINGS_SUCCESS') . adm_back_link($this->u_action));
 		}
 
 		foreach ($settings as $config_key => $setting)
@@ -266,8 +267,8 @@ class acp_controller
 			$booleans = ['yes_no', 'no_yes', 'enabled_disabled', 'disabled_enabled'];
 			if ($type[0] === 'radio' && !empty($type[1]) && in_array($type[1], $booleans))
 			{
-				$yes = [$this->lang->lang('YES'), $this->lang->lang('ENABLED')];
-				$no = [$this->lang->lang('NO'), $this->lang->lang('DISABLED')];
+				$yes = [$this->language->lang('YES'), $this->language->lang('ENABLED')];
+				$no = [$this->language->lang('NO'), $this->language->lang('DISABLED')];
 				$content = preg_replace(
 					['/(' . implode('|', $yes) . ')/', '/(' . implode('|', $no) . ')/', '/class="radio"/'],
 					['<span class="aps-button-green">$1</span>', '<span class="aps-button-red">$1</span>', 'class="radio aps-bool"'],
@@ -299,6 +300,9 @@ class acp_controller
 	 */
 	public function display()
 	{
+		$this->log->load_lang();
+		$this->language->add_lang(['aps_acp_common', 'aps_display'], 'phpbbstudio/aps');
+
 		$errors = [];
 
 		add_form_key('aps_display');
@@ -367,7 +371,7 @@ class acp_controller
 		{
 			if (!check_form_key('aps_display'))
 			{
-				$errors[] = $this->lang->lang('FORM_INVALID');
+				$errors[] = $this->language->lang('FORM_INVALID');
 			}
 
 			$display_blocks = $this->request->variable('aps_blocks', ['' => ['']]);
@@ -395,7 +399,7 @@ class acp_controller
 				$this->log_phpbb->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_ACP_APS_DISPLAY');
 
 				// Show success message
-				trigger_error($this->lang->lang('ACP_APS_DISPLAY_SUCCESS') . adm_back_link($this->u_action));
+				trigger_error($this->language->lang('ACP_APS_DISPLAY_SUCCESS') . adm_back_link($this->u_action));
 			}
 		}
 
@@ -420,6 +424,9 @@ class acp_controller
 	 */
 	public function points()
 	{
+		$this->log->load_lang();
+		$this->language->add_lang('aps_acp_common', 'phpbbstudio/aps');
+
 		$errors = [];
 		$action = $this->request->variable('action', '');
 		$submit = $this->request->is_set_post('submit');
@@ -442,7 +449,6 @@ class acp_controller
 				$reason_id = (int) $this->request->variable('r', 0);
 
 				$reason = $this->reasoner->row($reason_id);
-
 				$reason = $this->reasoner->fill($reason);
 
 				$reason['reason_title'] = $this->request->variable('title', (string) $reason['reason_title'] , true);
@@ -453,18 +459,19 @@ class acp_controller
 				{
 					if (!check_form_key($form_name))
 					{
-						$errors[] = $this->lang->lang('FORM_INVALID');
+						$errors[] = $this->language->lang('FORM_INVALID');
 					}
 
 					if (empty($reason['reason_title']) || strlen($reason['reason_title']) > 255)
 					{
-						$errors[] = $this->lang->lang('ACP_APS_REASON_EMPTY_SUBJECT');
+						$errors[] = $this->language->lang('ACP_APS_REASON_EMPTY_SUBJECT');
 					}
 
 					$reason_points_to_check = round($reason['reason_points'], 2);
+
 					if (empty($reason_points_to_check))
 					{
-						$errors[] = $this->lang->lang('ACP_APS_REASON_EMPTY_POINTS', $this->functions->get_name());
+						$errors[] = $this->language->lang('ACP_APS_REASON_EMPTY_POINTS', $this->functions->get_name());
 					}
 
 					if (empty($errors))
@@ -480,7 +487,7 @@ class acp_controller
 
 						$this->log_phpbb->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_ACP_APS_REASON_' . utf8_strtoupper($action));
 
-						trigger_error($this->lang->lang('ACP_APS_REASON_SAVED') . adm_back_link($this->u_action));
+						trigger_error($this->language->lang('ACP_APS_REASON_SAVED') . adm_back_link($this->u_action));
 					}
 				}
 
@@ -501,8 +508,8 @@ class acp_controller
 					$json_response = new \phpbb\json_response;
 					$json_response->send([
 						'SUCCESS'		=> true,
-						'MESSAGE_TITLE'	=> $this->lang->lang('INFORMATION'),
-						'MESSAGE_TEXT'	=> $this->lang->lang('ACP_APS_REASON_DELETE_SUCCESS'),
+						'MESSAGE_TITLE'	=> $this->language->lang('INFORMATION'),
+						'MESSAGE_TEXT'	=> $this->language->lang('ACP_APS_REASON_DELETE_SUCCESS'),
 					]);
 				}
 				else
@@ -535,7 +542,7 @@ class acp_controller
 					{
 						if (!check_form_key($form_name))
 						{
-							$errors[] = $this->lang->lang('FORM_INVALID');
+							$errors[] = $this->language->lang('FORM_INVALID');
 						}
 
 						if (empty($errors))
@@ -546,7 +553,7 @@ class acp_controller
 
 							$this->log_phpbb->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_ACP_APS_POINTS', time(), [$this->functions->get_name()]);
 
-							trigger_error($this->lang->lang('ACP_APS_POINTS_SUCCESS', $this->functions->get_name()) . adm_back_link($this->u_action));
+							trigger_error($this->language->lang('ACP_APS_POINTS_SUCCESS', $this->functions->get_name()) . adm_back_link($this->u_action));
 						}
 					}
 				}
@@ -583,7 +590,7 @@ class acp_controller
 			'S_ERRORS'			=> $s_errors,
 			'ERROR_MSG'			=> $s_errors ? implode('<br />', $errors) : '',
 
-			'APS_TITLE'			=> $action ? $this->lang->lang('ACP_APS_REASON_' . utf8_strtoupper($action)) : $this->functions->get_name(),
+			'APS_TITLE'			=> $action ? $this->language->lang('ACP_APS_REASON_' . utf8_strtoupper($action)) : $this->functions->get_name(),
 
 			'S_APS_ACTION'		=> $action,
 			'S_APS_POINTS'		=> $this->auth->acl_get('a_aps_points'),
@@ -601,6 +608,9 @@ class acp_controller
 	 */
 	public function logs()
 	{
+		$this->log->load_lang();
+		$this->language->add_lang('aps_acp_common', 'phpbbstudio/aps');
+
 		// Set up general vars
 		$start		= $this->request->variable('start', 0);
 		$forum_id	= $this->request->variable('f', '');
@@ -649,11 +659,11 @@ class acp_controller
 				$log_action = 'LOG_ACP_APS_LOGS_' . $delete_all ? 'CLEARED' : 'DELETED';
 				$this->log_phpbb->add('admin', $this->user->data['user_id'], $this->user->ip, $log_action, time(), [$this->functions->get_name()]);
 
-				trigger_error($this->lang->lang('ACP_APS_LOGS_DELETED', $plural) . adm_back_link($this->u_action));
+				trigger_error($this->language->lang('ACP_APS_LOGS_DELETED', $plural) . adm_back_link($this->u_action));
 			}
 			else
 			{
-				confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
+				confirm_box(false, $this->language->lang('CONFIRM_OPERATION'), build_hidden_fields([
 					'f'				=> $forum_id,
 					'start'			=> $start,
 					'del_marked'	=> $delete_mark,
@@ -671,23 +681,23 @@ class acp_controller
 
 		// Sorting
 		$limit_days = [
-			0 => $this->lang->lang('ALL_ENTRIES'),
-			1 => $this->lang->lang('1_DAY'),
-			7 => $this->lang->lang('7_DAYS'),
-			14 => $this->lang->lang('2_WEEKS'),
-			30 => $this->lang->lang('1_MONTH'),
-			90 => $this->lang->lang('3_MONTHS'),
-			180 => $this->lang->lang('6_MONTHS'),
-			365 => $this->lang->lang('1_YEAR'),
+			0 => $this->language->lang('ALL_ENTRIES'),
+			1 => $this->language->lang('1_DAY'),
+			7 => $this->language->lang('7_DAYS'),
+			14 => $this->language->lang('2_WEEKS'),
+			30 => $this->language->lang('1_MONTH'),
+			90 => $this->language->lang('3_MONTHS'),
+			180 => $this->language->lang('6_MONTHS'),
+			365 => $this->language->lang('1_YEAR'),
 		];
 		$sort_by_text = [
-			'a'  => $this->lang->lang('SORT_ACTION'),
+			'a'  => $this->language->lang('SORT_ACTION'),
 			'ps' => $name,
-			'pn' => $this->lang->lang('APS_POINTS_NEW', $name),
-			'po' => $this->lang->lang('APS_POINTS_OLD', $name),
-			'uu' => $this->lang->lang('SORT_USERNAME'),
-			'ru' => ucfirst($this->lang->lang('FROM')),
-			't'  => $this->lang->lang('SORT_DATE'),
+			'pn' => $this->language->lang('APS_POINTS_NEW', $name),
+			'po' => $this->language->lang('APS_POINTS_OLD', $name),
+			'uu' => $this->language->lang('SORT_USERNAME'),
+			'ru' => ucfirst($this->language->lang('FROM')),
+			't'  => $this->language->lang('SORT_DATE'),
 		];
 		$sort_by_sql = [
 			'a'  => 'l.log_action',
@@ -769,7 +779,7 @@ class acp_controller
 			$key = array_keys($names)[0];
 
 			// The 'expand view' HTML string
-			$expand = '<a class="aps-names-toggle" data-text="' . $this->lang->lang('COLLAPSE_VIEW') . '">' . $this->lang->lang('EXPAND_VIEW') . '</a>';
+			$expand = '<a class="aps-names-toggle" data-text="' . $this->language->lang('COLLAPSE_VIEW') . '">' . $this->language->lang('EXPAND_VIEW') . '</a>';
 
 			$names[$key]['append'] = $expand;
 		}
@@ -798,12 +808,12 @@ class acp_controller
 
 			if (empty($from) || empty($to))
 			{
-				$errors[] = $this->lang->lang('ACP_APS_POINTS_COPY_EMPTY');
+				$errors[] = $this->language->lang('ACP_APS_POINTS_COPY_EMPTY');
 			}
 
 			if (!check_form_key('aps_points_copy'))
 			{
-				$errors[] = $this->lang->lang('FORM_INVALID');
+				$errors[] = $this->language->lang('FORM_INVALID');
 			}
 
 			if ($errors)
@@ -811,7 +821,7 @@ class acp_controller
 				if ($this->request->is_ajax())
 				{
 					$json_response->send([
-						'MESSAGE_TITLE' => $this->lang->lang('ERROR'),
+						'MESSAGE_TITLE' => $this->language->lang('ERROR'),
 						'MESSAGE_TEXT'  => implode('<br />', $errors),
 					]);
 				}
@@ -827,11 +837,11 @@ class acp_controller
 				$this->log_phpbb->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_ACP_APS_COPIED', time(), [$this->functions->get_name()]);
 
 				$json_response->send([
-					'MESSAGE_TITLE'	=> $this->lang->lang('INFORMATION'),
-					'MESSAGE_TEXT'	=> $this->lang->lang('ACP_APS_POINTS_COPY_SUCCESS', $this->functions->get_name()),
+					'MESSAGE_TITLE'	=> $this->language->lang('INFORMATION'),
+					'MESSAGE_TEXT'	=> $this->language->lang('ACP_APS_POINTS_COPY_SUCCESS', $this->functions->get_name()),
 				]);
 
-				trigger_error($this->lang->lang('ACP_APS_POINTS_COPY_SUCCESS', $this->functions->get_name()) . adm_back_link($this->u_action));
+				trigger_error($this->language->lang('ACP_APS_POINTS_COPY_SUCCESS', $this->functions->get_name()) . adm_back_link($this->u_action));
 			}
 		}
 
@@ -846,7 +856,7 @@ class acp_controller
 		if ($this->request->is_ajax())
 		{
 			$json_response->send([
-				'MESSAGE_TITLE'	=> $this->lang->lang('ACP_APS_POINTS_COPY_TITLE', $this->functions->get_name()),
+				'MESSAGE_TITLE'	=> $this->language->lang('ACP_APS_POINTS_COPY_TITLE', $this->functions->get_name()),
 				'MESSAGE_TEXT'	=> $this->template->assign_display('copy'),
 			]);
 		}
@@ -870,13 +880,13 @@ class acp_controller
 
 			$json_response = new \phpbb\json_response;
 			$json_response->send([
-				'MESSAGE_TITLE'	=> $this->lang->lang('INFORMATION'),
-				'MESSAGE_TEXT'	=> $this->lang->lang('ACP_APS_POINTS_CLEAN_SUCCESS', $this->functions->get_name()),
+				'MESSAGE_TITLE'	=> $this->language->lang('INFORMATION'),
+				'MESSAGE_TEXT'	=> $this->language->lang('ACP_APS_POINTS_CLEAN_SUCCESS', $this->functions->get_name()),
 			]);
 		}
 		else
 		{
-			confirm_box(false, $this->lang->lang('ACP_APS_POINTS_CLEAN_CONFIRM', $this->functions->get_name()), build_hidden_fields([
+			confirm_box(false, $this->language->lang('ACP_APS_POINTS_CLEAN_CONFIRM', $this->functions->get_name()), build_hidden_fields([
 				'action' => 'clean',
 			]));
 		}

@@ -19,10 +19,21 @@
 		<div class="panel">
 			<div class="inner">
 				<fieldset>
-					<dl>
-						<dt><label>{{ lang('USERNAME') ~ lang('COLON') }}</label></dt>
-						<dd>{{ APS_USERNAME }}</dd>
-					</dl>
+					{% if APS_USERNAME %}
+						<dl>
+							<dt><strong>{{ lang('USERNAME') ~ lang('COLON') }}</strong></dt>
+							<dd>{{ APS_USERNAME }}</dd>
+						</dl>
+						<dl>
+							<dt><strong>{{ aps_name() ~ lang('COLON') }}</strong></dt>
+							<dd>{{ APS_POINTS }}</dd>
+						</dl>
+					{% else %}
+						<dl>
+							<dt><strong>{{ lang('GROUP') ~ lang('COLON') }}</strong></dt>
+							<dd>{{ APS_GROUP }}</dd>
+						</dl>
+					{% endif %}
 					<dl>
 						<dt>
 							<label for="action">
@@ -56,13 +67,14 @@
 				</fieldset>
 			</div>
 		</div>
-	{% endif %}
 
-	<fieldset class="submit-buttons">
-		<input class="button1" id="submit" name="submit" type="submit" value="{{ lang('SUBMIT') }}" />
-		<input class="button2" id="reset" name="reset" type="reset" value="{{ lang('RESET') }}" />&nbsp;
-		{{ S_FORM_TOKEN }}
-	</fieldset>
+		<fieldset class="submit-buttons">
+			<input class="button1" id="submit" name="submit" type="submit" value="{{ lang('SUBMIT') }}" />
+			&nbsp;
+			<input class="button2" id="reset" name="reset" type="reset" value="{{ lang('RESET') }}" />
+			{{ S_FORM_TOKEN }}
+		</fieldset>
+	{% endif %}
 </form>
 
 {% include 'mcp_footer.html' %}

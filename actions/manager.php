@@ -15,7 +15,7 @@ namespace phpbbstudio\aps\actions;
  */
 class manager
 {
-	/** @var array Array of action types from the service collection */
+	/** @var \phpbb\di\service_collection Array of action types from the service collection */
 	protected $actions;
 
 	/** @var \phpbbstudio\aps\points\distributor */
@@ -51,7 +51,7 @@ class manager
 	/**
 	 * Constructor.
 	 *
-	 * @param array									$actions		Array of action types from the service collection
+	 * @param \phpbb\di\service_collection			$actions		Array of action types from the service collection
 	 * @param \phpbbstudio\aps\points\distributor	$distributor	APS Distributor object
 	 * @param \phpbbstudio\aps\core\functions		$functions		APS Core functions
 	 * @param \phpbb\language\language				$lang			Language object
@@ -120,19 +120,19 @@ class manager
 	/**
 	 * Clean an array from a listener, turns an object into an array.
 	 *
-	 * @param $event
-	 * @return mixed
+	 * @param  mixed	$event	The event to clean
+	 * @return array			The event data
 	 * @access public
 	 */
 	public function clean_event($event)
 	{
 		if ($event instanceof \phpbb\event\data)
 		{
-			return $event->get_data();
+			return (array) $event->get_data();
 		}
 		else
 		{
-			return $event;
+			return (array) $event;
 		}
 	}
 
@@ -144,7 +144,7 @@ class manager
 	 * @return array			Array of unique integers
 	 * @access public
 	 */
-	public function get_identifiers($array, $key)
+	public function get_identifiers(array $array, $key)
 	{
 		return (array) array_map('intval', array_unique(array_filter(array_column($array, $key))));
 	}
@@ -171,10 +171,10 @@ class manager
 	 * 	to require the amount of points for the users. If it's left empty it will assume that the triggered action
 	 * 	is a "global" action, which means the forum_id = 0.
 	 *
-	 * @param  string	$action			The action to trigger
-	 * @param  array	$user_ids		The user identifiers that can receive points
-	 * @param  array	$event			The event data
-	 * @param  int		$forum_ids		The forum identifiers (array or single value)
+	 * @param  string		$action			The action to trigger
+	 * @param  array|int	$user_ids		The user identifiers that can receive points
+	 * @param  array		$event			The event data
+	 * @param  array|int	$forum_ids		The forum identifiers (array or single value)
 	 * @return void
 	 * @access public
 	 */
@@ -293,7 +293,7 @@ class manager
 	 * 	The array of users that are able to receive points, with a base array to make sure all keys are set,
 	 * 	aswell as all the users' current points.
 	 *
-	 * @param  array	$user_ids	The user identifiers
+	 * @param  array|int	$user_ids	The user identifiers
 	 * @return void
 	 * @access protected
 	 */
@@ -340,7 +340,7 @@ class manager
 	 * @return void
 	 * @access protected
 	 */
-	protected function calculate($data)
+	protected function calculate(array $data)
 	{
 		/** @var \phpbbstudio\aps\actions\type\action $type */
 		foreach ($this->types as $type)
@@ -454,7 +454,7 @@ class manager
 	 * @return void
 	 * @access protected
 	 */
-	protected function set_logs($user_id, $post_id, $row)
+	protected function set_logs($user_id, $post_id, array $row)
 	{
 		// Get the logs in a local variable for easier coding
 		$logs = $this->users[$user_id]['logs'];
@@ -510,7 +510,7 @@ class manager
 	 * @return string				The main log entry string
 	 * @access protected
 	 */
-	protected function main_log($logs)
+	protected function main_log(array $logs)
 	{
 		reset($logs);
 		$action = key($logs);
@@ -532,7 +532,7 @@ class manager
 	 * @return void					Passed by reference
 	 * @access protected
 	 */
-	protected function merge_logs(&$logs, $array)
+	protected function merge_logs(array &$logs, array $array)
 	{
 		// Merge the array in to the existing entries
 		$logs = array_merge_recursive($logs, $array);
@@ -572,8 +572,8 @@ class manager
 	 * 'total'
 	 * 	The total points gained for this user, summing up all points per action type.
 	 *
-	 * @param  array	$points		The user's current points
-	 * @return array
+	 * @param  double	$points		The user's current points
+	 * @return array				The user's base array
 	 * @access protected
 	 */
 	protected function user_array($points)

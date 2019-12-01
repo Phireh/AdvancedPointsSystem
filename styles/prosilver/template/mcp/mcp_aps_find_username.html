@@ -1,14 +1,42 @@
+{% INCLUDECSS '@phpbbstudio_aps/aps_display.css' %}
+
 <div class="panel">
 	<div class="inner">
-		<fieldset>
-			{% if S_ERROR %}
+		{% if S_ERROR %}
+			<fieldset>
 				<p class="error">{{ ERROR_MSG }}</p>
-			{% endif %}
+			</fieldset>
+		{% endif %}
+
+		<fieldset>
 			<dl>
 				<dt><label for="username">{{ lang('SELECT_USER') ~ lang('COLON') }}</label></dt>
-				<dd><input name="username" id="username" type="text" class="inputbox" value="{{ APS_USERNAME }}" /></dd>
+				<dd><input class="inputbox" id="username" name="username" type="text" value="{{ APS_USERNAME }}" /></dd>
 				<dd>[ <a href="{{ U_APS_SEARCH }}" onclick="find_username(this.href); return false;">{{ lang('FIND_USERNAME') }}</a> ]</dd>
 			</dl>
 		</fieldset>
+
+		<fieldset class="submit-buttons">
+			<input class="button1" id="submit_user" name="submit_user" type="submit" value="{{ lang('SUBMIT') }}" />
+			&nbsp;
+			<input class="button2" id="reset_user" type="reset" value="{{ lang('RESET') }}" />
+		</fieldset>
+
+		<hr class="aps-mar-top aps-mar-bot">
+
+		<fieldset>
+			<dl>
+				<dt><label for="group_id">{{ lang('SELECT_GROUP') ~ lang('COLON') }}</label></dt>
+				<dd><select class="inputbox" id="group_id" name="group_id">{{ APS_GROUPS }}</select></dd>
+			</dl>
+		</fieldset>
+
+		<fieldset class="submit-buttons">
+			<input class="button1" id="submit_group" name="submit_group" type="submit" value="{{ lang('SUBMIT') }}" />
+			&nbsp;
+			<input class="button2" id="reset_group" type="reset" value="{{ lang('RESET') }}" />
+		</fieldset>
+
+		{{ S_FORM_TOKEN }}
 	</div>
 </div>

@@ -13,10 +13,58 @@ namespace phpbbstudio\aps\event;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * phpBB Studio - Advanced Points System Event listener.
+ * phpBB Studio - Advanced Points System Event listener: Check.
  */
 class check implements EventSubscriberInterface
 {
+	/** @var \phpbbstudio\aps\core\functions */
+	protected $functions;
+
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/** @var \phpbb\template\template */
+	protected $template;
+
+	/** @var \phpbb\user */
+	protected $user;
+
+	/** @var \phpbbstudio\aps\points\valuator */
+	protected $valuator;
+
+	/** @var double|false The minimum point value */
+	protected $min;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param  \phpbb\config\config					$config			Configuration object
+	 * @param  \phpbbstudio\aps\core\functions		$functions		APS Core functions
+	 * @param  \phpbb\language\language				$language		Language object
+	 * @param  \phpbb\template\template				$template		Template object
+	 * @param  \phpbb\user							$user			User object
+	 * @param  \phpbbstudio\aps\points\valuator		$valuator		APS Valuator object
+	 * @return void
+	 * @access public
+	 */
+	public function __construct(
+		\phpbb\config\config $config,
+		\phpbbstudio\aps\core\functions $functions,
+		\phpbb\language\language $language,
+		\phpbb\template\template $template,
+		\phpbb\user $user,
+		\phpbbstudio\aps\points\valuator $valuator
+	)
+	{
+		$this->functions	= $functions;
+		$this->language		= $language;
+		$this->template		= $template;
+		$this->user			= $user;
+		$this->valuator		= $valuator;
+
+		$this->min = $config['aps_points_min'] !== '' ? (double) $config['aps_points_min'] : false;
+	}
+
 	/**
 	 * Assign functions defined in this class to event listeners in the core.
 	 *
@@ -34,44 +82,16 @@ class check implements EventSubscriberInterface
 		];
 	}
 
-	protected $functions;
-
-	protected $lang;
-
-	protected $template;
-
-	protected $user;
-
-	protected $valuator;
-
-	protected $min;
-
 	/**
-	 * Constructor.
+	 * Check the action: "Bump".
 	 *
-	 * @param  \phpbb\config\config				$config		Configuration object
-	 * @param  \phpbbstudio\aps\core\functions	$functions	APS Core functions
-	 * @param  \phpbb\language\language			$lang		Language object
-	 * @param  \phpbb\template\template			$template	Template object
-	 * @param  \phpbb\user						$user		User object
-	 * @param  \phpbbstudio\aps\points\valuator	$valuator	APS Valuator object
+	 * @param  \phpbb\event\data	$event		The event object
 	 * @return void
 	 * @access public
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbbstudio\aps\core\functions $functions, \phpbb\language\language $lang, \phpbb\template\template $template, \phpbb\user $user, \phpbbstudio\aps\points\valuator $valuator)
+	public function check_bump(\phpbb\event\data $event)
 	{
-		$this->lang			= $lang;
-		$this->functions	= $functions;
-		$this->template		= $template;
-		$this->user			= $user;
-		$this->valuator		= $valuator;
-
-		$this->min = $config['aps_points_min'] !== '' ? $config['aps_points_min'] : false;
-	}
-
-	public function check_bump($event)
-	{
-		if ($this->min)
+		if ($this->min === false)
 		{
 			return;
 		}
@@ -86,7 +106,7 @@ class check implements EventSubscriberInterface
 		$value = $this->get_value('aps_bump', $event['forum_id']);
 
 		// Check if the value is negative
-		if (!$this->is_negative($value))
+		if ($value >= 0)
 		{
 			return;
 		}
@@ -97,9 +117,16 @@ class check implements EventSubscriberInterface
 		}
 	}
 
-	public function check_delete($event)
+	/**
+	 * Check the action: "Delete".
+	 *
+	 * @param  \phpbb\event\data	$event		The event object
+	 * @return void
+	 * @access public
+	 */
+	public function check_delete(\phpbb\event\data $event)
 	{
-		if (!$this->min)
+		if ($this->min === false)
 		{
 			return;
 		}
@@ -118,16 +145,23 @@ class check implements EventSubscriberInterface
 			if ($value = $this->check_value($field, $event['forum_id']))
 			{
 				$event['error'] = array_merge($event['error'], [
-					$this->lang->lang('APS_POINTS_TOO_LOW', $this->functions->get_name()) . '<br>' .
-					$this->lang->lang('APS_POINTS_ACTION_COST', $this->functions->display_points($value))
+					$this->language->lang('APS_POINTS_TOO_LOW', $this->functions->get_name()) . '<br>' .
+					$this->language->lang('APS_POINTS_ACTION_COST', $this->functions->display_points($value))
 				]);
 			}
 		}
 	}
 
-	public function check_post($event)
+	/**
+	 * Check the action: "Post" and "Topic".
+	 *
+	 * @param  \phpbb\event\data	$event		The event object
+	 * @return void
+	 * @access public
+	 */
+	public function check_post(\phpbb\event\data $event)
 	{
-		if (!$this->min)
+		if ($this->min === false)
 		{
 			return;
 		}
@@ -139,9 +173,12 @@ class check implements EventSubscriberInterface
 			break;
 
 			case 'post':
+				$field = 'aps_topic_base';
+			break;
+
 			case 'reply':
 			case 'quote':
-				$field = $event['mode'] === 'post' ? 'aps_topic_base' : 'aps_post_base';
+				$field = 'aps_post_base';
 			break;
 
 			case 'edit':
@@ -160,15 +197,22 @@ class check implements EventSubscriberInterface
 		if ($value = $this->check_value($field, $event['forum_id']))
 		{
 			$event['error'] = array_merge($event['error'], [
-				$this->lang->lang('APS_POINTS_TOO_LOW', $this->functions->get_name()) . '<br>' .
-				$this->lang->lang('APS_POINTS_ACTION_COST', $this->functions->display_points($value))
+				$this->language->lang('APS_POINTS_TOO_LOW', $this->functions->get_name()) . '<br>' .
+				$this->language->lang('APS_POINTS_ACTION_COST', $this->functions->display_points($value))
 			]);
 		}
 	}
 
-	public function check_vote($event)
+	/**
+	 * Check the action: "Vote".
+	 *
+	 * @param  \phpbb\event\data	$event		The event object
+	 * @return void
+	 * @access public
+	 */
+	public function check_vote(\phpbb\event\data $event)
 	{
-		if (!$this->min)
+		if ($this->min === false)
 		{
 			return;
 		}
@@ -179,13 +223,31 @@ class check implements EventSubscriberInterface
 		}
 	}
 
+	/**
+	 * Verify the user has enough points to perform an action.
+	 *
+	 * @param  int		$field			The points field
+	 * @param  int		$forum_id		The forum identifier
+	 * @return double|false				The points value
+	 * @access protected
+	 */
 	protected function check_value($field, $forum_id)
 	{
 		$value = $this->get_value($field, $forum_id);
 
-		return ($this->is_negative($value) && $this->below_min($value)) ? $value : false;
+		$check = $value < 0 && $this->below_min($value) ? $value : false;
+
+		return $check;
 	}
 
+	/**
+	 * Get the base value for a points action.
+	 *
+	 * @param  int		$field			The points field
+	 * @param  int		$forum_id		The forum identifier
+	 * @return double					The points value
+	 * @access protected
+	 */
 	protected function get_value($field, $forum_id)
 	{
 		$fields = [0 => [$field]];
@@ -197,13 +259,17 @@ class check implements EventSubscriberInterface
 		return (double) $value;
 	}
 
-	protected function is_negative($value)
-	{
-		return (bool) $value < 0;
-	}
-
+	/**
+	 * Check whether or not the value is below the points minimum.
+	 *
+	 * @param  double	$value			The points value
+	 * @return bool						Whether or not the value is below the minimum
+	 * @access protected
+	 */
 	protected function below_min($value)
 	{
-		return (bool) $this->user->data['user_points'] + $value < $this->min;
+		$points = $this->functions->equate_points($this->user->data['user_points'], $value);
+
+		return (bool) ($points < $this->min);
 	}
 }

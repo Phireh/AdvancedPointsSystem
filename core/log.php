@@ -28,7 +28,7 @@ class log
 	protected $functions;
 
 	/** @var \phpbb\language\language */
-	protected $lang;
+	protected $language;
 
 	/** @var \phpbbstudio\aps\core\language */
 	protected $lang_aps;
@@ -45,7 +45,7 @@ class log
 	/** @var string phpBB admin path */
 	protected $admin_path;
 
-	/** @var string PHP file extension */
+	/** @var string php file extension */
 	protected $php_ext;
 
 	/** @var bool Whether called from the ACP or not */
@@ -64,13 +64,13 @@ class log
 	 * @param  \phpbb\config\config					$config			Configuration object
 	 * @param  \phpbb\db\driver\driver_interface	$db				Database object
 	 * @param  \phpbbstudio\aps\core\functions		$functions		APS Core functions
-	 * @param  \phpbb\language\language				$lang			phpBB Language object
+	 * @param  \phpbb\language\language				$language		phpBB Language object
 	 * @param  \phpbbstudio\aps\core\language		$lang_aps		APS Language object
 	 * @param  \phpbb\user							$user			User object
 	 * @param  string								$table			APS Logs table
 	 * @param  string								$root_path		phpBB root path
 	 * @param  string								$admin_path		phpBB relative admin path
-	 * @param  string								$php_ext		PHP File extension
+	 * @param  string								$php_ext		php File extension
 	 * @return void
 	 * @access public
 	 */
@@ -79,7 +79,7 @@ class log
 		\phpbb\config\config $config,
 		\phpbb\db\driver\driver_interface $db,
 		functions $functions,
-		\phpbb\language\language $lang,
+		\phpbb\language\language $language,
 		language $lang_aps,
 		\phpbb\user $user,
 		$table,
@@ -92,7 +92,7 @@ class log
 		$this->config		= $config;
 		$this->db			= $db;
 		$this->functions	= $functions;
-		$this->lang			= $lang;
+		$this->language		= $language;
 		$this->lang_aps		= $lang_aps;
 		$this->user			= $user;
 		$this->table		= $table;
@@ -161,7 +161,7 @@ class log
 	 * @return bool|int				False on error, new log entry identifier otherwise
 	 * @access public
 	 */
-	public function add($data, $time = 0)
+	public function add(array $data, $time = 0)
 	{
 		// We need to have at least the log action, points gained/lost and either the old or new user points.
 		if ($this->check_row($data))
@@ -185,7 +185,7 @@ class log
 	 * @return bool
 	 * @access public
 	 */
-	public function add_multi($data, $time = 0)
+	public function add_multi(array $data, $time = 0)
 	{
 		$logs = [];
 
@@ -212,7 +212,7 @@ class log
 	 * @return bool					Whether this log row is eligible or not
 	 * @access public
 	 */
-	public function check_row($row)
+	public function check_row(array $row)
 	{
 		return (bool) (empty($row['action']) || in_array($row['points_sum'], [0, 0.0, 0.00]) || (!isset($row['points_old']) && !isset($row['points_new'])));
 	}
@@ -225,7 +225,7 @@ class log
 	 * @return array				The prepared log row
 	 * @access public
 	 */
-	public function prepare_row($row, $time)
+	public function prepare_row(array $row, $time)
 	{
 		return [
 			'log_action'	=> $row['action'],
@@ -251,7 +251,7 @@ class log
 	 * @return void
 	 * @access public
 	 */
-	public function delete($conditions)
+	public function delete(array $conditions)
 	{
 		// Need an "empty" sql where to begin with
 		$sql_where = '';
@@ -293,7 +293,7 @@ class log
 	 * @return array					The array of point values indexed per post identifier
 	 * @access public
 	 */
-	public function get_values($user_id, $post_ids, $approved = true)
+	public function get_values($user_id, array $post_ids, $approved = true)
 	{
 		$points = [];
 
@@ -320,7 +320,7 @@ class log
 	 * @return void
 	 * @access public
 	 */
-	public function approve($user_id, $post_ids)
+	public function approve($user_id, array $post_ids)
 	{
 		$sql = 'UPDATE ' . $this->table . '
 				SET log_approved = 1
@@ -491,11 +491,11 @@ class log
 	/**
 	 * Generates a sql condition for the specified keywords
 	 *
-	 * @param	string	$keywords			The keywords the user specified to search for
-	 * @param	string	$table_alias		The alias of the logs' table ('l.' by default)
-	 * @param	string	$statement_operator	The operator used to prefix the statement ('AND' by default)
-	 *
-	 * @return	string						Returns the SQL condition searching for the keywords
+	 * @param  string	$keywords			The keywords the user specified to search for
+	 * @param  string	$table_alias		The alias of the logs' table ('l.' by default)
+	 * @param  string	$statement_operator	The operator used to prefix the statement ('AND' by default)
+	 * @return string						Returns the SQL condition searching for the keywords
+	 * @access protected
 	 */
 	protected function generate_sql_keyword($keywords, $table_alias = 'l.', $statement_operator = 'AND')
 	{
@@ -521,7 +521,7 @@ class log
 
 			$operations = [];
 
-			foreach ($this->lang->get_lang_array() as $key => $value)
+			foreach ($this->language->get_lang_array() as $key => $value)
 			{
 				if (substr($key, 0, 4) == 'APS_')
 				{

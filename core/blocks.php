@@ -37,7 +37,7 @@ class blocks
 	protected $helper;
 
 	/** @var \phpbb\language\language */
-	protected $lang;
+	protected $language;
 
 	/** @var \phpbbstudio\aps\core\log */
 	protected $log;
@@ -57,7 +57,7 @@ class blocks
 	/** @var string phpBB root path */
 	protected $root_path;
 
-	/** @var string PHP File extension */
+	/** @var string php File extension */
 	protected $php_ext;
 
 	/** @var string APS Logs table */
@@ -76,14 +76,14 @@ class blocks
 	 * @param  \phpbbstudio\aps\core\functions		$functions		APS Core functions
 	 * @param  \phpbb\group\helper					$group_helper	Group helper object
 	 * @param  \phpbb\controller\helper				$helper			Controller helper object
-	 * @param  \phpbb\language\language				$lang			Language object
+	 * @param  \phpbb\language\language				$language		Language object
 	 * @param  \phpbbstudio\aps\core\log			$log			APS Log object
 	 * @param  \phpbb\pagination					$pagination		Pagination object
 	 * @param  \phpbb\request\request				$request		Request object
 	 * @param  \phpbb\template\template				$template		Template object
 	 * @param  \phpbb\user							$user			User object
 	 * @param  string								$root_path		phpBB root path
-	 * @param  string								$php_ext		PHP File extension
+	 * @param  string								$php_ext		php File extension
 	 * @param  string								$table			APS Logs table
 	 * @return void
 	 * @access public
@@ -96,7 +96,7 @@ class blocks
 		functions $functions,
 		\phpbb\group\helper $group_helper,
 		\phpbb\controller\helper $helper,
-		\phpbb\language\language $lang,
+		\phpbb\language\language $language,
 		log $log,
 		\phpbb\pagination $pagination,
 		\phpbb\request\request $request,
@@ -114,12 +114,13 @@ class blocks
 		$this->functions	= $functions;
 		$this->group_helper	= $group_helper;
 		$this->helper		= $helper;
-		$this->lang			= $lang;
+		$this->language		= $language;
 		$this->log			= $log;
 		$this->pagination	= $pagination;
 		$this->request		= $request;
 		$this->template		= $template;
 		$this->user			= $user;
+
 		$this->root_path	= $root_path;
 		$this->php_ext		= $php_ext;
 		$this->table		= $table;
@@ -193,9 +194,9 @@ class blocks
 			// The searched user data
 			'APS_SEARCH_USERNAME'		=> $username,
 			'APS_SEARCH_USER_AVATAR'	=> !empty($user) ? phpbb_get_user_avatar($user) : '',
-			'APS_SEARCH_USER_FULL'		=> !empty($user) ? get_username_string('full', $user['user_id'], $user['username'], $user['user_colour']) : $this->lang->lang('NO_USER'),
+			'APS_SEARCH_USER_FULL'		=> !empty($user) ? get_username_string('full', $user['user_id'], $user['username'], $user['user_colour']) : $this->language->lang('NO_USER'),
 			'APS_SEARCH_USER_POINTS'	=> !empty($user) ? $user['user_points'] : 0.00,
-			'APS_SEARCH_USER_RANK'		=> !empty($user_rank) ? $user_rank : $this->lang->lang('NA'),
+			'APS_SEARCH_USER_RANK'		=> !empty($user_rank) ? $user_rank : $this->language->lang('NA'),
 			'U_APS_SEARCH_USER_ADJUST'	=> !empty($user) ? append_sid("{$this->root_path}mcp.{$this->php_ext}", 'i=-phpbbstudio-aps-mcp-main_module&amp;mode=change&amp;u=' . (int) $user['user_id'], true, $this->user->session_id) : '',
 
 			// Amount of top users to display
@@ -216,7 +217,7 @@ class blocks
 			$this->template->assign_vars([
 				'block'	=> [
 					'ID'			=> $block_id,
-					'TITLE'			=> $action === 'top' ? $this->lang->lang('APS_TOP_USERS') : $this->lang->lang('FIND_USERNAME'),
+					'TITLE'			=> $action === 'top' ? $this->language->lang('APS_TOP_USERS') : $this->language->lang('FIND_USERNAME'),
 					'TEMPLATE'		=> '@phpbbstudio_aps/blocks/points_' . $action . '.html',
 				],
 			]);
@@ -305,23 +306,23 @@ class blocks
 
 		// Sorting
 		$limit_days = [
-			0 => $this->lang->lang('APS_POINTS_ACTIONS_ALL', $this->name),
-			1 => $this->lang->lang('1_DAY'),
-			7 => $this->lang->lang('7_DAYS'),
-			14 => $this->lang->lang('2_WEEKS'),
-			30 => $this->lang->lang('1_MONTH'),
-			90 => $this->lang->lang('3_MONTHS'),
-			180 => $this->lang->lang('6_MONTHS'),
-			365 => $this->lang->lang('1_YEAR'),
+			0 => $this->language->lang('APS_POINTS_ACTIONS_ALL', $this->name),
+			1 => $this->language->lang('1_DAY'),
+			7 => $this->language->lang('7_DAYS'),
+			14 => $this->language->lang('2_WEEKS'),
+			30 => $this->language->lang('1_MONTH'),
+			90 => $this->language->lang('3_MONTHS'),
+			180 => $this->language->lang('6_MONTHS'),
+			365 => $this->language->lang('1_YEAR'),
 		];
 		$sort_by_text = [
-			'a'  => $this->lang->lang('APS_POINTS_ACTION', $this->name),
+			'a'  => $this->language->lang('APS_POINTS_ACTION', $this->name),
 			'ps' => $this->name,
-			'pn' => $this->lang->lang('APS_POINTS_NEW', $this->name),
-			'po' => $this->lang->lang('APS_POINTS_OLD', $this->name),
-			'uu' => $this->lang->lang('SORT_USERNAME'),
-			'ru' => ucfirst($this->lang->lang('FROM')),
-			't'  => $this->lang->lang('APS_POINTS_ACTION_TIME', $this->name),
+			'pn' => $this->language->lang('APS_POINTS_NEW', $this->name),
+			'po' => $this->language->lang('APS_POINTS_OLD', $this->name),
+			'uu' => $this->language->lang('SORT_USERNAME'),
+			'ru' => ucfirst($this->language->lang('FROM')),
+			't'  => $this->language->lang('APS_POINTS_ACTION_TIME', $this->name),
 		];
 		$sort_by_sql = [
 			'a'  => 'l.log_action',
@@ -392,7 +393,7 @@ class blocks
 
 		$this->template->assign_vars([
 			'PAGE_NUMBER'	=> $this->pagination->on_page($total, $limit, $start),
-			'TOTAL_LOGS'	=> $this->lang->lang('APS_POINTS_ACTIONS_TOTAL', $this->name, $total),
+			'TOTAL_LOGS'	=> $this->language->lang('APS_POINTS_ACTIONS_TOTAL', $this->name, $total),
 
 			'APS_ACTIONS_AVATARS'	=> $avatars,
 			'APS_ACTIONS_NO_AVATAR'	=> $this->functions->get_no_avatar(),
@@ -423,7 +424,7 @@ class blocks
 			$this->template->assign_vars([
 				'block'	=> [
 					'ID'			=> $block_id,
-					'TITLE'			=> $this->lang->lang('APS_POINTS_ACTIONS', $this->name),
+					'TITLE'			=> $this->language->lang('APS_POINTS_ACTIONS', $this->name),
 					'TEMPLATE'		=> '@phpbbstudio_aps/blocks/points_actions.html',
 				],
 			]);
@@ -507,7 +508,7 @@ class blocks
 
 		if (isset($rowset[0]))
 		{
-			$rowset[0]['NAME'] = $this->lang->lang('APS_POINTS_GLOBAL');
+			$rowset[0]['NAME'] = $this->language->lang('APS_POINTS_GLOBAL');
 		}
 
 		$this->template->assign_block_vars_array('aps_forums', $rowset);
@@ -593,7 +594,7 @@ class blocks
 	 * @param  string	$username	The username
 	 * @param  bool		$full		Whether we want just the identifier or everything
 	 * @return mixed				If $full is true: a user row or false if no user was found
-	 *                 				If $full is false: the user identifier
+	 *              				If $full is false: the user identifier
 	 * @access protected
 	 */
 	protected function find_user($username, $full = true)

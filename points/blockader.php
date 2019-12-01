@@ -19,23 +19,23 @@ class blockader
 	protected $db;
 
 	/** @var string APS Display table */
-	protected $table;
+	protected $blocks_table;
 
-	/** @var int User id used for admin desired blocks */
+	/** @var int User identifier used for admin desired blocks */
 	protected $admin_id = 0;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param  \phpbb\db\driver\driver_interface	$db		Database object
-	 * @param  string								$table	APS Display table
+	 * @param  \phpbb\db\driver\driver_interface	$db				Database object
+	 * @param  string								$blocks_table	APS Display table
 	 * @return void
 	 * @access public
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, $table)
+	public function __construct(\phpbb\db\driver\driver_interface $db, $blocks_table)
 	{
-		$this->db		= $db;
-		$this->table	= $table;
+		$this->db			= $db;
+		$this->blocks_table	= $blocks_table;
 	}
 
 	/**
@@ -58,7 +58,7 @@ class blockader
 	 */
 	public function row($user_id)
 	{
-		$sql = 'SELECT aps_display FROM ' . $this->table . ' WHERE user_id = ' . (int) $user_id;
+		$sql = 'SELECT aps_display FROM ' . $this->blocks_table . ' WHERE user_id = ' . (int) $user_id;
 		$result = $this->db->sql_query_limit($sql, 1);
 		$display = $this->db->sql_fetchfield('aps_display');
 		$this->db->sql_freeresult($result);
@@ -78,17 +78,15 @@ class blockader
 		$rowset = [];
 
 		$sql = 'SELECT user_id, aps_display
-				FROM ' . $this->table . '
+				FROM ' . $this->blocks_table . '
 				WHERE ' . $this->db->sql_in_set('user_id', [$this->admin_id, (int) $user_id]);
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			if ($row['user_id'] == ANONYMOUS)
+			if ($row['user_id'] != ANONYMOUS)
 			{
-				continue;
+				$rowset[(int) $row['user_id']] = (array) json_decode($row['aps_display'], true);
 			}
-
-			$rowset[(int) $row['user_id']] = (array) json_decode($row['aps_display'], true);
 		}
 		$this->db->sql_freeresult($result);
 
@@ -104,7 +102,7 @@ class blockader
 	 * @return bool|int				Bool on update, integer on insert
 	 * @access public
 	 */
-	public function set_blocks($user_id, $blocks, $insert)
+	public function set_blocks($user_id, array $blocks, $insert)
 	{
 		if ($user_id == ANONYMOUS)
 		{
@@ -129,12 +127,12 @@ class blockader
 	 * @return int
 	 * @access public
 	 */
-	public function insert($user_id, $blocks)
+	public function insert($user_id, array $blocks)
 	{
-		$sql = 'INSERT INTO ' . $this->table . ' ' . $this->db->sql_build_array('INSERT', [
-				'user_id'		=> (int) $user_id,
-				'aps_display'	=> json_encode($blocks),
-			]);
+		$sql = 'INSERT INTO ' . $this->blocks_table . ' ' . $this->db->sql_build_array('INSERT', [
+			'user_id'		=> (int) $user_id,
+			'aps_display'	=> json_encode($blocks),
+		]);
 		$this->db->sql_query($sql);
 
 		return (int) $this->db->sql_nextid();
@@ -148,11 +146,11 @@ class blockader
 	 * @return bool
 	 * @access public
 	 */
-	public function update($user_id, $blocks)
+	public function update($user_id, array $blocks)
 	{
-		$sql = 'UPDATE ' . $this->table . ' SET ' . $this->db->sql_build_array('UPDATE', [
-				'aps_display'	=> json_encode($blocks),
-			]) . ' WHERE user_id = ' . (int) $user_id;
+		$sql = 'UPDATE ' . $this->blocks_table . ' SET ' . $this->db->sql_build_array('UPDATE', [
+			'aps_display'	=> json_encode($blocks),
+		]) . ' WHERE user_id = ' . (int) $user_id;
 		$this->db->sql_query($sql);
 
 		return (bool) $this->db->sql_affectedrows();

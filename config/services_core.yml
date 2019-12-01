@@ -41,6 +41,7 @@ services:
             - '@ext.manager'
             - '@language'
             - '@path_helper'
+            - '@request'
             - '@user'
             - '%core.table_prefix%'
 

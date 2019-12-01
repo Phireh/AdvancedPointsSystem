@@ -36,14 +36,19 @@ class acp
 	/**
 	 * Constructor.
 	 *
-	 * @param  \phpbbstudio\aps\core\functions	$functions	APS Core functions
-	 * @param  \phpbb\template\template			$template	Template object
-	 * @param  array							$types		Array of action types from the service collection
-	 * @param  \phpbbstudio\aps\points\valuator	$valuator	APS Valuator object
+	 * @param  \phpbbstudio\aps\core\functions			$functions	APS Core functions
+	 * @param  \phpbb\template\template					$template	Template object
+	 * @param  \phpbbstudio\aps\actions\type\action[]	$types		Array of action types from the service collection
+	 * @param  \phpbbstudio\aps\points\valuator			$valuator	APS Valuator object
 	 * @return void
 	 * @access public
 	 */
-	public function __construct(functions $functions, \phpbb\template\template $template, $types, \phpbbstudio\aps\points\valuator $valuator)
+	public function __construct(
+		functions $functions,
+		\phpbb\template\template $template,
+		$types,
+		\phpbbstudio\aps\points\valuator $valuator
+	)
 	{
 		$this->functions	= $functions;
 		$this->template		= $template;
@@ -164,7 +169,7 @@ class acp
 	 * @return void
 	 * @access public
 	 */
-	public function set_points($points, $forum_id = 0)
+	public function set_points(array $points, $forum_id = 0)
 	{
 		$this->valuator->set_points($points, (int) $forum_id);
 	}
@@ -190,7 +195,7 @@ class acp
 	 * @return void
 	 * @access public
 	 */
-	public function copy_points($from, $to, $points)
+	public function copy_points($from, $to, array $points)
 	{
 		$points = [0 => array_keys($points)];
 		$points = $this->valuator->get_points($points, (int) $from);

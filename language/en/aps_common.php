@@ -22,7 +22,7 @@ if (empty($lang) || !is_array($lang))
  * Some characters you may want to copy&paste: ’ » “ ” …
  */
 $lang = array_merge($lang, [
-	'APS_NOTIFICATION_ADJUSTED'	=> '<strong>Your %1$s were adjusted:</strong> %2$s',
+	'APS_NOTIFICATION_ADJUSTED'	=> '<strong>Your %1$s were adjusted</strong>',
 	'APS_VIEWING_POINTS_PAGE'	=> 'Viewing the %s page',
 
 	'APS_POINTS_TOO_LOW'		=> 'You do not have enough %s to perform this action.',

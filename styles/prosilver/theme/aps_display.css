@@ -566,7 +566,7 @@ a.aps-panel-action {
 	padding-left: 72px;
 }
 
-.aps-collection .aps-collection-item.aps-avatar img {
+.aps-collection .aps-collection-item.aps-avatar .avatar {
 	vertical-align: middle;
 	position: absolute;
 	left: 15px;

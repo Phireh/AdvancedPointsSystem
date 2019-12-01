@@ -19,7 +19,7 @@ class language
 	protected $config;
 
 	/** @var \phpbb\language\language */
-	protected $lang;
+	protected $language;
 
 	/** @var \phpbb\extension\manager */
 	protected $manager;
@@ -27,26 +27,33 @@ class language
 	/** @var \phpbb\user */
 	protected $user;
 
-	/** @var string PHP file extension */
+	/** @var string php file extension */
 	protected $php_ext;
 
 	/**
 	 * Constructor.
 	 *
 	 * @param  \phpbb\config\config		$config		Configuration object
-	 * @param  \phpbb\language\language	$lang		Language object
+	 * @param  \phpbb\language\language	$language	Language object
 	 * @param  \phpbb\extension\manager	$manager	Extension manager object
 	 * @param  \phpbb\user				$user		User object
-	 * @param  string					$php_ext	PHP file extension
+	 * @param  string					$php_ext	php file extension
 	 * @return void
 	 * @access public
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\language\language $lang, \phpbb\extension\manager $manager, \phpbb\user $user, $php_ext)
+	public function __construct(
+		\phpbb\config\config $config,
+		\phpbb\language\language $language,
+		\phpbb\extension\manager $manager,
+		\phpbb\user $user,
+		$php_ext
+	)
 	{
 		$this->config	= $config;
-		$this->lang		= $lang;
+		$this->language	= $language;
 		$this->manager	= $manager;
 		$this->user		= $user;
+
 		$this->php_ext	= $php_ext;
 	}
 
@@ -93,7 +100,7 @@ class language
 		$lang_files = array_merge($english_lang_files, $default_lang_files, $user_lang_files);
 		foreach ($lang_files as $lang_file => $ext_name)
 		{
-			$this->lang->add_lang($lang_file, $ext_name);
+			$this->language->add_lang($lang_file, $ext_name);
 		}
 	}
 }

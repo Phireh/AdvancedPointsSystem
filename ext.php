@@ -24,7 +24,7 @@ class ext extends \phpbb\extension\base
 
 		$lang = $user->lang;
 
-		if (!(phpbb_version_compare(PHPBB_VERSION, '3.2.7', '>=') && phpbb_version_compare(PHPBB_VERSION, '4.0.0@dev', '<')))
+		if (!(phpbb_version_compare(PHPBB_VERSION, '3.2.8', '>=') && phpbb_version_compare(PHPBB_VERSION, '4.0.0@dev', '<')))
 		{
 			/**
 			 * Despite it seems wrong that's the right approach and not an error in coding
@@ -32,7 +32,7 @@ class ext extends \phpbb\extension\base
 			 * "Indirect modification of overloaded property phpbb/user::$lang has no effect"
 			 * Discussed here: https://www.phpbb.com/community/viewtopic.php?p=14724151#p14724151
 			 */
-			$lang['EXTENSION_NOT_ENABLEABLE'] .= '<br>' . $user->lang('APS_PHPBB_VERSION', '3.2.7', '4.0.0@dev');
+			$lang['EXTENSION_NOT_ENABLEABLE'] .= '<br>' . $user->lang('APS_PHPBB_VERSION', '3.2.8', '4.0.0@dev');
 
 			$is_enableable = false;
 		}

@@ -28,6 +28,7 @@ services:
             - '@dispatcher'
             - '@phpbbstudio.aps.distributor'
             - '@phpbbstudio.aps.functions'
+            - '@group_helper'
             - '@language'
             - '@phpbbstudio.aps.log'
             - '@notification_manager'

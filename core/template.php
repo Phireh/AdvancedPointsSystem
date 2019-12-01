@@ -85,7 +85,7 @@ class template extends \Twig_Extension
 			break;
 
 			case 'icon':
-				return $this->functions->get_icon();
+				return $this->functions->get_icon($points);
 			break;
 
 			case 'name';

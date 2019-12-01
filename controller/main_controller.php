@@ -10,6 +10,8 @@
 
 namespace phpbbstudio\aps\controller;
 
+use Symfony\Component\HttpFoundation\Response;
+
 /**
  * phpBB Studio - Advanced Points System main controller.
  */
@@ -34,7 +36,7 @@ class main_controller
 	protected $helper;
 
 	/** @var \phpbb\language\language */
-	protected $lang;
+	protected $language;
 
 	/** @var \phpbb\request\request */
 	protected $request;
@@ -48,7 +50,7 @@ class main_controller
 	/** @var string phpBB root path */
 	protected $root_path;
 
-	/** @var string PHP File extension */
+	/** @var string php File extension */
 	protected $php_ext;
 
 	/** @var string APS Points name */
@@ -75,12 +77,12 @@ class main_controller
 	 * @param  \phpbb\event\dispatcher				$dispatcher		Event dispatcher
 	 * @param  \phpbbstudio\aps\core\functions		$functions		APS Core functions
 	 * @param  \phpbb\controller\helper				$helper			Controller helper object
-	 * @param  \phpbb\language\language				$lang			Language object
+	 * @param  \phpbb\language\language				$language		Language object
 	 * @param  \phpbb\request\request				$request		Request object
 	 * @param  \phpbb\template\template				$template		Template object
 	 * @param  \phpbb\user							$user			User object
 	 * @param  string								$root_path		phpBB root path
-	 * @param  string								$php_ext		PHP File extension
+	 * @param  string								$php_ext		php File extension
 	 * @return void
 	 * @access public
 	 */
@@ -91,7 +93,7 @@ class main_controller
 		\phpbb\event\dispatcher $dispatcher,
 		\phpbbstudio\aps\core\functions $functions,
 		\phpbb\controller\helper $helper,
-		\phpbb\language\language $lang,
+		\phpbb\language\language $language,
 		\phpbb\request\request $request,
 		\phpbb\template\template $template,
 		\phpbb\user $user,
@@ -105,7 +107,7 @@ class main_controller
 		$this->dispatcher	= $dispatcher;
 		$this->functions	= $functions;
 		$this->helper		= $helper;
-		$this->lang			= $lang;
+		$this->language		= $language;
 		$this->request		= $request;
 		$this->template		= $template;
 		$this->user			= $user;
@@ -113,8 +115,6 @@ class main_controller
 		$this->php_ext		= $php_ext;
 
 		$this->name			= $functions->get_name();
-
-		$lang->add_lang('aps_display', 'phpbbstudio/aps');
 	}
 
 	/**
@@ -122,11 +122,13 @@ class main_controller
 	 *
 	 * @param  string	$page		The page slug
 	 * @param  int		$pagination	The page number for pagination
-	 * @return \Symfony\Component\HttpFoundation\Response
+	 * @return Response
 	 * @access public
 	 */
 	public function display($page, $pagination)
 	{
+		$this->language->add_lang('aps_display', 'phpbbstudio/aps');
+
 		$this->page = $page;
 
 		// Load page blocks
@@ -150,8 +152,13 @@ class main_controller
 		// Handle any action
 		$this->handle_action();
 
-		foreach (array_keys($this->admin_blocks) as $slug)
+		foreach ($this->admin_blocks as $slug => $admin_blocks)
 		{
+			if (empty($admin_blocks))
+			{
+				continue;
+			}
+
 			$data = $this->page_blocks[$slug];
 
 			// Only list pages that the user is authorised to see
@@ -225,7 +232,7 @@ class main_controller
 				'U_VIEW_FORUM'	=> $this->helper->route('phpbbstudio_aps_display'),
 			],
 			[
-				'FORUM_NAME'	=> $this->lang->lang('APS_OVERVIEW'),
+				'FORUM_NAME'	=> $this->language->lang('APS_OVERVIEW'),
 				'U_VIEW_FORUM'	=> $this->helper->route('phpbbstudio_aps_display'),
 			],
 		]);
@@ -242,7 +249,7 @@ class main_controller
 	 * @return array				The block template variables
 	 * @access protected
 	 */
-	protected function build_display($block_id, $block)
+	protected function build_display($block_id, array $block)
 	{
 		return [
 			'ID'			=> $block_id,
@@ -261,7 +268,7 @@ class main_controller
 	 * @return string				The block template list item
 	 * @access protected
 	 */
-	protected function build_list($block_id, $block)
+	protected function build_list($block_id, array $block)
 	{
 		$u_add = $this->helper->route('phpbbstudio_aps_display', ['page' => $this->page, 'aps_action' => 'add', 'id' => $block_id]);
 
@@ -276,7 +283,7 @@ class main_controller
 	 * @return mixed				The block function declaration
 	 * @access protected
 	 */
-	protected function call_function($block_id, $block)
+	protected function call_function($block_id, array $block)
 	{
 		// Set up function parameters and append the block id
 		$params = !empty($block['params']) ? $block['params'] : [];
@@ -293,16 +300,16 @@ class main_controller
 	/**
 	 * Check if the current user is authorised to see this display page.
 	 *
-	 * @return string|\Symfony\Component\HttpFoundation\Response
+	 * @return string|Response
 	 * @access protected
 	 */
 	protected function check_auth()
 	{
 		if (isset($this->page_blocks[$this->page]['auth']) && !$this->page_blocks[$this->page]['auth'])
 		{
-			$message = $this->lang->lang('NOT_AUTHORISED');
-			$back_link = '<a href="' . $this->helper->route('phpbbstudio_aps_display', ['page' => 'overview']) . '">' . $this->lang->lang('APS_OVERVIEW') . '</a>';
-			$back_msg = $this->lang->lang('RETURN_TO', $back_link);
+			$message = $this->language->lang('NOT_AUTHORISED');
+			$back_link = '<a href="' . $this->helper->route('phpbbstudio_aps_display', ['page' => 'overview']) . '">' . $this->language->lang('APS_OVERVIEW') . '</a>';
+			$back_msg = $this->language->lang('RETURN_TO', $back_link);
 
 			return $this->helper->message($message . '<br /><br />' . $back_msg, [], 'INFORMATION', 401);
 		}
@@ -313,16 +320,16 @@ class main_controller
 	/**
 	 * Check if the current page is available.
 	 *
-	 * @return string|\Symfony\Component\HttpFoundation\Response
+	 * @return string|Response
 	 * @access protected
 	 */
 	protected function check_existance()
 	{
 		if (empty($this->page_blocks[$this->page]))
 		{
-			$message = $this->lang->lang('PAGE_NOT_FOUND');
-			$back_link = '<a href="' . $this->helper->route('phpbbstudio_aps_display', ['page' => 'overview']) . '">' . $this->lang->lang('APS_OVERVIEW') . '</a>';
-			$back_msg = $this->lang->lang('RETURN_TO', $back_link);;
+			$message = $this->language->lang('PAGE_NOT_FOUND');
+			$back_link = '<a href="' . $this->helper->route('phpbbstudio_aps_display', ['page' => 'overview']) . '">' . $this->language->lang('APS_OVERVIEW') . '</a>';
+			$back_msg = $this->language->lang('RETURN_TO', $back_link);;
 
 			return $this->helper->message($message . '<br /><br />' . $back_msg, [], 'INFORMATION', 404);
 		}
@@ -359,8 +366,8 @@ class main_controller
 			$json_response = new \phpbb\json_response;
 			$json_response->send([
 				'success'	=> $response,
-				'APS_TITLE'	=> $this->lang->lang('APS_SUCCESS'),
-				'APS_TEXT'	=> $this->lang->lang('APS_POINTS_BLOCK_' . utf8_strtoupper($action), $this->name),
+				'APS_TITLE'	=> $this->language->lang('APS_SUCCESS'),
+				'APS_TEXT'	=> $this->language->lang('APS_POINTS_BLOCK_' . utf8_strtoupper($action), $this->name),
 			]);
 		}
 
@@ -411,56 +418,56 @@ class main_controller
 	{
 		$page_blocks = [
 			'overview'	=> [
-				'title'		=> $this->lang->lang('APS_OVERVIEW'),
+				'title'		=> $this->language->lang('APS_OVERVIEW'),
 				'blocks'	=> [
 					'points_top'      => [
-						'title'		=> $this->lang->lang('APS_TOP_USERS'),
+						'title'		=> $this->language->lang('APS_TOP_USERS'),
 						'function'	=> [$this->blocks, 'user_top_search'],
 						'template'	=> '@phpbbstudio_aps/blocks/points_top.html',
 					],
 					'points_search'   => [
-						'title'		=> $this->lang->lang('FIND_USERNAME'),
+						'title'		=> $this->language->lang('FIND_USERNAME'),
 						'function'	=> [$this->blocks, 'user_top_search'],
 						'template'	=> '@phpbbstudio_aps/blocks/points_search.html',
 					],
 					'points_settings' => [
-						'title'		=> $this->lang->lang('SETTINGS'),
+						'title'		=> $this->language->lang('SETTINGS'),
 						'template'	=> '@phpbbstudio_aps/blocks/points_settings.html',
 					],
 					'points_random'		=> [
-						'title'		=> $this->lang->lang('APS_RANDOM_USER'),
+						'title'		=> $this->language->lang('APS_RANDOM_USER'),
 						'function'	=> [$this->blocks, 'user_random'],
 						'template'	=> '@phpbbstudio_aps/blocks/points_random.html',
 					],
 					'points_forums'		=> [
-						'title'		=> $this->lang->lang('APS_POINTS_PER_FORUM', $this->name),
+						'title'		=> $this->language->lang('APS_POINTS_PER_FORUM', $this->name),
 						'function'	=> [$this->blocks, 'charts_forum'],
 						'template'	=> '@phpbbstudio_aps/blocks/points_forums.html',
 					],
 					'points_groups'		=> [
-						'title'		=> $this->lang->lang('APS_POINTS_PER_GROUP', $this->name),
+						'title'		=> $this->language->lang('APS_POINTS_PER_GROUP', $this->name),
 						'function'	=> [$this->blocks, 'charts_group'],
 						'template'	=> '@phpbbstudio_aps/blocks/points_groups.html',
 					],
 					'points_growth'		=> [
-						'title'		=> $this->lang->lang('APS_POINTS_GROWTH', $this->name),
+						'title'		=> $this->language->lang('APS_POINTS_GROWTH', $this->name),
 						'function'	=> [$this->blocks, 'charts_period'],
 						'template'	=> '@phpbbstudio_aps/blocks/points_growth.html',
 					],
 					'points_trade_off'	=> [
-						'title'		=> $this->lang->lang('APS_POINTS_TRADE_OFF', $this->name),
+						'title'		=> $this->language->lang('APS_POINTS_TRADE_OFF', $this->name),
 						'function'	=> [$this->blocks, 'charts_period'],
 						'template'	=> '@phpbbstudio_aps/blocks/points_trade_off.html',
 					],
 				],
 			],
 			'actions'	=> [
-				'title'		=> $this->lang->lang('APS_POINTS_ACTIONS', $this->name),
+				'title'		=> $this->language->lang('APS_POINTS_ACTIONS', $this->name),
 				'auth'		=> $this->auth->acl_get('u_aps_view_logs'),
 				'blocks'	=> [
 					'points_actions'	=> [
 						'auth'		=> $this->auth->acl_get('u_aps_view_logs'),
-						'title'		=> $this->lang->lang('APS_POINTS_ACTIONS', $this->name),
+						'title'		=> $this->language->lang('APS_POINTS_ACTIONS', $this->name),
 						'required'	=> true,
 						'function'	=> [$this->blocks, 'display_actions'],
 						'params'	=> ['pagination' => $pagination],
@@ -468,7 +475,7 @@ class main_controller
 					],
 					'points_registration'	=> [
 						'auth'		=> $this->auth->acl_get('u_aps_view_logs'),
-						'title'		=> $this->lang->lang('APS_RECENT_ADJUSTMENTS'),
+						'title'		=> $this->language->lang('APS_RECENT_ADJUSTMENTS'),
 						'function'	=> [$this->blocks, 'recent_adjustments'],
 						'template'	=> '@phpbbstudio_aps/blocks/points_adjustments.html',
 					],
@@ -495,8 +502,8 @@ class main_controller
 	/**
 	 * Add a block to the user desired blocks.
 	 *
-	 * @param  string	$block_id			The block identifier
-	 * @return \phpbb\template\template		The rendered block for display
+	 * @param  string	$block_id		The block identifier
+	 * @return string					The rendered block for display
 	 * @access protected
 	 */
 	protected function add_block($block_id)
@@ -555,7 +562,7 @@ class main_controller
 	 * Move (order) the user desired blocks.
 	 *
 	 * @return bool|int			Boolean on update or integer on insert.
-	 * @access public
+	 * @access protected
 	 */
 	protected function move_block()
 	{

@@ -13,10 +13,46 @@ namespace phpbbstudio\aps\event;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * phpBB Studio - Advanced Points System Event listener.
+ * phpBB Studio - Advanced Points System Event listener: Display.
  */
 class display implements EventSubscriberInterface
 {
+	/** @var \phpbbstudio\aps\core\functions */
+	protected $functions;
+
+	/** @var \phpbb\controller\helper */
+	protected $helper;
+
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/** @var string php File extension */
+	protected $php_ext;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param  \phpbbstudio\aps\core\functions	$functions	APS Core functions
+	 * @param  \phpbb\controller\helper			$helper		Controller helper object
+	 * @param  \phpbb\language\language			$language	Language object
+	 * @param  string							$php_ext	php File extension
+	 * @return void
+	 * @access public
+	 */
+	public function __construct(
+		\phpbbstudio\aps\core\functions $functions,
+		\phpbb\controller\helper $helper,
+		\phpbb\language\language $language,
+		$php_ext
+	)
+	{
+		$this->functions	= $functions;
+		$this->helper		= $helper;
+		$this->language		= $language;
+
+		$this->php_ext		= $php_ext;
+	}
+
 	/**
 	 * Assign functions defined in this class to event listeners in the core.
 	 *
@@ -39,36 +75,6 @@ class display implements EventSubscriberInterface
 		];
 	}
 
-	/** @var \phpbbstudio\aps\core\functions */
-	protected $functions;
-
-	/** @var \phpbb\controller\helper */
-	protected $helper;
-
-	/** @var \phpbb\language\language */
-	protected $lang;
-
-	/** @var string PHP File extension */
-	protected $php_ext;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param  \phpbbstudio\aps\core\functions	$functions	APS Core functions
-	 * @param  \phpbb\controller\helper			$helper		Controller helper object
-	 * @param  \phpbb\language\language			$lang		Language object
-	 * @param  string							$php_ext	PHP File extension
-	 * @return void
-	 * @access public
-	 */
-	public function __construct(\phpbbstudio\aps\core\functions $functions, \phpbb\controller\helper $helper, \phpbb\language\language $lang, $php_ext)
-	{
-		$this->functions	= $functions;
-		$this->helper		= $helper;
-		$this->lang			= $lang;
-		$this->php_ext		= $php_ext;
-	}
-
 	/**
 	 * Load language during user set up.
 	 *
@@ -78,7 +84,7 @@ class display implements EventSubscriberInterface
 	 */
 	public function load_lang()
 	{
-		$this->lang->add_lang('aps_common', 'phpbbstudio/aps');
+		$this->language->add_lang('aps_common', 'phpbbstudio/aps');
 	}
 
 	/**
@@ -89,11 +95,11 @@ class display implements EventSubscriberInterface
 	 * @return void
 	 * @access public
 	 */
-	public function view_online($event)
+	public function view_online(\phpbb\event\data $event)
 	{
 		if ($event['on_page'][1] === 'app' && strrpos($event['row']['session_page'], 'app.' . $this->php_ext . '/points') === 0)
 		{
-			$event['location'] = $this->lang->lang('APS_VIEWING_POINTS_PAGE', $this->functions->get_name());
+			$event['location'] = $this->language->lang('APS_VIEWING_POINTS_PAGE', $this->functions->get_name());
 			$event['location_url'] = $this->helper->route('phpbbstudio_aps_display');
 		}
 	}
@@ -106,7 +112,7 @@ class display implements EventSubscriberInterface
 	 * @return void
 	 * @access public
 	 */
-	public function display_pm($event)
+	public function display_pm(\phpbb\event\data $event)
 	{
 		$event['msg_data'] = array_merge($event['msg_data'], [
 			'AUTHOR_POINTS'	=> $event['user_info']['user_points'],
@@ -121,7 +127,7 @@ class display implements EventSubscriberInterface
 	 * @return void
 	 * @access public
 	 */
-	public function set_post($event)
+	public function set_post(\phpbb\event\data $event)
 	{
 		$event['rowset_data'] = array_merge($event['rowset_data'], [
 			'user_points' => $event['row']['user_points'],
@@ -136,7 +142,7 @@ class display implements EventSubscriberInterface
 	 * @return void
 	 * @access public
 	 */
-	public function cache_post($event)
+	public function cache_post(\phpbb\event\data $event)
 	{
 		$event['user_cache_data'] = array_merge($event['user_cache_data'], [
 			'user_points' => $event['row']['user_points'],
@@ -151,7 +157,7 @@ class display implements EventSubscriberInterface
 	 * @return void
 	 * @access public
 	 */
-	public function display_post($event)
+	public function display_post(\phpbb\event\data $event)
 	{
 		$event['post_row'] = array_merge($event['post_row'], [
 			'POSTER_POINTS' => $event['user_cache'][$event['poster_id']]['user_points'],
@@ -166,7 +172,7 @@ class display implements EventSubscriberInterface
 	 * @return void
 	 * @access public
 	 */
-	public function display_profile($event)
+	public function display_profile(\phpbb\event\data $event)
 	{
 		$event['template_data'] = array_merge($event['template_data'], [
 			'USER_POINTS'	=> $event['data']['user_points'],

@@ -124,7 +124,7 @@ class adjust extends \phpbb\notification\type\base
 	 * @param array $data		The type specific data
 	 * @param array $options	Options for finding users for notification
 	 * 				  ignore_users => array of users and user types that should not receive notifications from this type
-	 *               				  because they've already been notified
+	 *             					  because they've already been notified
 	 * 				  e.g.: array(2 => array(''), 3 => array('', 'email'), ...)
 	 * @return array		Array of user identifiers with their notification method(s)
 	 * @access public
@@ -132,9 +132,14 @@ class adjust extends \phpbb\notification\type\base
 	public function find_users_for_notification($data, $options = [])
 	{
 		// Return an array of users to be notified, storing the user_ids as the array keys
-		return [
-			$data['user_id'] => $this->notification_manager->get_default_methods(),
-		];
+		$users = [];
+
+		foreach ($data['user_ids'] as $user_id)
+		{
+			$users[(int) $user_id] = $this->notification_manager->get_default_methods();
+		}
+		
+		return $users;
 	}
 
 	/**
@@ -171,7 +176,7 @@ class adjust extends \phpbb\notification\type\base
 	 */
 	public function get_title()
 	{
-		return $this->language->lang('APS_NOTIFICATION_ADJUSTED', $this->get_data('name'), $this->get_data('points'));
+		return $this->language->lang('APS_NOTIFICATION_ADJUSTED', $this->get_data('name'));
 	}
 
 	/**
@@ -236,7 +241,6 @@ class adjust extends \phpbb\notification\type\base
 	public function create_insert_array($data, $pre_create_data = [])
 	{
 		$this->set_data('name', $data['name']);
-		$this->set_data('points', $data['points']);
 		$this->set_data('reason', $data['reason']);
 		$this->set_data('moderator', $data['moderator']);
 		$this->set_data('moderator_id', $data['moderator_id']);

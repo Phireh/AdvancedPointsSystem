@@ -13,29 +13,10 @@ namespace phpbbstudio\aps\event;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * phpBB Studio - Advanced Points System Event listener.
+ * phpBB Studio - Advanced Points System Event listener: ACP.
  */
 class acp implements EventSubscriberInterface
 {
-	/**
-	 * Assign functions defined in this class to event listeners in the core.
-	 *
-	 * @static
-	 * @return array
-	 * @access public
-	 */
-	static public function getSubscribedEvents()
-	{
-		return [
-			'core.acp_language_after_delete'			=> 'delete_name',
-
-			'core.acp_users_display_overview'			=> 'display_user',
-
-			'core.acp_manage_forums_display_form'		=> 'display_data',
-			'core.acp_manage_forums_update_data_after'	=> 'request_data',
-		];
-	}
-
 	/** @var \phpbbstudio\aps\core\acp */
 	protected $acp;
 
@@ -52,7 +33,7 @@ class acp implements EventSubscriberInterface
 	protected $helper;
 
 	/** @var \phpbb\language\language */
-	protected $lang;
+	protected $language;
 
 	/** @var \phpbb\log\log */
 	protected $log;
@@ -77,7 +58,7 @@ class acp implements EventSubscriberInterface
 	 * @param  \phpbb\config\config				$config		Configuration object
 	 * @param  \phpbbstudio\aps\core\functions	$functions	APS Core functions
 	 * @param  \phpbb\controller\helper			$helper		Controller helper object
-	 * @param  \phpbb\language\language			$lang		Language object
+	 * @param  \phpbb\language\language			$language	Language object
 	 * @param  \phpbb\log\log					$log		phpBB Log object
 	 * @param  \phpbbstudio\aps\core\log		$log_aps	APS Log object
 	 * @param  \phpbb\request\request			$request	Request object
@@ -86,21 +67,50 @@ class acp implements EventSubscriberInterface
 	 * @return void
 	 * @access public
 	 */
-	public function __construct(\phpbbstudio\aps\core\acp $acp, \phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbbstudio\aps\core\functions $functions, \phpbb\controller\helper $helper, \phpbb\language\language $lang, \phpbb\log\log $log, \phpbbstudio\aps\core\log $log_aps, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
+	public function __construct(
+		\phpbbstudio\aps\core\acp $acp,
+		\phpbb\auth\auth $auth,
+		\phpbb\config\config $config,
+		\phpbbstudio\aps\core\functions $functions,
+		\phpbb\controller\helper $helper,
+		\phpbb\language\language $language,
+		\phpbb\log\log $log,
+		\phpbbstudio\aps\core\log $log_aps,
+		\phpbb\request\request $request,
+		\phpbb\template\template $template,
+		\phpbb\user $user
+	)
 	{
 		$this->acp			= $acp;
 		$this->auth			= $auth;
 		$this->config		= $config;
 		$this->functions	= $functions;
 		$this->helper		= $helper;
-		$this->lang			= $lang;
+		$this->language		= $language;
 		$this->log			= $log;
 		$this->log_aps		= $log_aps;
 		$this->request		= $request;
 		$this->template		= $template;
 		$this->user			= $user;
+	}
 
-		$log_aps->load_lang();
+	/**
+	 * Assign functions defined in this class to event listeners in the core.
+	 *
+	 * @static
+	 * @return array
+	 * @access public
+	 */
+	static public function getSubscribedEvents()
+	{
+		return [
+			'core.acp_language_after_delete'			=> 'delete_name',
+
+			'core.acp_users_display_overview'			=> 'display_user',
+
+			'core.acp_manage_forums_display_form'		=> 'display_data',
+			'core.acp_manage_forums_update_data_after'	=> 'request_data',
+		];
 	}
 
 	/**
@@ -111,7 +121,7 @@ class acp implements EventSubscriberInterface
 	 * @return void
 	 * @access public
 	 */
-	public function delete_name($event)
+	public function delete_name(\phpbb\event\data $event)
 	{
 		$this->config->delete('aps_points_name_' . $event['lang_iso'], true);
 	}
@@ -124,7 +134,7 @@ class acp implements EventSubscriberInterface
 	 * @return void
 	 * @access public
 	 */
-	public function display_user($event)
+	public function display_user(\phpbb\event\data $event)
 	{
 		$this->template->assign_var('APS_POINTS', $event['user_row']['user_points']);
 	}
@@ -137,8 +147,10 @@ class acp implements EventSubscriberInterface
 	 * @return void
 	 * @access public
 	 */
-	public function display_data($event)
+	public function display_data(\phpbb\event\data $event)
 	{
+		$this->log_aps->load_lang();
+
 		// Only display a points list if the administrator is authorised to edit the points
 		if ($s_auth = $this->auth->acl_get('a_aps_points'))
 		{
@@ -163,8 +175,8 @@ class acp implements EventSubscriberInterface
 						if (empty($copy))
 						{
 							$json_response->send([
-								'MESSAGE_TITLE'	=> $this->lang->lang('ERROR'),
-								'MESSAGE_TEXT'	=> $this->lang->lang('ACP_APS_POINTS_COPY_EMPTY_FROM'),
+								'MESSAGE_TITLE'	=> $this->language->lang('ERROR'),
+								'MESSAGE_TEXT'	=> $this->language->lang('ACP_APS_POINTS_COPY_EMPTY_FROM'),
 							]);
 						}
 
@@ -174,8 +186,8 @@ class acp implements EventSubscriberInterface
 						$this->acp->copy_points($copy, $forum_id, $fields);
 
 						$json_response->send([
-							'MESSAGE_TITLE'	=> $this->lang->lang('INFORMATION'),
-							'MESSAGE_TEXT'	=> $this->lang->lang('ACP_APS_POINTS_COPY_SUCCESS', $this->functions->get_name()),
+							'MESSAGE_TITLE'	=> $this->language->lang('INFORMATION'),
+							'MESSAGE_TEXT'	=> $this->language->lang('ACP_APS_POINTS_COPY_SUCCESS', $this->functions->get_name()),
 							'APS_VALUES'	=> $this->acp->assign_values($forum_id),
 						]);
 					break;
@@ -186,13 +198,13 @@ class acp implements EventSubscriberInterface
 							$this->acp->delete_points($forum_id);
 
 							$json_response->send([
-								'MESSAGE_TITLE'	=> $this->lang->lang('INFORMATION'),
-								'MESSAGE_TEXT'	=> $this->lang->lang('ACP_APS_POINTS_RESET_SUCCESS', $this->functions->get_name()),
+								'MESSAGE_TITLE'	=> $this->language->lang('INFORMATION'),
+								'MESSAGE_TEXT'	=> $this->language->lang('ACP_APS_POINTS_RESET_SUCCESS', $this->functions->get_name()),
 							]);
 						}
 						else
 						{
-							confirm_box(false, $this->lang->lang('ACP_APS_POINTS_RESET_CONFIRM', $this->functions->get_name()), build_hidden_fields([
+							confirm_box(false, $this->language->lang('ACP_APS_POINTS_RESET_CONFIRM', $this->functions->get_name()), build_hidden_fields([
 								'aps_action'	=> $action,
 								'forum_id'		=> $forum_id,
 							]));
@@ -216,8 +228,10 @@ class acp implements EventSubscriberInterface
 	 * @return void
 	 * @access public
 	 */
-	public function request_data($event)
+	public function request_data(\phpbb\event\data $event)
 	{
+		$this->log_aps->load_lang();
+
 		// Only set the points when the administrator is authorised to edit the points
 		if (!$this->auth->acl_get('a_aps_points'))
 		{

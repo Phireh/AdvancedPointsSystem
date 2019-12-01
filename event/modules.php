@@ -13,10 +13,30 @@ namespace phpbbstudio\aps\event;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * phpBB Studio - Advanced Points System Event listener.
+ * phpBB Studio - Advanced Points System Event listener: Modules.
  */
 class modules implements EventSubscriberInterface
 {
+	/** @var \phpbbstudio\aps\core\functions */
+	protected $functions;
+
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param  \phpbbstudio\aps\core\functions	$functions	APS Core functions
+	 * @param  \phpbb\language\language			$language	Language object
+	 * @return void
+	 * @access public
+	 */
+	public function __construct(\phpbbstudio\aps\core\functions $functions, \phpbb\language\language $language)
+	{
+		$this->functions	= $functions;
+		$this->language		= $language;
+	}
+
 	/**
 	 * Assign functions defined in this class to event listeners in the core.
 	 *
@@ -31,26 +51,6 @@ class modules implements EventSubscriberInterface
 		];
 	}
 
-	/** @var \phpbbstudio\aps\core\functions */
-	protected $functions;
-
-	/** @var \phpbb\language\language */
-	protected $lang;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param  \phpbbstudio\aps\core\functions	$functions	APS Core functions
-	 * @param  \phpbb\language\language			$lang		Language object
-	 * @return void
-	 * @access public
-	 */
-	public function __construct(\phpbbstudio\aps\core\functions $functions, \phpbb\language\language $lang)
-	{
-		$this->functions	= $functions;
-		$this->lang			= $lang;
-	}
-
 	/**
 	 * Localise the APS module titles.
 	 *
@@ -59,7 +59,7 @@ class modules implements EventSubscriberInterface
 	 * @return void
 	 * @access public
 	 */
-	public function module_names($event)
+	public function module_names(\phpbb\event\data $event)
 	{
 		$module = $event['module_row'];
 
@@ -70,7 +70,7 @@ class modules implements EventSubscriberInterface
 			case 'ACP_APS_MODE_POINTS':
 			case 'MCP_APS_POINTS':
 			case 'UCP_APS_POINTS':
-				$module['lang'] = $this->lang->lang($langname, ucfirst($this->functions->get_name()));
+				$module['lang'] = $this->language->lang($langname, ucfirst($this->functions->get_name()));
 			break;
 
 			default:

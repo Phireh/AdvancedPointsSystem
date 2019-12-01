@@ -1,5 +1,17 @@
 # phpBB Studio - Advanced Points System
 
+#### v1.0.4-beta
+- Major code clean up
+- Bumped phpBB version requirement to 3.2.8
+- Fixed MCP "Front" missing log language strings
+- Fixed ACP "Display" missing language strings
+- Fixed ACP setting for "icon position" not taking affect
+- Added radio CSS to admin
+- Added changing user points for an entire group
+- Added the possibility to use an image as icon
+- Added to automatically hide display categories without blocks
+- Added version checker
+
 #### v1.0.3-beta
 - Fixed PHP event DocBlocks versions
 - Added PHP event for points distribution

@@ -1,5 +1,15 @@
-.aps-form *, .aps-form *:before, .aps-form *:after {
+.aps-form *,
+.aps-form *:before,
+.aps-form *:after {
 	box-sizing: border-box;
+}
+
+.aps-radio { display: none; }
+
+.aps-radio:checked + .aps-button-blue {
+	background: #12a3eb;
+	border-color: #12a3eb;
+	color: #ffffff;
 }
 
 /* Fix for double borders due to border-box */

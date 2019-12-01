@@ -10,6 +10,8 @@
 
 namespace phpbbstudio\aps\acp;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 /**
  * phpBB Studio - Advanced Points System ACP module.
  */
@@ -24,25 +26,29 @@ class main_module
 	/** @var string Custom form action */
 	public $u_action;
 
+	/** @var ContainerInterface */
+	protected $container;
+
 	/** @var \phpbb\language\language */
-	protected $lang;
+	protected $language;
 
 	public function main($id, $mode)
 	{
-		/** @var \Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container */
+		/** @var ContainerInterface $phpbb_container */
 		global $phpbb_container;
 
+		$this->container = $phpbb_container;
+		$this->language = $this->container->get('language');
+
 		/** @var \phpbbstudio\aps\controller\acp_controller $controller */
-		$controller = $phpbb_container->get('phpbbstudio.aps.controller.acp');
+		$controller = $this->container->get('phpbbstudio.aps.controller.acp');
 
 		/** @var \phpbbstudio\aps\core\functions $functions */
-		$functions = $phpbb_container->get('phpbbstudio.aps.functions');
-
-		$this->lang = $phpbb_container->get('language');
+		$functions = $this->container->get('phpbbstudio.aps.functions');
 
 		// Set the page title and template
 		$this->tpl_name = 'aps_' . $mode;
-		$this->page_title = $this->lang->lang('ACP_APS_POINTS') . ' &bull; ' . $this->lang->lang('ACP_APS_MODE_' . utf8_strtoupper($mode), $functions->get_name());
+		$this->page_title = $this->language->lang('ACP_APS_POINTS') . ' &bull; ' . $this->language->lang('ACP_APS_MODE_' . utf8_strtoupper($mode), $functions->get_name());
 
 		// Make the custom form action available in the controller and handle the mode
 		$controller->set_page_url($this->u_action)->{$mode}();
@@ -57,7 +63,7 @@ class main_module
 	 */
 	public function set_action($action)
 	{
-		return '<label><a class="aps-button-green" href="' . $this->u_action . '&action='.  $action . '" data-ajax="true">' . $this->lang->lang('RUN') . '</a></label>';
+		return '<label><a class="aps-button-green" href="' . $this->u_action . '&action='.  $action . '" data-ajax="true">' . $this->language->lang('RUN') . '</a></label>';
 	}
 
 	/**
@@ -85,7 +91,42 @@ class main_module
 	}
 
 	/**
-	 * Build configuration template for the points icon.
+	 * Build configuration template for the points icon image.
+	 *
+	 * @param  string	$value		The config value
+	 * @param  string	$key		The config key
+	 * @return string				The configuration template
+	 * @access public
+	 */
+	public function build_icon_image_select($value, $key = '')
+	{
+		$directory = $this->container->getParameter('core.root_path') . '/images';
+
+		$files	= array_diff(scandir($directory), ['.', '..']);
+		$images	= array_filter($files, function($file) use ($directory)
+		{
+			$file = "{$directory}/{$file}";
+
+			return is_file($file) && filesize($file) && preg_match('#\.gif|jpg|jpeg|png|svg$#i', $file);
+		});
+
+		$select = '<select id="' . $key . '" name="config[' . $key . ']">';
+		$select .= '<option value="">' . $this->language->lang('ACP_APS_POINTS_ICON_IMG_NO') . '</option>';
+
+		foreach ($images as $image)
+		{
+			$selected = $value === $image;
+
+			$select .= '<option value="' . $image . ($selected ? '" selected="selected' : '') . '">' . $image . '</option>';
+		}
+
+		$select .= '</select>';
+
+		return $select;
+	}
+
+	/**
+	 * Build configuration template for the points icon position.
 	 *
 	 * @param  string	$value		The config value
 	 * @param  string	$key		The config key
@@ -94,9 +135,25 @@ class main_module
 	 */
 	public function build_position_radio($value, $key = '')
 	{
-		$position_array = [0 => 'ACP_APS_POINTS_ICON_POSITION_LEFT', 1 => 'ACP_APS_POINTS_ICON_POSITION_RIGHT'];
+		$html = '';
+		$s_id = false;
 
-		return h_radio("config[{$key}]", $position_array, $value, $key);
+		$positions = [0 => 'ACP_APS_POINTS_ICON_POSITION_LEFT', 1 => 'ACP_APS_POINTS_ICON_POSITION_RIGHT'];
+
+		foreach ($positions as $val => $title)
+		{
+			$check = $value === $val ? ' checked' : '';
+			$id = $s_id ? ' id="' . $key . '"' : '';
+
+			$html .= '<label>';
+			$html .= '<input class="radio aps-radio"' . $id . ' name="config[' . $key . ']" type="radio" value="' . $val . '"' . $check . '>';
+			$html .= '<span class="aps-button-blue">' . $this->language->lang($title) . '</span>';
+			$html .= '</label>';
+
+			$s_id = true;
+		}
+
+		return $html;
 	}
 
 	/**

@@ -13,7 +13,7 @@ namespace phpbbstudio\aps\event;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * phpBB Studio - Advanced Points System Event listener.
+ * phpBB Studio - Advanced Points System Event listener: Permissions.
  */
 class permissions implements EventSubscriberInterface
 {
@@ -39,7 +39,7 @@ class permissions implements EventSubscriberInterface
 	 * @return void
 	 * @access public
 	 */
-	public function permissions($event)
+	public function permissions(\phpbb\event\data $event)
 	{
 		$categories = $event['categories'];
 		$permissions = $event['permissions'];

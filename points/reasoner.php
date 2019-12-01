@@ -19,20 +19,20 @@ class reasoner
 	protected $db;
 
 	/** @var string APS Reasons table */
-	protected $table;
+	protected $reasons_table;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param  \phpbb\db\driver\driver_interface	$db		Database object
-	 * @param  string								$table	APS Reasons table
+	 * @param  \phpbb\db\driver\driver_interface	$db					Database object
+	 * @param  string								$reasons_table		APS Reasons table
 	 * @return void
 	 * @access public
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, $table)
+	public function __construct(\phpbb\db\driver\driver_interface $db, $reasons_table)
 	{
-		$this->db		= $db;
-		$this->table	= $table;
+		$this->db				= $db;
+		$this->reasons_table	= $reasons_table;
 	}
 
 	/**
@@ -46,14 +46,14 @@ class reasoner
 	{
 		unset($reason['reason_id']);
 
-		$sql = 'SELECT MAX(reason_order) as reason_order FROM ' . $this->table;
+		$sql = 'SELECT MAX(reason_order) as reason_order FROM ' . $this->reasons_table;
 		$result = $this->db->sql_query($sql);
 		$order = $this->db->sql_fetchfield('reason_order');
 		$this->db->sql_freeresult($result);
 
 		$reason['reason_order'] = ++$order;
 
-		$sql = 'INSERT INTO ' . $this->table . ' ' . $this->db->sql_build_array('INSERT', $reason);
+		$sql = 'INSERT INTO ' . $this->reasons_table . ' ' . $this->db->sql_build_array('INSERT', $reason);
 		$this->db->sql_query($sql);
 
 		return (int) $this->db->sql_nextid();
@@ -71,7 +71,7 @@ class reasoner
 	{
 		unset($reason['reason_id']);
 
-		$sql = 'UPDATE ' . $this->table . ' SET ' . $this->db->sql_build_array('UPDATE', $reason) . ' WHERE reason_id = ' . (int) $reason_id;
+		$sql = 'UPDATE ' . $this->reasons_table . ' SET ' . $this->db->sql_build_array('UPDATE', $reason) . ' WHERE reason_id = ' . (int) $reason_id;
 		$this->db->sql_query($sql);
 
 		return (bool) $this->db->sql_affectedrows();
@@ -86,7 +86,7 @@ class reasoner
 	 */
 	public function delete($reason_id)
 	{
-		$sql = 'DELETE FROM ' . $this->table . ' WHERE reason_id = ' . (int) $reason_id;
+		$sql = 'DELETE FROM ' . $this->reasons_table . ' WHERE reason_id = ' . (int) $reason_id;
 		$this->db->sql_query($sql);
 
 		return (bool) $this->db->sql_affectedrows();
@@ -101,7 +101,7 @@ class reasoner
 	 */
 	public function row($reason_id)
 	{
-		$sql = 'SELECT * FROM ' . $this->table . ' WHERE reason_id = ' . (int) $reason_id;
+		$sql = 'SELECT * FROM ' . $this->reasons_table . ' WHERE reason_id = ' . (int) $reason_id;
 		$result = $this->db->sql_query_limit($sql, 1);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
@@ -119,7 +119,7 @@ class reasoner
 	{
 		$rowset = [];
 
-		$sql = 'SELECT * FROM ' . $this->table . ' ORDER BY reason_order ASC';
+		$sql = 'SELECT * FROM ' . $this->reasons_table . ' ORDER BY reason_order ASC';
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
@@ -137,7 +137,7 @@ class reasoner
 	 * @return array				The filled reason array
 	 * @access public
 	 */
-	public function fill($reason)
+	public function fill(array $reason)
 	{
 		$reason = !empty($reason) ? $reason : [];
 
@@ -167,7 +167,7 @@ class reasoner
 	public function order($reason_id, $direction)
 	{
 		// Select the current order
-		$sql = 'SELECT reason_order FROM ' . $this->table . ' WHERE reason_id = ' . (int) $reason_id;
+		$sql = 'SELECT reason_order FROM ' . $this->reasons_table . ' WHERE reason_id = ' . (int) $reason_id;
 		$result = $this->db->sql_query_limit($sql, 1);
 		$order = (int) $this->db->sql_fetchfield('reason_order');
 		$this->db->sql_freeresult($result);
@@ -176,7 +176,7 @@ class reasoner
 		$other_order = $direction === 'up' ? $order - 1 : $order + 1;
 
 		// Select the other reason identifier (with which it is being swapped)
-		$sql = 'SELECT reason_id FROM ' . $this->table . ' WHERE reason_order = ' . (int) $other_order;
+		$sql = 'SELECT reason_id FROM ' . $this->reasons_table . ' WHERE reason_order = ' . (int) $other_order;
 		$result = $this->db->sql_query_limit($sql, 1);
 		$other_id = (int) $this->db->sql_fetchfield('reason_id');
 		$this->db->sql_freeresult($result);

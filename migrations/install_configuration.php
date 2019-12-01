@@ -28,7 +28,7 @@ class install_configuration extends \phpbb\db\migration\migration
 	 */
 	public function effectively_installed()
 	{
-		return isset($this->config['aps_points_name_en']);
+		return $this->config->offsetExists('aps_points_name_en');
 	}
 
 	/**

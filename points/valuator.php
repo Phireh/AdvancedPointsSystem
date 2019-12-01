@@ -25,15 +25,15 @@ class valuator
 	protected $user;
 
 	/** @var string APS Values table */
-	protected $table;
+	protected $values_table;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param  \phpbb\db\driver\driver_interface	$db			Database object
-	 * @param  \phpbbstudio\aps\core\functions		$functions	APS Core functions
-	 * @param  \phpbb\user							$user		User object
-	 * @param  string								$table		APS Values table
+	 * @param  \phpbb\db\driver\driver_interface	$db					Database object
+	 * @param  \phpbbstudio\aps\core\functions		$functions			APS Core functions
+	 * @param  \phpbb\user							$user				User object
+	 * @param  string								$values_table		APS Values table
 	 * @return void
 	 * @access public
 	 */
@@ -41,13 +41,14 @@ class valuator
 		\phpbb\db\driver\driver_interface $db,
 		\phpbbstudio\aps\core\functions $functions,
 		\phpbb\user $user,
-		$table
+		$values_table
 	)
 	{
-		$this->db			= $db;
-		$this->functions	= $functions;
-		$this->user			= $user;
-		$this->table		= $table;
+		$this->db				= $db;
+		$this->functions		= $functions;
+		$this->user				= $user;
+
+		$this->values_table		= $values_table;
 	}
 
 	/**
@@ -119,7 +120,7 @@ class valuator
 	 * @return array
 	 * @access public
 	 */
-	public function get_points($fields, $forum_ids, $fill = true)
+	public function get_points(array $fields, $forum_ids, $fill = true)
 	{
 		// Set up base arrays
 		$sql_where = $values = [];
@@ -135,7 +136,7 @@ class valuator
 		}
 
 		$sql = 'SELECT *
-				FROM ' . $this->table . '
+				FROM ' . $this->values_table . '
 				WHERE ' . implode(' OR ', $sql_where);
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
@@ -167,7 +168,7 @@ class valuator
 	 */
 	public function clean_points($fields, $forum_id)
 	{
-		$sql = 'DELETE FROM ' . $this->table . '
+		$sql = 'DELETE FROM ' . $this->values_table . '
 				WHERE forum_id = ' . (int) $forum_id . '
 					AND ' . $this->db->sql_in_set('points_name', $fields, true, true);
 		$this->db->sql_query($sql);
@@ -203,7 +204,7 @@ class valuator
 			}
 		}
 
-		$sql = 'DELETE FROM ' . $this->table . '
+		$sql = 'DELETE FROM ' . $this->values_table . '
 				WHERE points_value = 0
 					OR ' . $this->db->sql_in_set('forum_id', ($forum_ids + [0]), true) . '
 					OR ' . implode(' OR ', $sql_where);
@@ -219,7 +220,7 @@ class valuator
 	 */
 	public function delete_points($forum_id)
 	{
-		$sql = 'DELETE FROM ' . $this->table . '
+		$sql = 'DELETE FROM ' . $this->values_table . '
 				WHERE forum_id = ' . (int) $forum_id;
 		$this->db->sql_query($sql);
 
@@ -247,7 +248,7 @@ class valuator
 			// If the value already exists in the database, update it
 			if (in_array($name, $existing))
 			{
-				$sql = 'UPDATE ' . $this->table . '
+				$sql = 'UPDATE ' . $this->values_table . '
 						SET points_value = ' . (double) $value . '
 						WHERE points_name = "' . $this->db->sql_escape($name) . '"
 							AND forum_id = ' . (int) $forum_id;
@@ -257,7 +258,7 @@ class valuator
 				// Otherwise insert it for the first time
 				$row['forum_id'] = (int) $forum_id;
 
-				$sql = 'INSERT INTO ' . $this->table . ' ' . $this->db->sql_build_array('INSERT', [
+				$sql = 'INSERT INTO ' . $this->values_table . ' ' . $this->db->sql_build_array('INSERT', [
 					'points_name'	=> (string) $name,
 					'points_value'	=> (double) $value,
 					'forum_id'		=> (int) $forum_id,
@@ -284,7 +285,7 @@ class valuator
 
 		// Select "from" points
 		$sql = 'SELECT points_name, points_value
-				FROM ' . $this->table . '
+				FROM ' . $this->values_table . '
 				WHERE forum_id = ' . (int) $from;
 		$result = $this->db->sql_query($sql);
 		$rowset = $this->db->sql_fetchrowset($result);
@@ -293,7 +294,7 @@ class valuator
 		$to = array_map('intval', array_unique(array_filter($to)));
 
 		// Delete "to" points
-		$sql = 'DELETE FROM ' . $this->table . '
+		$sql = 'DELETE FROM ' . $this->values_table . '
 				WHERE ' . $this->db->sql_in_set('forum_id', $to);
 		$this->db->sql_query($sql);
 
@@ -304,7 +305,7 @@ class valuator
 				$rowset[$i]['forum_id'] = (int) $forum_id;
 			}
 
-			$this->db->sql_multi_insert($this->table, $rowset);
+			$this->db->sql_multi_insert($this->values_table, $rowset);
 		}
 
 		$this->db->sql_transaction('commit');
@@ -320,7 +321,7 @@ class valuator
 	 * @return string						The SQL WHERE clause
 	 * @access protected
 	 */
-	protected function get_sql_where($scope, $fields, $forum_ids, $negate = false)
+	protected function get_sql_where($scope, array $fields, $forum_ids, $negate = false)
 	{
 		$sql_where = '(';
 		$sql_where .= $this->db->sql_in_set('points_name', $fields, $negate);
@@ -352,9 +353,9 @@ class valuator
 	 * @param  array		$fields			Array of action types fields
 	 * @param  array|int	$forum_ids		The forum identifier(s)
 	 * @return void
-	 * @access public
+	 * @access protected
 	 */
-	protected function fill_values(&$values, $fields, $forum_ids)
+	protected function fill_values(array &$values, $fields, $forum_ids)
 	{
 		// Make sure all forum ids are set
 		$fill = is_array($forum_ids) ? array_map('intval', $forum_ids) : [(int) $forum_ids];

@@ -36,5 +36,4 @@ $lang = array_merge($lang, [
 
 	'MCP_APS_POINTS_USER_CHANGE'			=> 'Are you sure you want to adjust this user’s %s?',
 	'MCP_APS_POINTS_USER_CHANGE_SUCCESS'	=> 'The %s for this user have successfully been adjusted.',
-	'MCP_APS_POINTS_USER_TOTAL'				=> 'This will bring the user’s total %1$s to <strong>%2$s</strong>!',
 ]);

@@ -10,6 +10,8 @@
 
 namespace phpbbstudio\aps\controller;
 
+use phpbbstudio\aps\event\check;
+
 /**
  * phpBB Studio - Advanced Points System MCP controller.
  */
@@ -33,8 +35,11 @@ class mcp_controller
 	/** @var \phpbbstudio\aps\core\functions */
 	protected $functions;
 
+	/** @var \phpbb\group\helper */
+	protected $group_helper;
+
 	/** @var \phpbb\language\language */
-	protected $lang;
+	protected $language;
 
 	/** @var \phpbbstudio\aps\core\log */
 	protected $log;
@@ -81,7 +86,8 @@ class mcp_controller
 	 * @param  \phpbb\event\dispatcher				$dispatcher		Event dispatcher
 	 * @param  \phpbbstudio\aps\points\distributor	$distributor	APS Distributor object
 	 * @param  \phpbbstudio\aps\core\functions		$functions		APS Core functions
-	 * @param  \phpbb\language\language				$lang			Language object
+	 * @param  \phpbb\group\helper					$group_helper	Group helper object
+	 * @param  \phpbb\language\language				$language		Language object
 	 * @param  \phpbbstudio\aps\core\log			$log			APS Log object
 	 * @param  \phpbb\notification\manager			$notification	Notification manager object
 	 * @param  \phpbb\pagination					$pagination		Pagination object
@@ -102,7 +108,8 @@ class mcp_controller
 		\phpbb\event\dispatcher $dispatcher,
 		\phpbbstudio\aps\points\distributor $distributor,
 		\phpbbstudio\aps\core\functions $functions,
-		\phpbb\language\language $lang,
+		\phpbb\group\helper $group_helper,
+		\phpbb\language\language $language,
 		\phpbbstudio\aps\core\log $log,
 		\phpbb\notification\manager $notification,
 		\phpbb\pagination $pagination,
@@ -121,7 +128,8 @@ class mcp_controller
 		$this->dispatcher	= $dispatcher;
 		$this->distributor	= $distributor;
 		$this->functions	= $functions;
-		$this->lang			= $lang;
+		$this->group_helper	= $group_helper;
+		$this->language		= $language;
 		$this->log			= $log;
 		$this->notification	= $notification;
 		$this->pagination	= $pagination;
@@ -135,8 +143,6 @@ class mcp_controller
 		$this->php_ext		= $php_ext;
 
 		$this->name			= $functions->get_name();
-
-		$log->load_lang();
 	}
 
 	/**
@@ -149,6 +155,8 @@ class mcp_controller
 	{
 		if ($this->auth->acl_get('u_aps_view_logs'))
 		{
+			$this->log->load_lang();
+
 			// Latest 5 logs
 			$logs = $this->log->get(false, 5);
 			foreach ($logs as $row)
@@ -215,6 +223,8 @@ class mcp_controller
 	 */
 	public function logs()
 	{
+		$this->log->load_lang();
+
 		// Set up general vars
 		$start		= $this->request->variable('start', 0);
 		$forum_id	= $this->request->variable('f', '');
@@ -237,23 +247,23 @@ class mcp_controller
 
 		// Sorting
 		$limit_days = [
-			0 => $this->lang->lang('ALL_ENTRIES'),
-			1 => $this->lang->lang('1_DAY'),
-			7 => $this->lang->lang('7_DAYS'),
-			14 => $this->lang->lang('2_WEEKS'),
-			30 => $this->lang->lang('1_MONTH'),
-			90 => $this->lang->lang('3_MONTHS'),
-			180 => $this->lang->lang('6_MONTHS'),
-			365 => $this->lang->lang('1_YEAR'),
+			0 => $this->language->lang('ALL_ENTRIES'),
+			1 => $this->language->lang('1_DAY'),
+			7 => $this->language->lang('7_DAYS'),
+			14 => $this->language->lang('2_WEEKS'),
+			30 => $this->language->lang('1_MONTH'),
+			90 => $this->language->lang('3_MONTHS'),
+			180 => $this->language->lang('6_MONTHS'),
+			365 => $this->language->lang('1_YEAR'),
 		];
 		$sort_by_text = [
-			'a'  => $this->lang->lang('SORT_ACTION'),
+			'a'  => $this->language->lang('SORT_ACTION'),
 			'ps' => $name,
-			'pn' => $this->lang->lang('APS_POINTS_NEW', $name),
-			'po' => $this->lang->lang('APS_POINTS_OLD', $name),
-			'uu' => $this->lang->lang('SORT_USERNAME'),
-			'ru' => $this->lang->lang('FROM'),
-			't'  => $this->lang->lang('SORT_DATE'),
+			'pn' => $this->language->lang('APS_POINTS_NEW', $name),
+			'po' => $this->language->lang('APS_POINTS_OLD', $name),
+			'uu' => $this->language->lang('SORT_USERNAME'),
+			'ru' => $this->language->lang('FROM'),
+			't'  => $this->language->lang('SORT_DATE'),
 		];
 		$sort_by_sql = [
 			'a'  => 'l.log_action',
@@ -302,16 +312,19 @@ class mcp_controller
 	 */
 	public function change()
 	{
+		$this->log->load_lang();
+
+		$group_id = $this->request->variable('g', 0);
 		$user_id = $this->request->variable('u', 0);
 
-		if (empty($user_id))
+		if (empty($group_id) && empty($user_id))
 		{
 			$this->find_user();
 
 			return;
 		}
 
-		$this->lang->add_lang('acp/common');
+		$this->language->add_lang('acp/common');
 
 		$action = $this->request->variable('action', '');
 
@@ -322,7 +335,7 @@ class mcp_controller
 			case 'set':
 				if (!$this->auth->acl_get('m_aps_adjust_custom'))
 				{
-					trigger_error($this->lang->lang('NOT_AUTHORISED'), E_USER_WARNING);
+					trigger_error($this->language->lang('NOT_AUTHORISED'), E_USER_WARNING);
 				}
 			break;
 
@@ -333,131 +346,177 @@ class mcp_controller
 			default:
 				if (!$this->auth->acl_get('m_aps_adjust_reason'))
 				{
-					trigger_error($this->lang->lang('NOT_AUTHORISED'), E_USER_WARNING);
+					trigger_error($this->language->lang('NOT_AUTHORISED'), E_USER_WARNING);
 				}
 			break;
 		}
 
-		$sql = 'SELECT user_id, username, user_colour
+		if (!empty($user_id))
+		{
+			$sql = 'SELECT user_id, username, user_colour
 				FROM ' . $this->functions->table('users') . '
 				WHERE user_type <> ' . USER_IGNORE . '
 					AND user_id = ' . (int) $user_id;
-		$result = $this->db->sql_query_limit($sql, 1);
-		$user = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
+			$result = $this->db->sql_query_limit($sql, 1);
+			$user = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
 
-		if ($user === false)
-		{
-			trigger_error($this->lang->lang('NO_USER') . $this->back_link($this->u_action), E_USER_WARNING);
+			if ($user === false)
+			{
+				trigger_error($this->language->lang('NO_USER') . $this->back_link($this->u_action), E_USER_WARNING);
+			}
+
+			$user_ids = [$user_id];
+
+			$u_action = '&u=' . (int) $user_id;
 		}
+		else
+		{
+			$sql = 'SELECT user_id
+				FROM ' . $this->functions->table('user_group') . '
+				WHERE group_id = ' . (int) $group_id;
+			$result = $this->db->sql_query($sql);
+			$rowset = $this->db->sql_fetchrowset($result);
+			$this->db->sql_freeresult($result);
+
+			if (empty($rowset))
+			{
+				$this->language->add_lang('acp/groups');
+
+				trigger_error($this->language->lang('GROUPS_NO_MEMBERS') . $this->back_link($this->u_action), E_USER_WARNING);
+			}
+
+			$user_ids = array_column($rowset, 'user_id');
+
+			$u_action = '&g=' . (int) $group_id;
+		}
+
 
 		// Actions
 		$reasons = $this->reasoner->rowset();
 		$actions = [
-			'add'	=> $this->lang->lang('ADD'),
-			'sub'	=> $this->lang->lang('REMOVE'),
-			'set'	=> $this->lang->lang('CHANGE'),
+			'add'	=> $this->language->lang('ADD'),
+			'sub'	=> $this->language->lang('REMOVE'),
+			'set'	=> $this->language->lang('CHANGE'),
 		];
 
-		$user_points = $this->valuator->user((int) $user_id);
+		$users = $this->valuator->users($user_ids);
 
-		if ($submit = $this->request->is_set_post('submit'))
+		$submit = $this->request->is_set_post('submit');
+		$points = $this->request->variable('points', 0.00);
+		$reason = $this->request->variable('reason', '', true);
+
+		if ($submit)
 		{
-			$points = $this->request->variable('points', 0.00);
-			$reason = $this->request->variable('reason', '', true);
-
-			$sum_points = 0;
-
-			switch ($action)
+			if ($action === '')
 			{
-				case 'add':
-					$sum_points = $points;
-				break;
-				case 'sub':
-					$sum_points = $this->functions->equate_points(0, $points, '-');
-				break;
-				case 'set':
-					$sum_points = $this->functions->equate_points($points, $user_points, '-');
-				break;
-
-				case '':
-					trigger_error($this->lang->lang('NO_ACTION'), E_USER_WARNING);
-				break;
-
-				default:
-					if (empty($reasons[$action]))
-					{
-						trigger_error($this->lang->lang('NO_ACTION') . $this->back_link($this->u_action . '&u=' . $user_id), E_USER_WARNING);
-					}
-
-					$points = $sum_points = $reasons[$action]['reason_points'];
-					$reason = $reasons[$action]['reason_title'] . '<br />' . $reasons[$action]['reason_desc'];
-				break;
+				trigger_error($this->language->lang('NO_ACTION'), E_USER_WARNING);
 			}
 
 			if (confirm_box(true))
 			{
-				$log_entry[] = [
-					'action'		=> 'APS_POINTS_USER_ADJUSTED',
-					'actions'		=> !empty($reason) ? [$reason => $sum_points] : ['APS_POINTS_USER_ADJUSTED' => $sum_points],
-					'user_id'		=> (int) $user_id,
-					'reportee_id'	=> (int) $this->user->data['user_id'],
-					'reportee_ip'	=> (string) $this->user->ip,
-					'points_old'	=> $user_points,
-					'points_sum'	=> $sum_points,
-				];
+				foreach ($users as $uid => $user_points)
+				{
+					switch ($action)
+					{
+						case 'add':
+							$sum_points = $points;
+						break;
+						case 'sub':
+							$sum_points = $this->functions->equate_points(0, $points, '-');
+						break;
+						case 'set':
+							$sum_points = $this->functions->equate_points($points, $user_points, '-');
+						break;
 
-				$this->distributor->distribute($user_id, $sum_points, $log_entry, $user_points);
+						default:
+							if (empty($reasons[$action]))
+							{
+								trigger_error($this->language->lang('NO_ACTION') . $this->back_link($this->u_action), E_USER_WARNING);
+							}
+
+							$sum_points = $reasons[$action]['reason_points'];
+							$reason = $reasons[$action]['reason_title'] . '<br />' . $reasons[$action]['reason_desc'];
+						break;
+					}
+					
+					$log_entry = [];
+
+					$log_entry[] = [
+						'action'		=> 'APS_POINTS_USER_ADJUSTED',
+						'actions'		=> !empty($reason) ? [$reason => $sum_points] : ['APS_POINTS_USER_ADJUSTED' => $sum_points],
+						'user_id'		=> (int) $uid,
+						'reportee_id'	=> (int) $this->user->data['user_id'],
+						'reportee_ip'	=> (string) $this->user->ip,
+						'points_old'	=> $user_points,
+						'points_sum'	=> $sum_points,
+					];
+
+					$this->distributor->distribute($uid, $sum_points, $log_entry, $user_points);
+				}
 
 				$this->config->increment('aps_notification_id', 1);
 
 				$this->notification->add_notifications('phpbbstudio.aps.notification.type.adjust', [
 					'name'				=> $this->functions->get_name(),
-					'points'			=> $this->functions->display_points($sum_points),
 					'reason'			=> $reason,
-					'user_id'			=> (int) $user_id,
+					'user_ids'			=> array_keys($users),
 					'moderator'			=> get_username_string('no_profile', $this->user->data['user_id'], $this->user->data['username'], $this->user->data['user_colour']),
 					'moderator_id'		=> (int) $this->user->data['user_id'],
 					'notification_id'	=> (int) $this->config['aps_notification_id'],
 				]);
 
-				trigger_error($this->lang->lang('MCP_APS_POINTS_USER_CHANGE_SUCCESS', $this->name) . $this->back_link($this->u_action));
+				trigger_error($this->language->lang('MCP_APS_POINTS_USER_CHANGE_SUCCESS', $this->name) . $this->back_link($this->u_action));
 			}
 			else
 			{
-				$new_points = $this->functions->equate_points($user_points, $sum_points);
-				$confirmation = $this->lang->lang('MCP_APS_POINTS_USER_CHANGE', $this->name) . '<br>' . $this->lang->lang('MCP_APS_POINTS_USER_TOTAL', $this->name, $new_points);
-
-				confirm_box(false, $confirmation, build_hidden_fields([
+				confirm_box(false, $this->language->lang('MCP_APS_POINTS_USER_CHANGE', $this->name), build_hidden_fields([
 					'submit'	=> $submit,
 					'action'	=> $action,
 					'points'	=> $points,
 					'reason'	=> $reason,
 				]));
+
+				redirect($this->u_action);
 			}
 		}
 
-		if ($this->auth->acl_get('u_aps_view_logs'))
+		if (!empty($user_id) && $this->auth->acl_get('u_aps_view_logs'))
 		{
 			$logs = $this->log->get(false, 5, 0, '', 0, 0, (int) $user_id);
+
 			foreach ($logs as $row)
 			{
 				$this->template->assign_block_vars('logs', array_change_key_case($row, CASE_UPPER));
 			}
+
+			$this->template->assign_var('S_APS_LOGS', true);
+		}
+
+		if (!empty($group_id))
+		{
+			$sql = 'SELECT group_id, group_name, group_colour
+					FROM ' . $this->functions->table('groups') . '
+					WHERE group_id = ' . (int) $group_id;
+			$result = $this->db->sql_query_limit($sql, 1);
+			$group = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
+
+			$group_name = $this->group_helper->get_name_string('full', $group['group_id'], $group['group_name'], $group['group_colour']);
 		}
 
 		$this->template->assign_vars([
 			'APS_ACTIONS'	=> $actions,
 			'APS_REASONS'	=> $reasons,
-			'APS_POINTS'	=> $this->functions->display_points($user_points),
-			'APS_USERNAME'	=> get_username_string('full', $user['user_id'], $user['username'], $user['user_colour']),
+			'APS_POINTS'	=> $user_id ? $this->functions->display_points($users[$user_id]) : '',
+			'APS_USERNAME'	=> !empty($user) ? get_username_string('full', $user['user_id'], $user['username'], $user['user_colour']) : '',
+			'APS_GROUP'		=> !empty($group_name) ? $group_name : '',
 
 			'S_APS_CUSTOM'	=> $this->auth->acl_get('m_aps_adjust_custom'),
 			'S_APS_REASON'	=> $this->auth->acl_get('m_aps_adjust_reason'),
-			'S_APS_LOGS'	=> $this->auth->acl_get('u_aps_view_logs'),
 			'S_APS_POINTS'	=> true,
 
-			'U_APS_ACTION'	=> $this->u_action . '&u=' . (int) $user_id,
+			'U_APS_ACTION'	=> $this->u_action . $u_action,
 		]);
 	}
 
@@ -469,35 +528,61 @@ class mcp_controller
 	 */
 	protected function find_user()
 	{
-		$form_name = 'mcp_aps_change';
+		$this->language->add_lang('acp/groups');
 
+		$form_name = 'mcp_aps_change';
 		add_form_key($form_name);
 
-		if ($this->request->is_set_post('submit'))
+		$submit_group = $this->request->is_set_post('submit_group');
+		$submit_user = $this->request->is_set_post('submit_user');
+		$submit = $submit_group || $submit_user;
+
+		$group_id = $this->request->variable('group_id', 0);
+
+		if ($submit && !check_form_key($form_name))
 		{
-			if (!function_exists('user_get_id_name'))
+			$error = 'FORM_INVALID';
+		}
+		else if ($submit)
+		{
+			if ($submit_group)
 			{
-				/** @noinspection PhpIncludeInspection */
-				include $this->root_path . 'includes/functions_user.' . $this->php_ext;
+				redirect($this->u_action . '&g=' . (int) $group_id);
 			}
 
-			$username[] = $this->request->variable('username', '', true);
-
-			$error = user_get_id_name($user_ids, $username);
-
-			if (empty($error))
+			if ($submit_user)
 			{
-				$user_id = $user_ids[0];
+				if (!function_exists('user_get_id_name'))
+				{
+					/** @noinspection PhpIncludeInspection */
+					include $this->root_path . 'includes/functions_user.' . $this->php_ext;
+				}
 
-				redirect($this->u_action . '&u=' . (int) $user_id);
+				$username[] = $this->request->variable('username', '', true);
+
+				$error = user_get_id_name($user_ids, $username);
+
+				if (empty($error))
+				{
+					$user_id = $user_ids[0];
+
+					redirect($this->u_action . '&u=' . (int) $user_id);
+				}
 			}
+		}
+
+		if (!function_exists('group_select_options'))
+		{
+			/** @noinspection PhpIncludeInspection */
+			include $this->root_path . 'includes/functions_admin.' . $this->php_ext;
 		}
 
 		$this->template->assign_vars([
 			'S_ERROR'		=> !empty($error),
-			'ERROR_MSG'		=> !empty($error) ? $this->lang->lang($error) : '',
+			'ERROR_MSG'		=> !empty($error) ? $this->language->lang($error) : '',
 
 			'APS_USERNAME'	=> !empty($username[0]) ? $username[0] : '',
+			'APS_GROUPS'	=> group_select_options($group_id),
 
 			'S_APS_SEARCH'	=> true,
 
@@ -515,7 +600,7 @@ class mcp_controller
 	 */
 	protected function back_link($action)
 	{
-		return '<br /><br /><a href="' . $action . '">&laquo; ' . $this->lang->lang('BACK_TO_PREV') . '</a>';
+		return '<br /><br /><a href="' . $action . '">&laquo; ' . $this->language->lang('BACK_TO_PREV') . '</a>';
 	}
 
 	/**

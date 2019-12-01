@@ -1,27 +1,32 @@
 {
-    "name": "phpbbstudio/aps",
-    "type": "phpbb-extension",
-    "description": "A fully integrated and extendable points extension for the phpBB Forum Software.",
-    "homepage": "https://www.phpbbstudio.com",
-    "version": "1.0.3-beta",
-    "time": "2019-10-08",
-    "license": "GPL-2.0-only",
-    "authors": [
-        {
-            "name": "phpBB Studio",
-            "email": "info@phpbbstudio.com",
-            "homepage": "https://www.phpbbstudio.com",
-            "role": "Lead Developer"
-        }
-    ],
-    "require": {
-        "php": ">=5.5.0",
-        "composer/installers": "~1.0"
-    },
-    "extra": {
-        "display-name": "phpBB Studio - Advanced Points System",
-        "soft-require": {
-            "phpbb/phpbb": ">=3.2.7,<4.0.0@dev"
-        }
-    }
+	"name": "phpbbstudio/aps",
+	"type": "phpbb-extension",
+	"description": "A fully integrated and extendable points extension for the phpBB Forum Software.",
+	"homepage": "https://www.phpbbstudio.com",
+	"version": "1.0.4-beta",
+	"time": "2019-12-01",
+	"license": "GPL-2.0-only",
+	"authors": [
+		{
+			"name": "phpBB Studio",
+			"email": "info@phpbbstudio.com",
+			"homepage": "https://www.phpbbstudio.com",
+			"role": "Lead Developer"
+		}
+	],
+	"require": {
+		"php": ">=5.5.0",
+		"composer/installers": "~1.0"
+	},
+	"extra": {
+		"display-name": "phpBB Studio - Advanced Points System",
+		"soft-require": {
+			"phpbb/phpbb": ">=3.2.8,<4.0.0@dev"
+		},
+		"version-check": {
+			"host": "3d-i.github.io",
+			"directory": "/site/vchecks",
+			"filename": "advpoints.json"
+		}
+	}
 }

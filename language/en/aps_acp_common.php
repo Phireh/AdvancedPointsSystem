@@ -83,6 +83,9 @@ $lang = array_merge($lang, [
 	'ACP_APS_POINTS_EXCLUDE_WORDS_DESC'	=> 'This will not count the words with equal or less than X characters when calculating %s.',
 
 	'ACP_APS_POINTS_ICON'					=> 'Icon',
+	'ACP_APS_POINTS_ICON_IMG'				=> 'Icon image',
+	'ACP_APS_POINTS_ICON_IMG_DESC'			=> 'Setting an image will override the icon selected above.<br />Images can be selected from the <samp>/images</samp> folder.',
+	'ACP_APS_POINTS_ICON_IMG_NO'			=> 'No image',
 	'ACP_APS_POINTS_ICON_POSITION'			=> 'Icon position',
 	'ACP_APS_POINTS_ICON_POSITION_LEFT'		=> 'Left',
 	'ACP_APS_POINTS_ICON_POSITION_RIGHT'	=> 'Right',

@@ -25,10 +25,13 @@ class functions
 	protected $db;
 
 	/** @var \phpbb\language\language */
-	protected $lang;
+	protected $language;
 
 	/** @var \phpbb\path_helper */
 	protected $path_helper;
+
+	/** @var \phpbb\request\request */
+	protected $request;
 
 	/** @var \phpbb\user */
 	protected $user;
@@ -36,7 +39,7 @@ class functions
 	/** @var string Table prefix */
 	protected $table_prefix;
 
-	/** @var bool Whether Default Avatar Extended (DAE) is enabled */
+	/** @var bool Whether or not Default Avatar Extended (DAE) is enabled */
 	protected $is_dae_enabled;
 
 	/** @var string The localised points name */
@@ -49,21 +52,34 @@ class functions
 	 * @param  \phpbb\config\config					$config			Configuration object
 	 * @param  \phpbb\db\driver\driver_interface	$db				Database object
 	 * @param  \phpbb\extension\manager				$ext_manager	Extension manager object
-	 * @param  \phpbb\language\language				$lang			Language object
+	 * @param  \phpbb\language\language				$language		Language object
 	 * @param  \phpbb\path_helper					$path_helper	Path helper object
+	 * @param  \phpbb\request\request				$request		Request object
 	 * @param  \phpbb\user							$user			User object
 	 * @param  string								$table_prefix	Table prefix
 	 * @return void
 	 * @access public
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\extension\manager $ext_manager, \phpbb\language\language $lang, \phpbb\path_helper $path_helper, \phpbb\user $user, $table_prefix)
+	public function __construct(
+		\phpbb\auth\auth $auth,
+		\phpbb\config\config $config,
+		\phpbb\db\driver\driver_interface $db,
+		\phpbb\extension\manager $ext_manager,
+		\phpbb\language\language $language,
+		\phpbb\path_helper $path_helper,
+		\phpbb\request\request $request,
+		\phpbb\user $user,
+		$table_prefix
+	)
 	{
 		$this->auth			= $auth;
 		$this->config		= $config;
 		$this->db			= $db;
-		$this->lang			= $lang;
+		$this->language		= $language;
 		$this->path_helper	= $path_helper;
+		$this->request		= $request;
 		$this->user			= $user;
+
 		$this->table_prefix = $table_prefix;
 
 		$this->is_dae_enabled = $ext_manager->is_enabled('threedi/dae') && $config['threedi_default_avatar_extended'];
@@ -217,11 +233,22 @@ class functions
 	/**
 	 * Get the points icon for display.
 	 *
+	 * @param  bool		$force_fa	Whether to force FA icon
 	 * @return string				The HTML formatted points icon
 	 * @access public
 	 */
-	public function get_icon()
+	public function get_icon($force_fa = false)
 	{
+		if (!$force_fa && $this->config['aps_points_icon_img'])
+		{
+			$board_url = defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH;
+			$base_path = $board_url || $this->request->is_ajax() ? generate_board_url() . '/' : $this->path_helper->get_web_root_path();
+
+			$source = $base_path . 'images/' . (string) $this->config['aps_points_icon_img'];
+
+			return '<span class="icon fa-fw"><img src="' . $source . '" alt="' . $this->get_name() . '" style="width: auto; height: 1em;"></span>';
+		}
+
 		return '<i class="icon ' . (string) $this->config['aps_points_icon'] . ' fa-fw" title="' . $this->get_name() . '" aria-hidden="true"></i>';
 	}
 
@@ -413,7 +440,7 @@ class functions
 		$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $corrected_path;
 		$theme_path = "{$web_path}styles/" . rawurlencode($this->user->style['style_path']) . '/theme';
 
-		$no_avatar = '<img class="avatar" src="' . $theme_path . '/images/no_avatar.gif" alt="' . $this->lang->lang('USER_AVATAR') . '" />';
+		$no_avatar = '<img class="avatar" src="' . $theme_path . '/images/no_avatar.gif" alt="' . $this->language->lang('USER_AVATAR') . '" />';
 
 		return $no_avatar;
 	}

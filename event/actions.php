@@ -13,51 +13,10 @@ namespace phpbbstudio\aps\event;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * phpBB Studio - Advanced Points System Event listener.
+ * phpBB Studio - Advanced Points System Event listener: Actions.
  */
 class actions implements EventSubscriberInterface
 {
-	/**
-	 * Assign functions defined in this class to event listeners in the core.
-	 *
-	 * @static
-	 * @return array
-	 * @access public
-	 */
-	static public function getSubscribedEvents()
-	{
-		return [
-			/* User actions */
-			'core.modify_posting_auth'					=> 'bump',
-
-			'core.submit_post_end'						=> 'post',
-			'core.delete_post_after'					=> 'post_delete',
-			'core.viewtopic_modify_poll_ajax_data'		=> 'vote',
-
-			/* Moderator actions */
-			'core.mcp_main_modify_fork_sql'				=> 'copy',
-			'core.mcp_change_poster_after'				=> 'change',
-			'core.delete_topics_before_query'			=> 'delete',
-			'core.posting_modify_submit_post_before'	=> 'lock_and_type',
-			'core.mcp_lock_unlock_after'				=> 'lock',
-			'core.move_posts_before'					=> 'move_posts',
-			'core.move_topics_before_query'				=> 'move_topics',
-			'core.approve_posts_after'					=> 'queue',
-			'core.approve_topics_after'					=> 'queue',
-			'core.disapprove_posts_after'				=> 'queue',
-
-			'core.mcp_forum_merge_topics_after'			=> 'merge',
-
-			/* Global actions */
-			'core.ucp_register_register_after'			=> 'register',
-
-			'core.mcp_warn_post_after'					=> 'warn',
-			'core.mcp_warn_user_after'					=> 'warn',
-
-			'core.submit_pm_after'						=> 'pm',
-		];
-	}
-
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
@@ -92,11 +51,20 @@ class actions implements EventSubscriberInterface
 	 * @param  \phpbb\request\request			$request	Request object
 	 * @param  \phpbb\user						$user		User object
 	 * @param  string							$root_path	phpBB root path
-	 * @param  string							$php_ext	PHP File extension
+	 * @param  string							$php_ext	php File extension
 	 * @return void
 	 * @access public
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbbstudio\aps\core\functions $functions, \phpbbstudio\aps\actions\manager $manager, \phpbb\request\request $request, \phpbb\user $user, $root_path, $php_ext)
+	public function __construct(
+		\phpbb\auth\auth $auth,
+		\phpbb\config\config $config,
+		\phpbbstudio\aps\core\functions $functions,
+		\phpbbstudio\aps\actions\manager $manager,
+		\phpbb\request\request $request,
+		\phpbb\user $user,
+		$root_path,
+		$php_ext
+	)
 	{
 		$this->auth			= $auth;
 		$this->config		= $config;
@@ -104,20 +72,58 @@ class actions implements EventSubscriberInterface
 		$this->manager		= $manager;
 		$this->request		= $request;
 		$this->user			= $user;
+
 		$this->root_path	= $root_path;
 		$this->php_ext		= $php_ext;
+	}
+
+	/**
+	 * Assign functions defined in this class to event listeners in the core.
+	 *
+	 * @static
+	 * @return array
+	 * @access public
+	 */
+	static public function getSubscribedEvents()
+	{
+		return [
+			/* User actions */
+			'core.modify_posting_auth'					=> 'bump',
+			'core.submit_post_end'						=> 'post',
+			'core.delete_post_after'					=> 'post_delete',
+			'core.viewtopic_modify_poll_ajax_data'		=> 'vote',
+
+			/* Moderator actions */
+			'core.mcp_main_modify_fork_sql'				=> 'copy',
+			'core.mcp_change_poster_after'				=> 'change',
+			'core.delete_topics_before_query'			=> 'delete',
+			'core.posting_modify_submit_post_before'	=> 'lock_and_type',
+			'core.mcp_lock_unlock_after'				=> 'lock',
+			'core.move_posts_before'					=> 'move_posts',
+			'core.move_topics_before_query'				=> 'move_topics',
+			'core.approve_posts_after'					=> 'queue',
+			'core.approve_topics_after'					=> 'queue',
+			'core.disapprove_posts_after'				=> 'queue',
+			'core.mcp_forum_merge_topics_after'			=> 'merge',
+
+			/* Global actions */
+			'core.ucp_register_register_after'			=> 'register',
+			'core.mcp_warn_post_after'					=> 'warn',
+			'core.mcp_warn_user_after'					=> 'warn',
+			'core.submit_pm_after'						=> 'pm',
+		];
 	}
 
 	/**
 	 * Trigger Advanced Points System action: “bump”!
 	 *
 	 * @event  core.modify_posting_auth
-	 * @param  \phpbb\event\object	$event		The event object
+	 * @param  \phpbb\event\data	$event		The event object
 	 * @since  1.0.0
 	 * @return void
 	 * @access public
 	 */
-	public function bump($event)
+	public function bump(\phpbb\event\data $event)
 	{
 		if (
 			($event['mode'] !== 'bump')
@@ -141,12 +147,12 @@ class actions implements EventSubscriberInterface
 	 * Trigger Advanced Points System action: “post” or “topic”!
 	 *
 	 * @event  core.submit_post_end
-	 * @param  \phpbb\event\object	$event		The event object
+	 * @param  \phpbb\event\data	$event		The event object
 	 * @since  1.0.0
 	 * @return void
 	 * @access public
 	 */
-	public function post($event)
+	public function post(\phpbb\event\data $event)
 	{
 		if ($event['mode'] === 'edit' && $event['data']['poster_id'] != $this->user->data['user_id'])
 		{
@@ -182,12 +188,12 @@ class actions implements EventSubscriberInterface
 	 * Trigger Advanced Points System action: “delete” or “post”!
 	 *
 	 * @event  core.delete_post_after
-	 * @param  \phpbb\event\object	$event		The event object
+	 * @param  \phpbb\event\data	$event		The event object
 	 * @since  1.0.0
 	 * @return void
 	 * @access public
 	 */
-	public function post_delete($event)
+	public function post_delete(\phpbb\event\data $event)
 	{
 		if ($this->user->data['user_id'] == $event['data']['poster_id'])
 		{
@@ -221,12 +227,12 @@ class actions implements EventSubscriberInterface
 	 * Trigger Advanced Points System action: “vote”!
 	 *
 	 * @event  core.viewtopic_modify_poll_ajax_data
-	 * @param  \phpbb\event\object	$event		The event object
+	 * @param  \phpbb\event\data	$event		The event object
 	 * @since  1.0.0
 	 * @return void
 	 * @access public
 	 */
-	public function vote($event)
+	public function vote(\phpbb\event\data $event)
 	{
 		$this->manager->trigger('vote', $this->user->data['user_id'], $event, $event['forum_id']);
 	}
@@ -235,12 +241,12 @@ class actions implements EventSubscriberInterface
 	 * Trigger Advanced Points System action: “copy”!
 	 *
 	 * @event  core.mcp_main_modify_fork_sql
-	 * @param  \phpbb\event\object	$event		The event object
+	 * @param  \phpbb\event\data	$event		The event object
 	 * @since  1.0.0
 	 * @return void
 	 * @access public
 	 */
-	public function copy($event)
+	public function copy(\phpbb\event\data $event)
 	{
 		$this->manager->trigger('copy', $event['topic_row']['topic_poster'], $event, [(int) $event['topic_row']['forum_id'], (int) $event['sql_ary']['forum_id']]);
 	}
@@ -249,12 +255,12 @@ class actions implements EventSubscriberInterface
 	 * Trigger Advanced Points System action: “change”!
 	 *
 	 * @event  core.mcp_change_poster_after
-	 * @param  \phpbb\event\object	$event		The event object
+	 * @param  \phpbb\event\data	$event		The event object
 	 * @since  1.0.0
 	 * @return void
 	 * @access public
 	 */
-	public function change($event)
+	public function change(\phpbb\event\data $event)
 	{
 		$this->manager->trigger('change', [$event['userdata']['user_id'], $event['post_info']['poster_id']], $event, $event['post_info']['forum_id']);
 	}
@@ -263,12 +269,12 @@ class actions implements EventSubscriberInterface
 	 * Trigger Advanced Points System action: “delete”!
 	 *
 	 * @event  core.delete_topics_before_query
-	 * @param  \phpbb\event\object	$event		The event object
+	 * @param  \phpbb\event\data	$event		The event object
 	 * @since  1.0.0
 	 * @return void
 	 * @access public
 	 */
-	public function delete($event)
+	public function delete(\phpbb\event\data $event)
 	{
 		// Check for chain triggering events
 		if (!$this->config['aps_chain_merge_delete'] && $this->request->variable('action', '', true) === 'merge_topics')
@@ -299,12 +305,12 @@ class actions implements EventSubscriberInterface
 	 * Trigger Advanced Points System action: “lock” and/or “type”!
 	 *
 	 * @event  core.posting_modify_submit_post_before
-	 * @param  \phpbb\event\object	$event		The event object
+	 * @param  \phpbb\event\data	$event		The event object
 	 * @since  1.0.0
 	 * @return void
 	 * @access public
 	 */
-	public function lock_and_type($event)
+	public function lock_and_type(\phpbb\event\data $event)
 	{
 		if ($event['mode'] === 'edit')
 		{
@@ -349,12 +355,12 @@ class actions implements EventSubscriberInterface
 	 * Trigger Advanced Points System action: “lock”!
 	 *
 	 * @event  core.mcp_lock_unlock_after
-	 * @param  \phpbb\event\object	$event		The event object
+	 * @param  \phpbb\event\data	$event		The event object
 	 * @since  1.0.0
 	 * @return void
 	 * @access public
 	 */
-	public function lock($event)
+	public function lock(\phpbb\event\data $event)
 	{
 		$s_user = in_array($event['action'], ['lock', 'unlock']) ? 'topic_poster' : 'poster_id';
 
@@ -368,12 +374,12 @@ class actions implements EventSubscriberInterface
 	 * Trigger Advanced Points System action: “move”!
 	 *
 	 * @event  core.move_posts_before
-	 * @param  \phpbb\event\object	$event		The event object
+	 * @param  \phpbb\event\data	$event		The event object
 	 * @since  1.0.0
 	 * @return void
 	 * @access public
 	 */
-	public function move_posts($event)
+	public function move_posts(\phpbb\event\data $event)
 	{
 		// Check for chain triggering events
 		if (!$this->config['aps_chain_merge_move'] && $this->request->variable('action', '', true) === 'merge_topics')
@@ -404,12 +410,12 @@ class actions implements EventSubscriberInterface
 	 * Trigger Advanced Points System action: “move”!
 	 *
 	 * @event  core.move_topics_before_query
-	 * @param  \phpbb\event\object	$event		The event object
+	 * @param  \phpbb\event\data	$event		The event object
 	 * @since  1.0.0
 	 * @return void
 	 * @access public
 	 */
-	public function move_topics($event)
+	public function move_topics(\phpbb\event\data $event)
 	{
 		if (!function_exists('phpbb_get_topic_data'))
 		{
@@ -436,12 +442,12 @@ class actions implements EventSubscriberInterface
 	 * @event  core.approve_posts_after
 	 * @event  core.approve_topics_after
 	 * @event  core.disapprove_posts_after
-	 * @param  \phpbb\event\object	$event		The event object
+	 * @param  \phpbb\event\data	$event		The event object
 	 * @since  1.0.0
 	 * @return void
 	 * @access public
 	 */
-	public function queue($event)
+	public function queue(\phpbb\event\data $event)
 	{
 		$data = array_merge($this->manager->clean_event($event), [
 			'mode'	=> isset($event['action']) ? $event['action'] : 'disapprove',
@@ -459,12 +465,12 @@ class actions implements EventSubscriberInterface
 	 * Trigger Advanced Points System action: “merge”!
 	 *
 	 * @event  core.mcp_forum_merge_topics_after
-	 * @param  \phpbb\event\object	$event		The event object
+	 * @param  \phpbb\event\data	$event		The event object
 	 * @since  1.0.0
 	 * @return void
 	 * @access public
 	 */
-	public function merge($event)
+	public function merge(\phpbb\event\data $event)
 	{
 		$user_ids = $this->manager->get_identifiers($event['all_topic_data'], 'topic_poster');
 
@@ -475,12 +481,12 @@ class actions implements EventSubscriberInterface
 	 * Trigger Advanced Points System action: “register”!
 	 *
 	 * @event  core.ucp_register_register_after
-	 * @param  \phpbb\event\object	$event		The event object
+	 * @param  \phpbb\event\data	$event		The event object
 	 * @since  1.0.0
 	 * @return void
 	 * @access public
 	 */
-	public function register($event)
+	public function register(\phpbb\event\data $event)
 	{
 		$this->manager->trigger('register', $event['user_id'], $event);
 	}
@@ -490,12 +496,12 @@ class actions implements EventSubscriberInterface
 	 *
 	 * @event  core.mcp_warn_post_after
 	 * @event  core.mcp_warn_user_after
-	 * @param  \phpbb\event\object	$event		The event object
+	 * @param  \phpbb\event\data	$event		The event object
 	 * @since  1.0.0
 	 * @return void
 	 * @access public
 	 */
-	public function warn($event)
+	public function warn(\phpbb\event\data $event)
 	{
 		$this->manager->trigger('warn', $event['user_row']['user_id'], $event, 0);
 	}
@@ -504,12 +510,12 @@ class actions implements EventSubscriberInterface
 	 * Trigger Advanced Points System action: “pm”!
 	 *
 	 * @event  core.submit_pm_after
-	 * @param  \phpbb\event\object	$event		The event object
+	 * @param  \phpbb\event\data	$event		The event object
 	 * @since  1.0.0
 	 * @return void
 	 * @access public
 	 */
-	public function pm($event)
+	public function pm(\phpbb\event\data $event)
 	{
 		// Check for chain triggering events
 		if (!$this->config['aps_chain_warn_pm'] && $this->request->variable('mode', '', true) === 'warn_user')
