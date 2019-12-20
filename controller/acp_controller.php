@@ -155,6 +155,10 @@ class acp_controller
 				case 'clean':
 					$this->clean_points();
 				break;
+
+				case 'locations':
+					$this->link_locations();
+				break;
 			}
 		}
 
@@ -173,15 +177,22 @@ class acp_controller
 			'aps_points_separator_dec'		=> ['lang' => 'ACP_APS_SEPARATOR_DEC', 'validate' => 'string', 'type' => 'select', 'method' => 'build_separator_select', 'params' => ['{CONFIG_VALUE}']],
 			'aps_points_separator_thou'		=> ['lang' => 'ACP_APS_SEPARATOR_THOU', 'validate' => 'string', 'type' => 'select', 'method' => 'build_separator_select'],
 			'legend4'		=> 'GENERAL_SETTINGS',
+			'aps_link_locations'			=> ['lang' => 'ACP_APS_LOCATIONS', 'type' => 'custom', 'method' => 'set_action', 'params' => ['locations', false], 'explain' => true],
 			'aps_points_display_profile'	=> ['lang' => 'ACP_APS_POINTS_DISPLAY_PROFILE', 'type' => 'radio:yes_no', 'validate' => 'bool', 'explain' => true],
 			'aps_points_display_post'		=> ['lang' => 'ACP_APS_POINTS_DISPLAY_POST', 'type' => 'radio:yes_no', 'validate' => 'bool', 'explain' => true],
 			'aps_points_display_pm'			=> ['lang' => 'ACP_APS_POINTS_DISPLAY_PM', 'type' => 'radio:yes_no', 'validate' => 'bool', 'explain' => true],
 			'aps_points_min'				=> ['lang' => 'ACP_APS_POINTS_MIN', 'type' => 'number', 'validate' => 'string', 'explain' => true], // Validate as string to make sure it does not default to 0
 			'aps_points_max'				=> ['lang' => 'ACP_APS_POINTS_MAX', 'type' => 'number', 'validate' => 'string', 'explain' => true],
-			'aps_actions_per_page'			=> ['lang' => 'ACP_APS_POINTS_PER_PAGE', 'type' => 'number:10:100', 'validate', 'validate' => 'number:10:100', 'explain' => true],
+			'aps_actions_per_page'			=> ['lang' => 'ACP_APS_POINTS_PER_PAGE', 'type' => 'number:10:100', 'validate' => 'number:10:100', 'explain' => true],
 			'aps_points_exclude_words'		=> ['lang' => 'ACP_APS_POINTS_EXCLUDE_WORDS', 'type' => 'number:0:10', 'validate' => 'number:0:10', 'explain' => true, 'append' => '&nbsp;' . $this->language->lang('ACP_APS_CHARACTERS')],
 			'aps_points_exclude_chars'		=> ['lang' => 'ACP_APS_POINTS_EXCLUDE_CHARS', 'type' => 'radio:yes_no', 'validate' => 'bool', 'explain' => true],
-			'legend5'		=> 'ACP_APS_CHAIN_SETTINGS',
+			'legend5'		=> 'ACP_APS_IGNORE_SETTINGS',
+			'aps_ignore_criteria'			=> ['lang' => 'ACP_APS_IGNORE_CRITERIA', 'validate' => 'int:0:4', 'type' => 'custom', 'method' => 'build_ignore_criteria_radio', 'explain' => true],
+			'aps_ignore_min_words'			=> ['lang' => 'ACP_APS_IGNORE_MIN_WORDS', 'type' => 'number:0:100', 'validate' => 'number:0:100', 'explain' => true],
+			'aps_ignore_min_chars'			=> ['lang' => 'ACP_APS_IGNORE_MIN_CHARS', 'type' => 'number:0:200', 'validate' => 'number:0:200', 'explain' => true],
+			'aps_ignore_excluded_words'		=> ['lang' => 'ACP_APS_IGNORE_EXCLUDED_WORDS', 'type' => 'radio:yes_no', 'validate' => 'bool', 'explain' => true],
+			'aps_ignore_excluded_chars'		=> ['lang' => 'ACP_APS_IGNORE_EXCLUDED_CHARS', 'type' => 'radio:yes_no', 'validate' => 'bool', 'explain' => true],
+			'legend6'		=> 'ACP_APS_CHAIN_SETTINGS',
 			'aps_chain_merge_delete'		=> ['lang' => 'ACP_APS_CHAIN_MERGE_DELETE', 'type' => 'radio:enabled_disabled', 'validate' => 'bool', 'explain' => true],
 			'aps_chain_merge_move'			=> ['lang' => 'ACP_APS_CHAIN_MERGE_MOVE', 'type' => 'radio:enabled_disabled', 'validate' => 'bool', 'explain' => true],
 			'aps_chain_warn_pm'				=> ['lang' => 'ACP_APS_CHAIN_WARN_PM', 'type' => 'radio:enabled_disabled', 'validate' => 'bool', 'explain' => true],
@@ -889,6 +900,41 @@ class acp_controller
 			confirm_box(false, $this->language->lang('ACP_APS_POINTS_CLEAN_CONFIRM', $this->functions->get_name()), build_hidden_fields([
 				'action' => 'clean',
 			]));
+		}
+	}
+
+	/**
+	 * Handles the link locations from the settings page.
+	 *
+	 * @return void
+	 * @access protected
+	 */
+	protected function link_locations()
+	{
+		$locations = $this->functions->get_link_locations();
+		$variables = ['S_APS_LOCATIONS' => true];
+
+		foreach ($locations as $location => $status)
+		{
+			$variables[$location] = (bool) $status;
+		}
+
+		$this->template->assign_vars($variables);
+
+		if ($this->request->is_set_post('submit_locations'))
+		{
+			$links = [];
+
+			foreach (array_keys($locations) as $location)
+			{
+				$links[$location] = $this->request->variable((string) $location, false);
+			}
+
+			$this->functions->set_link_locations($links);
+
+			$this->log_phpbb->add('admin', $this->user->data['user_id'], $this->user->data['user_ip'], 'LOG_ACP_APS_LOCATIONS');
+
+			trigger_error($this->language->lang('ACP_APS_LOCATIONS_SUCCESS') . adm_back_link($this->u_action));
 		}
 	}
 }

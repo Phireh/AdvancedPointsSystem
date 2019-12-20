@@ -1,0 +1,81 @@
+{% macro location(name, status) %}
+	<label class="aps-location"><input id="{{ name }}" name="{{ name }}" value="1" type="checkbox"{% if status %} checked{% endif %}><span class="aps-button-green">{{ lang('YES') }}</span><span class="aps-button-red">{{ lang('NO') }}</span></label>
+{% endmacro %}
+
+{% from _self import location as location %}
+
+{% INCLUDECSS '@phpbbstudio_aps/css/aps_locations.css' %}
+
+<fieldset class="quick"><a href="{{ U_ACTION }}"><i class="icon fa-reply fa-fw" aria-hidden="true"></i> <span>{{ lang('BACK_TO_PREV') }}</span></a></fieldset>
+
+<form class="aps-form" id="aps_settings" name="aps_settings" action="{{ U_ACTION }}" method="post">
+	<div class="aps-locations">
+		<div class="navbar">
+			<ul>
+				<li class="has-dropdown">
+					<i class="icon fa-bars fa-fw" aria-hidden="true"></i> <span>{{ lang('QUICK_LINKS') }}</span>
+					<div class="dropdown quick-links">
+						<div class="pointer"></div>
+						<div class="dropdown-contents">
+							<div>{{ location('navbar_header_quick_links_before', navbar_header_quick_links_before) }}</div>
+							<div>{{ lang('QUICK_LINKS') }}</div>
+							<div>{{ location('navbar_header_quick_links_after', navbar_header_quick_links_after) }}</div>
+						</div>
+					</div>
+				</li>
+				<li>{{ location('overall_header_navigation_prepend', overall_header_navigation_prepend) }}</li>
+				<li><i class="icon fa-info-circle fa-fw" aria-hidden="true"></i> <span>{{ lang('FAQ') }}</span></li>
+				<li>{{ location('overall_header_navigation_append', overall_header_navigation_append) }}</li>
+				<li><i class="icon fa-cogs fa-fw" aria-hidden="true"></i> <span>{{ lang('ACP_SHORT') }}</span></li>
+
+				<li class="right-side">{{ location('navbar_header_user_profile_prepend', navbar_header_user_profile_prepend) }}</li>
+				<li class="right-side has-dropdown">
+					<i class="icon fa-user-circle-o fa-fw" aria-hidden="true"></i> <span>{{ USERNAME }}</span>
+					<div class="dropdown user">
+						<div class="pointer"></div>
+						<div class="dropdown-contents">
+							<div>{{ location('navbar_header_profile_list_before', navbar_header_profile_list_before) }}</div>
+							<div>{{ lang('UCP') }}</div>
+							<div>{{ lang('READ_PROFILE') }}</div>
+							<div>{{ location('navbar_header_profile_list_after', navbar_header_profile_list_after) }}</div>
+							<div>{{ lang('LOGOUT') }}</div>
+						</div>
+					</div>
+				</li>
+				<li class="right-side"><i class="icon fa-inbox fa-fw" aria-hidden="true"></i> <span>{{ lang('PRIVATE_MESSAGES') }}</span></li>
+				<li class="right-side"><i class="icon fa-bell fa-fw" aria-hidden="true"></i> <span>{{ lang('NOTIFICATIONS') }}</span></li>
+				<li class="right-side">{{ location('navbar_header_user_profile_append', navbar_header_user_profile_append) }}</li>
+			</ul>
+		</div>
+		<p>{{ lang('ACP_APS_LOCATIONS_EXPLAIN') }}</p>
+
+		<div class="navbar clearfix">
+			<ul>
+				<li><i class="icon fa-home fa-fw" aria-hidden="true"></i> <span>{{ lang('FORUM_INDEX') }}</span></li>
+				<li>{{ location('overall_footer_breadcrumb_append', overall_footer_breadcrumb_append) }}</li>
+				<li class="right-side">{{ location('overall_footer_timezone_before', overall_footer_timezone_before) }}</li>
+				<li class="right-side"><span>{{ lang('ALL_TIMES', "now"|date('TO'), "now"|date('e')) }}</span></li>
+				<li class="right-side">{{ location('overall_footer_timezone_after', overall_footer_timezone_after) }}</li>
+				<li class="right-side"><i class="icon fa-trash fa-fw" aria-hidden="true"></i> <span>{{ lang('DELETE_COOKIES') }}</span></li>
+				<li class="right-side"><i class="icon fa-users fa-fw" aria-hidden="true"></i> <span>{{ lang('MEMBERLIST') }}</span></li>
+				<li class="right-side">{{ location('overall_footer_teamlink_before', overall_footer_teamlink_before) }}</li>
+				<li class="right-side"><i class="icon fa-shield fa-fw" aria-hidden="true"></i> <span>{{ lang('THE_TEAM') }}</span></li>
+				<li class="right-side">{{ location('overall_footer_teamlink_after', overall_footer_teamlink_after) }}</li>
+				<li class="right-side"><i class="icon fa-envelope fa-fw" aria-hidden="true"></i> <span>{{ lang('CONTACT_US') }}</span></li>
+			</ul>
+		</div>
+	</div>
+
+	<fieldset>
+		<legend>{{ lang('ACP_SUBMIT_CHANGES') }}</legend>
+		<p class="submit-buttons">
+			<input type="hidden" name="action" value="locations">
+			<button class="aps-button-green" type="submit" name="submit_locations"><i class="icon fa-paper-plane fa-fw" aria-hidden="true"></i> <span>{{ lang('SUBMIT') }}</span></button>
+			<button class="aps-button-red" type="reset" name="reset"><i class="icon fa-refresh fa-fw" aria-hidden="true"></i> <span>{{ lang('RESET') }}</span></button>
+		</p>
+	</fieldset>
+
+	<fieldset class="quick">
+		<a href="{{ U_ACTION }}"><i class="icon fa-reply fa-fw" aria-hidden="true"></i> <span>{{ lang('BACK_TO_PREV') }}</span></a>
+	</fieldset>
+</form>

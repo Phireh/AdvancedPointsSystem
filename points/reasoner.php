@@ -101,12 +101,17 @@ class reasoner
 	 */
 	public function row($reason_id)
 	{
+		if (empty($reason_id))
+		{
+			return [];
+		}
+
 		$sql = 'SELECT * FROM ' . $this->reasons_table . ' WHERE reason_id = ' . (int) $reason_id;
 		$result = $this->db->sql_query_limit($sql, 1);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		return $row;
+		return (array) $row;
 	}
 
 	/**

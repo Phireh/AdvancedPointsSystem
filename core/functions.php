@@ -39,6 +39,9 @@ class functions
 	/** @var string Table prefix */
 	protected $table_prefix;
 
+	/** @var array APS Constants */
+	protected $constants;
+
 	/** @var bool Whether or not Default Avatar Extended (DAE) is enabled */
 	protected $is_dae_enabled;
 
@@ -57,6 +60,7 @@ class functions
 	 * @param  \phpbb\request\request				$request		Request object
 	 * @param  \phpbb\user							$user			User object
 	 * @param  string								$table_prefix	Table prefix
+	 * @param  array								$constants		APS Constants
 	 * @return void
 	 * @access public
 	 */
@@ -69,7 +73,8 @@ class functions
 		\phpbb\path_helper $path_helper,
 		\phpbb\request\request $request,
 		\phpbb\user $user,
-		$table_prefix
+		$table_prefix,
+		array $constants
 	)
 	{
 		$this->auth			= $auth;
@@ -81,6 +86,7 @@ class functions
 		$this->user			= $user;
 
 		$this->table_prefix = $table_prefix;
+		$this->constants	= $constants;
 
 		$this->is_dae_enabled = $ext_manager->is_enabled('threedi/dae') && $config['threedi_default_avatar_extended'];
 	}
@@ -454,5 +460,42 @@ class functions
 	public function is_dae_enabled()
 	{
 		return (bool) ($this->is_dae_enabled && $this->config['threedi_default_avatar_extended']);
+	}
+
+	/**
+	 * Get link locations.
+	 *
+	 * @param string	$key			The config key
+	 * @return array					The link locations data
+	 */
+	public function get_link_locations($key = 'aps_link_locations')
+	{
+		$links = [];
+
+		foreach($this->constants['locations'] as $location => $flag)
+		{
+			$links[$location] = (bool) ((int) $this->config[$key] & $flag);
+		}
+
+		return $links;
+	}
+
+	/**
+	 * Set link locations
+	 *
+	 * @param array		$locations		The link locations data
+	 * @param string	$key			The config key
+	 * @return void
+	 */
+	public function set_link_locations(array $locations, $key = 'aps_link_locations')
+	{
+		$flags = 0;
+
+		foreach ($locations as $location => $status)
+		{
+			$flags += $status ? (int) $this->constants['locations'][$location] : 0;
+		}
+
+		$this->config->set($key, (int) $flags);
 	}
 }

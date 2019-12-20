@@ -58,12 +58,13 @@ class main_module
 	 * Build configuration template for custom points actions.
 	 *
 	 * @param  string	$action		The custom points action
+	 * @param  bool		$ajax		The AJAX request indicator
 	 * @return string				The configuration template
 	 * @access public
 	 */
-	public function set_action($action)
+	public function set_action($action, $ajax = true)
 	{
-		return '<label><a class="aps-button-green" href="' . $this->u_action . '&action='.  $action . '" data-ajax="true">' . $this->language->lang('RUN') . '</a></label>';
+		return '<label><a class="aps-button-green" href="' . $this->u_action . '&action='.  $action . ($ajax ? '" data-ajax="true' : '') . '">' . $this->language->lang('RUN') . '</a></label>';
 	}
 
 	/**
@@ -135,25 +136,10 @@ class main_module
 	 */
 	public function build_position_radio($value, $key = '')
 	{
-		$html = '';
-		$s_id = false;
-
-		$positions = [0 => 'ACP_APS_POINTS_ICON_POSITION_LEFT', 1 => 'ACP_APS_POINTS_ICON_POSITION_RIGHT'];
-
-		foreach ($positions as $val => $title)
-		{
-			$check = $value === $val ? ' checked' : '';
-			$id = $s_id ? ' id="' . $key . '"' : '';
-
-			$html .= '<label>';
-			$html .= '<input class="radio aps-radio"' . $id . ' name="config[' . $key . ']" type="radio" value="' . $val . '"' . $check . '>';
-			$html .= '<span class="aps-button-blue">' . $this->language->lang($title) . '</span>';
-			$html .= '</label>';
-
-			$s_id = true;
-		}
-
-		return $html;
+		return $this->build_radio($value, $key, [
+			0 => 'ACP_APS_POINTS_ICON_POSITION_LEFT',
+			1 => 'ACP_APS_POINTS_ICON_POSITION_RIGHT',
+		]);
 	}
 
 	/**
@@ -173,5 +159,34 @@ class main_module
 		}
 
 		return $options;
+	}
+
+	public function build_ignore_criteria_radio($value, $key = '')
+	{
+		return $this->build_radio($value, $key, array_map(function($constant)
+		{
+			return 'ACP_APS_IGNORE_' . utf8_strtoupper($constant);
+		}, array_flip($this->container->getParameter('phpbbstudio.aps.constants')['ignore'])));
+	}
+
+	protected function build_radio($value, $key, $options)
+	{
+		$html = '';
+		$s_id = false;
+
+		foreach ($options as $val => $title)
+		{
+			$check = $value === $val ? ' checked' : '';
+			$id = $s_id ? ' id="' . $key . '"' : '';
+
+			$html .= '<label>';
+			$html .= '<input class="radio aps-radio"' . $id . ' name="config[' . $key . ']" type="radio" value="' . $val . '"' . $check . '>';
+			$html .= '<span class="aps-button-blue">' . $this->language->lang($title) . '</span>';
+			$html .= '</label>';
+
+			$s_id = true;
+		}
+
+		return $html;
 	}
 }

@@ -21,18 +21,23 @@ class post extends base
 	/** @var \phpbb\textformatter\s9e\utils */
 	protected $utils;
 
+	/** @var array Ignore criteria constants */
+	protected $ignore;
+
 	/**
 	 * Constructor.
 	 *
 	 * @param \phpbb\config\config				$config		Config object
 	 * @param \phpbb\textformatter\s9e\utils	$utils		s9e Textformatter utilities object
+	 * @param array								$constants	APS Constants
 	 * @return void
 	 * @access public
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\textformatter\s9e\utils $utils)
+	public function __construct(\phpbb\config\config $config, \phpbb\textformatter\s9e\utils $utils, array $constants)
 	{
 		$this->config	= $config;
 		$this->utils	= $utils;
+		$this->ignore	= $constants['ignore'];
 	}
 
 	/**
@@ -139,20 +144,44 @@ class post extends base
 				$message = $this->utils->remove_bbcode($message, 'quote');
 				$message = $this->utils->remove_bbcode($message, 'attachment');
 				$message = $this->utils->clean_formatting($message);
-				$words = array_filter(preg_split('/[\s]+/', $message));
-				$chars = implode('', $words);
+				$words = $exclude_words = array_filter(preg_split('/[\s]+/', $message));
+				$chars = $exclude_chars = implode('', $words);
 
-				if ($min = $this->config['acp_points_exclude_words'])
+				if ($min = $this->config['aps_points_exclude_words'])
 				{
-					$words = array_filter($words, function($word) use ($min) {
+					$exclude_words = array_filter($words, function($word) use ($min)
+					{
 						return strlen($word) > $min;
 					});
 
-					if ($this->config['acp_points_exclude_words'])
+					if ($this->config['aps_points_exclude_chars'])
 					{
-						$chars = implode('', $words);
+						$exclude_chars = implode('', $exclude_words);
 					}
 				}
+
+				// Check ignore criteria
+				if ($this->config['aps_ignore_criteria'])
+				{
+					$ignore_words = $this->config['aps_ignore_excluded_words'] ? $exclude_words : $words;
+					$ignore_chars = $this->config['aps_ignore_excluded_chars'] ? $exclude_chars : $chars;
+
+					$ignore_words = count($ignore_words) < $this->config['aps_ignore_min_words'];
+					$ignore_chars = strlen($ignore_chars) < $this->config['aps_ignore_min_chars'];
+
+					if (($this->config['aps_ignore_criteria'] == $this->ignore['both'] && $ignore_words && $ignore_chars)
+						|| ($this->config['aps_ignore_criteria'] == $this->ignore['words'] && $ignore_words)
+						|| ($this->config['aps_ignore_criteria'] == $this->ignore['chars'] && $ignore_chars))
+					{
+						$points = 0;
+
+						// Break out of calculation
+						break;
+					}
+				}
+
+				$words = $exclude_words;
+				$chars = $exclude_chars;
 
 				$points += $logs[$strings['aps_post_per_quote']] = $this->equate($values['aps_post_per_quote'], count($quotes), '*');
 				$points += $logs[$strings['aps_post_per_word']] = $this->equate($values['aps_post_per_word'], count($words), '*');

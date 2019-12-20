@@ -48,6 +48,7 @@ services:
             - '@phpbbstudio.aps.functions'
             - '@controller.helper'
             - '@language'
+            - '@template'
             - '%core.php_ext%'
         tags:
             - { name: event.listener }

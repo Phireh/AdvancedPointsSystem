@@ -1,5 +1,6 @@
 imports:
     - { resource: actions.yml }
+    - { resource: constants.yml }
     - { resource: parameters.yml }
     - { resource: services_controllers.yml }
     - { resource: services_core.yml }

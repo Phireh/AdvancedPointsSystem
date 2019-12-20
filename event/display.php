@@ -26,6 +26,9 @@ class display implements EventSubscriberInterface
 	/** @var \phpbb\language\language */
 	protected $language;
 
+	/** @var \phpbb\template\template */
+	protected $template;
+
 	/** @var string php File extension */
 	protected $php_ext;
 
@@ -35,6 +38,7 @@ class display implements EventSubscriberInterface
 	 * @param  \phpbbstudio\aps\core\functions	$functions	APS Core functions
 	 * @param  \phpbb\controller\helper			$helper		Controller helper object
 	 * @param  \phpbb\language\language			$language	Language object
+	 * @param  \phpbb\template\template			$template	Template object
 	 * @param  string							$php_ext	php File extension
 	 * @return void
 	 * @access public
@@ -43,12 +47,14 @@ class display implements EventSubscriberInterface
 		\phpbbstudio\aps\core\functions $functions,
 		\phpbb\controller\helper $helper,
 		\phpbb\language\language $language,
+		\phpbb\template\template $template,
 		$php_ext
 	)
 	{
 		$this->functions	= $functions;
 		$this->helper		= $helper;
 		$this->language		= $language;
+		$this->template		= $template;
 
 		$this->php_ext		= $php_ext;
 	}
@@ -64,6 +70,7 @@ class display implements EventSubscriberInterface
 	{
 		return [
 			'core.user_setup'						=> 'load_lang',
+			'core.page_header_after'				=> 'display_links',
 
 			'core.viewonline_overwrite_location'	=> 'view_online',
 
@@ -85,6 +92,18 @@ class display implements EventSubscriberInterface
 	public function load_lang()
 	{
 		$this->language->add_lang('aps_common', 'phpbbstudio/aps');
+	}
+
+	public function display_links()
+	{
+		$locations = array_filter($this->functions->get_link_locations());
+
+		if ($locations)
+		{
+			$this->template->assign_vars(array_combine(array_map(function($key) {
+				return 'S_APS_' . strtoupper($key);
+			}, array_keys($locations)), $locations));
+		}
 	}
 
 	/**

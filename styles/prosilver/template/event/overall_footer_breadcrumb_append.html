@@ -1,0 +1,7 @@
+{% if S_APS_OVERALL_FOOTER_BREADCRUMB_APPEND %}
+	<li>
+		<a href="{{ path('phpbbstudio_aps_display') }}" title="{{ aps_name() }}">
+			{{ aps_icon() }}<span>{{ aps_display(user.data.user_points, false) }}</span>
+		</a>
+	</li>
+{% endif %}

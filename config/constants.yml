@@ -1,0 +1,21 @@
+parameters:
+    phpbbstudio.aps.constants:
+        ignore:
+            none:  0
+            both:  1
+            words: 2
+            chars: 3
+        locations:
+            navbar_header_quick_links_before:   1
+            navbar_header_quick_links_after:    2
+            navbar_header_user_profile_prepend: 4
+            navbar_header_user_profile_append:  8
+            navbar_header_profile_list_before:  16
+            navbar_header_profile_list_after:   32
+            overall_header_navigation_prepend:  64
+            overall_header_navigation_append:   128
+            overall_footer_breadcrumb_append:   256
+            overall_footer_timezone_before:     512
+            overall_footer_timezone_after:      1024
+            overall_footer_teamlink_before:     2048
+            overall_footer_teamlink_after:      4096

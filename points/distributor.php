@@ -170,7 +170,7 @@ class distributor
 	{
 		// Delete the log entries
 		$this->log->delete([
-			'log_approved'	=> (bool) false,
+			'log_approved'	=> (int) false,
 			'user_id'		=> (int) $user_id,
 			'post_id'		=> [
 				'IN'	=> (array) $post_ids,

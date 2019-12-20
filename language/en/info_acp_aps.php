@@ -35,6 +35,7 @@ $lang = array_merge($lang, [
 	'LOG_ACP_APS_POINTS'		=> '<strong>Altered <abbr title="Advanced Points System">APS</abbr> %s</strong>',
 	'LOG_ACP_APS_POINTS_COPIED'	=> '<strong>Copied <abbr title="Advanced Points System">APS</abbr> %3$s</strong> for %2$s<br>from %1$s',
 	'LOG_ACP_APS_POINTS_RESET'	=> '<strong>Reset <abbr title="Advanced Points System">APS</abbr> %2$s</strong><br>» %1$s',
+	'LOG_ACP_APS_LOCATIONS'		=> '<strong>Updated <abbr title="Advanced Points System">APS</abbr> link locations</strong>',
 	'LOG_ACP_APS_LOGS_CLEARED'	=> '<strong>Cleared <abbr title="Advanced Points System">APS</abbr> %s actions</strong>',
 	'LOG_ACP_APS_LOGS_DELETED'	=> '<strong>Deleted <abbr title="Advanced Points System">APS</abbr> %s actions</strong>',
 	'LOG_ACP_APS_COPIED'		=> '<strong>Copied <abbr title="Advanced Points System">APS</abbr> %s to multiple forums</strong>',

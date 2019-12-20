@@ -10,8 +10,6 @@
 
 namespace phpbbstudio\aps\controller;
 
-use phpbbstudio\aps\event\check;
-
 /**
  * phpBB Studio - Advanced Points System MCP controller.
  */
@@ -439,7 +437,7 @@ class mcp_controller
 							$reason = $reasons[$action]['reason_title'] . '<br />' . $reasons[$action]['reason_desc'];
 						break;
 					}
-					
+
 					$log_entry = [];
 
 					$log_entry[] = [

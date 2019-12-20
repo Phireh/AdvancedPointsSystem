@@ -1,6 +1,14 @@
 # phpBB Studio - Advanced Points System
 
-#### v1.0.4-beta
+#### v1.0.5-RC1 on 20-12-2019
+- Entered the stage features frozen.
+- Fixed a bug where points were displayed on profile despite the setting
+- Fixed a bug where excluded points were still receiving points
+- Added an option to ignore points which do not meet certain criteria
+- Added an option to determine where the Points link shows up
+- Enhanced the CSS to be altered more easily for other styles
+
+#### v1.0.4-beta on 01-12-2019
 - Major code clean up
 - Bumped phpBB version requirement to 3.2.8
 - Fixed MCP "Front" missing log language strings

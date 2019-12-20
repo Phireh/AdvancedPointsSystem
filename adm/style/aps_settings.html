@@ -17,6 +17,8 @@
 
 {% if S_APS_COPY %}
 	{% include '@phpbbstudio_aps/aps_points_copy.html' %}
+{% elseif S_APS_LOCATIONS %}
+	{% include '@phpbbstudio_aps/aps_locations.html' %}
 {% else %}
 	<form class="aps-form" id="aps_settings" name="aps_settings" action="{{ U_ACTION }}" method="post">
 	{% for setting in settings %}

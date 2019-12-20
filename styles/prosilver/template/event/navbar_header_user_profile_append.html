@@ -1,5 +1,5 @@
-{% if S_APS_NAVBAR_HEADER_PROFILE_LIST_AFTER %}
-	<li>
+{% if S_APS_NAVBAR_HEADER_USER_PROFILE_APPEND %}
+	<li class="rightside">
 		<a href="{{ path('phpbbstudio_aps_display') }}" title="{{ aps_name() }}" role="menuitem">
 			{{ aps_icon() }}<span>{{ aps_display(user.data.user_points, false) }}</span>
 		</a>

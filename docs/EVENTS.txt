@@ -16,4 +16,4 @@
  * The same can be viewed at <http://opensource.org/licenses/gpl-2.0.php>
  */
 
-No events required while using at least phpBB 3.2.7
+No events required while using at least phpBB 3.2.8

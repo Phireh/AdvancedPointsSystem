@@ -1,2 +1,2 @@
-<dt>{{ aps_name() ~ lang('COLON') }}</dt> <dd>{{ aps_display(USER_POINTS) }}</dd>
+{% if aps_config('aps_points_display_profile') %}<dt>{{ aps_name() ~ lang('COLON') }}</dt> <dd>{{ aps_display(USER_POINTS) }}</dd>{% endif %}
 {% EVENT phpbbstudio_aps_profile_append %}

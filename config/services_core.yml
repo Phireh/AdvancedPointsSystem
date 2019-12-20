@@ -44,6 +44,7 @@ services:
             - '@request'
             - '@user'
             - '%core.table_prefix%'
+            - '%phpbbstudio.aps.constants%'
 
     phpbbstudio.aps.language:
         class: phpbbstudio\aps\core\language

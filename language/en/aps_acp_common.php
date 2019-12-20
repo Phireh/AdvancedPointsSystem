@@ -95,6 +95,8 @@ $lang = array_merge($lang, [
 	'ACP_APS_POINTS_MAX'				=> 'Maximum user %s',
 	'ACP_APS_POINTS_MAX_DESC'			=> 'If set, users’ %s can not go higher than this amount.',
 
+	'ACP_APS_POINTS_NAMES'				=> 'Points names',
+
 	'ACP_APS_POINTS_PER_PAGE'			=> '%s actions per page',
 	'ACP_APS_POINTS_PER_PAGE_DESC'		=> 'The amount of %s actions that should be displayed per page.',
 
@@ -103,7 +105,21 @@ $lang = array_merge($lang, [
 
 	'ACP_APS_FORMATTING'				=> 'Formatting',
 
-	'ACP_APS_POINTS_NAMES'				=> 'Points names',
+	'ACP_APS_IGNORE_SETTINGS'				=> 'Ignore settings',
+	'ACP_APS_IGNORE_CRITERIA'				=> 'Ignore criteria',
+	'ACP_APS_IGNORE_CRITERIA_DESC'			=> 'What criteria should checked to see if a post will not receive points.',
+	'ACP_APS_IGNORE_MIN_CHARS'				=> 'Minimum characters',
+	'ACP_APS_IGNORE_MIN_CHARS_DESC'			=> 'Posts with less characters than this will not receive points.',
+	'ACP_APS_IGNORE_MIN_WORDS'				=> 'Minimum words',
+	'ACP_APS_IGNORE_MIN_WORDS_DESC'			=> 'Posts with less words than this will not receive points.',
+	'ACP_APS_IGNORE_EXCLUDED_CHARS'			=> 'Ignore excluded characters',
+	'ACP_APS_IGNORE_EXCLUDED_CHARS_DESC'	=> 'Do not count the “excluded characters” towards the “minimum characters” criteria.',
+	'ACP_APS_IGNORE_EXCLUDED_WORDS'			=> 'Ignore excluded words',
+	'ACP_APS_IGNORE_EXCLUDED_WORDS_DESC'	=> 'Do not count the “excluded words” towards the “minimum words” criteria.',
+	'ACP_APS_IGNORE_BOTH'					=> 'Both',
+	'ACP_APS_IGNORE_NONE'					=> 'None',
+	'ACP_APS_IGNORE_CHARS'					=> 'Chars',
+	'ACP_APS_IGNORE_WORDS'					=> 'Words',
 
 	'ACP_APS_CHAIN_SETTINGS'			=> 'Chain settings',
 	'ACP_APS_CHAIN_MERGE_DELETE'		=> 'When “merging” also trigger “delete”',
@@ -123,4 +139,10 @@ $lang = array_merge($lang, [
 	'ACP_APS_SEPARATOR_UNDERSCORE'		=> 'Underscore',
 	'ACP_APS_SEPARATOR_SPACE'			=> 'Space',
 	'ACP_APS_SEPARATOR_SPACE_NARROW'	=> 'Narrow space',
+
+	// Locations
+	'ACP_APS_LOCATIONS'					=> 'Link locations',
+	'ACP_APS_LOCATIONS_DESC'			=> 'Determine where the link to the Points page should be displayed.',
+	'ACP_APS_LOCATIONS_EXPLAIN'			=> 'This is an example of a board index. In here you can select where you want the link to show up.<br>You can select as many locations as you like, from nowhere to at all places.',
+	'ACP_APS_LOCATIONS_SUCCESS'			=> 'You have successfully updated the link locations.',
 ]);
