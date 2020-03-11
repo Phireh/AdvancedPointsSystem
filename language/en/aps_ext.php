@@ -22,7 +22,7 @@ if (empty($lang) || !is_array($lang))
  * Some characters you may want to copy&paste: ’ » “ ” …
  */
 $lang = array_merge($lang, [
-	'APS_DISABLE_EXTENDED'	=> 'Disabling the Advanced Points System is not possible as it is still being extended by an other extension. Extension name: %s',
+	'APS_DISABLE_EXTENDED'	=> 'Disabling the <strong>“Advanced Points System”</strong> is not possible as it is still being extended by an other extension. Extension name: <strong>“%s”</strong>',
 	'APS_PHPBB_VERSION'		=> 'Minimum phpBB version required is %1$s but less than %2$s',
-	'APS_UP_INSTALLED'		=> 'The extension “dmzx/ultimatepoints” is not compatible with this one!',
+	'APS_UP_INSTALLED'		=> 'The extension <strong>“dmzx/ultimatepoints”</strong> is not compatible with this one!',
 ]);

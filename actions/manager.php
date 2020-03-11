@@ -403,18 +403,6 @@ class manager
 		// Iterate over all the users
 		foreach ($this->users as $user_id => $user_row)
 		{
-			// Approve logs
-			if ($user_row['approve'])
-			{
-				$this->distributor->approve($user_id, array_unique(array_filter($user_row['approve'])));
-			}
-
-			// Disapprove logs
-			if ($user_row['disapprove'])
-			{
-				$this->distributor->disapprove($user_id, array_unique(array_filter($user_row['disapprove'])));
-			}
-
 			// Iterate over all the action types
 			foreach ($user_row['actions'] as $actions)
 			{
@@ -442,6 +430,20 @@ class manager
 				$this->users[$user_id]['logs'],
 				$this->users[$user_id]['current']
 			);
+
+			// Approve logs
+			if ($user_row['approve'])
+			{
+				$user_points = $this->functions->equate_points($this->users[$user_id]['total'], $this->users[$user_id]['current']);
+
+				$this->distributor->approve($user_id, array_unique(array_filter($user_row['approve'])), $user_points);
+			}
+
+			// Disapprove logs
+			if ($user_row['disapprove'])
+			{
+				$this->distributor->disapprove($user_id, array_unique(array_filter($user_row['disapprove'])));
+			}
 		}
 	}
 

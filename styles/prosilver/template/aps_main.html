@@ -43,17 +43,17 @@
 			</ul>
 		</div>
 
-		{% set nav = block('nav')|trim %}
-		{% set nav_right = block('nav_right')|trim %}
+		{% set nav = block('nav') is defined ? block('nav')|trim : '' %}
+		{% set nav_right = block('nav_right') is defined ? block('nav_right')|trim : '' %}
 
-		{% if (nav is defined and nav != '') or (nav_right is defined and nav != '') %}
+		{% if nav != '' or nav_right != '' %}
 			<div class="aps-nav aps-lists-container headerbar">
-				{% if nav is defined and nav is not empty %}
+				{% if nav != '' %}
 					<ul class="aps-list">
 						{{ nav }}
 					</ul>
 				{% endif %}
-				{% if nav_right is defined and nav_right != '' %}
+				{% if nav_right != '' %}
 					<ul class="aps-list aps-list-right">
 						{{ nav_right }}
 					</ul>

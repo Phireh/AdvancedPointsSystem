@@ -129,7 +129,7 @@ class topic extends base
 		$topic_id = $post_data['topic_id'];
 		$post_id = !$s_bump ? $post_data['post_id'] : 0;
 		$message = !$s_bump ? $post_data['message'] : '';
-		$attachments = !$s_bump ? $post_data['attachment_data'] : '';
+		$attachments = !$s_bump ? $post_data['attachment_data'] : [];
 
 		$logs = [];
 		$values = $values[$forum_id];

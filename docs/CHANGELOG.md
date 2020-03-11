@@ -1,5 +1,11 @@
 # phpBB Studio - Advanced Points System
 
+#### v1.0.6-RC on 11-03-2020
+- Fixed template block inclusion
+- Fixed approved post points distribution
+- Updated permission language strings
+- Added phpBB 3.3 compatibility
+
 #### v1.0.5-RC1 on 20-12-2019
 - Entered the stage features frozen.
 - Fixed a bug where points were displayed on profile despite the setting

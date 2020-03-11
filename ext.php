@@ -17,24 +17,29 @@ class ext extends \phpbb\extension\base
 {
 	public function is_enableable()
 	{
-		$is_enableable = true;
-
-		$user = $this->container->get('user');
-		$user->add_lang_ext('phpbbstudio/aps', 'aps_ext');
-
-		$lang = $user->lang;
-
 		if (!(phpbb_version_compare(PHPBB_VERSION, '3.2.8', '>=') && phpbb_version_compare(PHPBB_VERSION, '4.0.0@dev', '<')))
 		{
-			/**
-			 * Despite it seems wrong that's the right approach and not an error in coding
-			 * That's done in order to avoid a PHP error like
-			 * "Indirect modification of overloaded property phpbb/user::$lang has no effect"
-			 * Discussed here: https://www.phpbb.com/community/viewtopic.php?p=14724151#p14724151
-			 */
-			$lang['EXTENSION_NOT_ENABLEABLE'] .= '<br>' . $user->lang('APS_PHPBB_VERSION', '3.2.8', '4.0.0@dev');
+			if (phpbb_version_compare(PHPBB_VERSION, '3.3.0@dev', '<'))
+			{
+				$user = $this->container->get('user');
+				$user->add_lang_ext('phpbbstudio/aps', 'aps_ext');
 
-			$is_enableable = false;
+				$lang = $user->lang;
+
+				$lang['EXTENSION_NOT_ENABLEABLE'] .= '<br>' . $user->lang('APS_PHPBB_VERSION', '3.2.8', '4.0.0@dev');
+
+				$user->lang = $lang;
+
+				return false;
+			}
+
+			if (phpbb_version_compare(PHPBB_VERSION, '3.3.0@dev', '>'))
+			{
+				$language= $this->container->get('language');
+				$language->add_lang('aps_ext', 'phpbbstudio/aps');
+
+				return $language->lang('APS_PHPBB_VERSION', '3.2.8', '4.0.0@dev');
+			}
 		}
 
 		/**
@@ -45,14 +50,30 @@ class ext extends \phpbb\extension\base
 
 		if ($is_ups_enabled)
 		{
-			$lang['EXTENSION_NOT_ENABLEABLE'] .= '<br>' . $user->lang('APS_UP_INSTALLED');
+			if (phpbb_version_compare(PHPBB_VERSION, '3.3.0@dev', '<'))
+			{
+				$user = $this->container->get('user');
+				$user->add_lang_ext('phpbbstudio/aps', 'aps_ext');
 
-			$is_enableable = false;
+				$lang = $user->lang;
+
+				$lang['EXTENSION_NOT_ENABLEABLE'] .= '<br>' . $user->lang('APS_UP_INSTALLED');
+
+				$user->lang = $lang;
+
+				return false;
+			}
+
+			if (phpbb_version_compare(PHPBB_VERSION, '3.3.0@dev', '>'))
+			{
+				$language= $this->container->get('language');
+				$language->add_lang('aps_ext', 'phpbbstudio/aps');
+
+				return $language->lang('APS_UP_INSTALLED');
+			}
 		}
 
-		$user->lang = $lang;
-
-		return $is_enableable;
+		return true;
 	}
 
 	/**

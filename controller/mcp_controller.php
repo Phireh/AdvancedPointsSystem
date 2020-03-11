@@ -338,7 +338,7 @@ class mcp_controller
 			break;
 
 			case '':
-				continue;
+				// do nothing
 			break;
 
 			default:
