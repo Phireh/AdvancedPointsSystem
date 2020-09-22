@@ -250,7 +250,7 @@ class valuator
 			{
 				$sql = 'UPDATE ' . $this->values_table . '
 						SET points_value = ' . (double) $value . '
-						WHERE points_name = "' . $this->db->sql_escape($name) . '"
+						WHERE points_name = \'' . $this->db->sql_escape($name) . '\'
 							AND forum_id = ' . (int) $forum_id;
 			}
 			else

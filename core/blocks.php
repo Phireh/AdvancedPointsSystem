@@ -539,7 +539,7 @@ class blocks
 
 		$sql = 'SELECT group_name, group_colour, group_id
 				FROM ' . $this->functions->table('groups') . '
-				WHERE group_name <> "BOTS"
+				WHERE group_name <> \'BOTS\'
 					AND group_type <> ' . GROUP_HIDDEN . '
 					AND ' . $this->db->sql_in_set('group_id', array_keys($rowset), false, true);
 		$result = $this->db->sql_query($sql);
@@ -632,7 +632,7 @@ class blocks
 
 		$sql = 'SELECT forum_id, topic_id
 				FROM ' . $this->functions->table('topics') . '
-				WHERE topic_title = "' . $this->db->sql_escape($title) . '"';
+				WHERE topic_title = \'' . $this->db->sql_escape($title) . '\'';
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
