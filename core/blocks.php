@@ -609,8 +609,8 @@ class blocks
 		$sql = 'SELECT ' . $select . '
 				FROM ' . $this->functions->table('users') . '
 				WHERE user_type <> ' . USER_IGNORE . '
-					AND (username = "' . $this->db->sql_escape($username) . '"
-						OR username_clean = "' . $this->db->sql_escape(utf8_clean_string($username)) . '"
+					AND (username = \'' . $this->db->sql_escape($username) . '\'
+						OR username_clean = \'' . $this->db->sql_escape(utf8_clean_string($username)) . '\'
 					)';
 		$result = $this->db->sql_query_limit($sql, 1);
 		$user = $this->db->sql_fetchrow($result);
